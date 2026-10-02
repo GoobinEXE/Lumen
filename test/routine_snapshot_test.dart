@@ -96,4 +96,34 @@ void main() {
     expect(message, contains('10:15'));
     expect(message, isNot(contains('nota íntima')));
   });
+
+  test('export corta o que ficou fora do período e limpa nota vazia', () {
+    final now = DateTime(2026, 9, 21, 12);
+    final lines = routineExportLines(
+      snapshots: [
+        RoutineSnapshot(
+          id: 'old',
+          savedAt: now.subtract(const Duration(days: 7, minutes: 1)),
+          mainFocusAnchor: 'Antigo',
+        ),
+        RoutineSnapshot(
+          id: 'edge',
+          savedAt: now.subtract(const Duration(days: 7)),
+          mainFocusAnchor: ' No corte ',
+          completedHabits: const {'zeta', 'alfa'},
+          eveningReflection: '   ',
+          therapistNotes: '  nota  ',
+        ),
+      ],
+      now: now,
+      periodDays: 7,
+      hideIntimateNotes: false,
+    );
+
+    expect(lines, hasLength(1));
+    expect(lines.single.anchor, 'No corte');
+    expect(lines.single.completedHabits, ['alfa', 'zeta']);
+    expect(lines.single.eveningReflection, isNull);
+    expect(lines.single.therapistNotes, 'nota');
+  });
 }

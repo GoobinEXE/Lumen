@@ -514,7 +514,7 @@ class MedicationReminderService {
     return repo.ensureDoseLog(
       medicationId: payload.medicationId,
       medicationName: payload.name,
-      scheduled: scheduledOnToday(payload.time),
+      scheduled: scheduledDoseInstant(payload.time),
     );
   }
 

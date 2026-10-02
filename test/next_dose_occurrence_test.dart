@@ -1,5 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:noa/features/medications/data/medication_repository.dart';
+import 'package:noa/features/medications/domain/medication.dart';
 import 'package:noa/features/medications/service/reminder_schedule.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   group('upcomingDoseOccurrences', () {
@@ -98,6 +101,73 @@ void main() {
         ),
         ReminderLaunchIntent.ignore,
       );
+    });
+  });
+
+  group('scheduledDoseInstant', () {
+    test('confirmar de madrugada grava a dose da noite anterior', () {
+      final afterMidnight = DateTime(2026, 10, 2, 0, 30);
+      final scheduled = scheduledDoseInstant('22:00', afterMidnight);
+
+      expect(scheduled, DateTime(2026, 10, 1, 22));
+    });
+
+    test('aviso adiantado no mesmo dia não cai na véspera', () {
+      final justBefore = DateTime(2026, 10, 2, 7, 50);
+      final scheduled = scheduledDoseInstant('08:00', justBefore);
+
+      expect(scheduled, DateTime(2026, 10, 2, 8));
+    });
+
+    test('tomar depois do horário fica no mesmo dia', () {
+      final later = DateTime(2026, 10, 2, 10);
+      expect(scheduledDoseInstant('08:00', later), DateTime(2026, 10, 2, 8));
+    });
+
+    test(
+      'no meio do caminho entre as duas ocorrências fica a que já passou',
+      () {
+        final midpoint = DateTime(2026, 10, 2, 10);
+        expect(
+          scheduledDoseInstant('22:00', midpoint),
+          DateTime(2026, 10, 1, 22),
+        );
+      },
+    );
+
+    test('confirmar depois da meia-noite não marca a dose de hoje', () async {
+      TestWidgetsFlutterBinding.ensureInitialized();
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+      final repo = MedicationRepository(prefs);
+      await repo.saveMedication(
+        const Medication(
+          id: 'med-1',
+          name: 'Venvanse',
+          dosage: '30mg',
+          scheduledTimes: ['22:00'],
+          remainingStock: 10,
+        ),
+      );
+
+      final confirmedAt = DateTime(2026, 10, 2, 0, 30);
+      final scheduled = scheduledDoseInstant('22:00', confirmedAt);
+      final log = await repo.ensureDoseLog(
+        medicationId: 'med-1',
+        medicationName: 'Venvanse 30mg',
+        scheduled: scheduled,
+      );
+      await repo.markAsTaken(log.id, confirmedAt);
+
+      final today = await repo.getLogsForDate(DateTime(2026, 10, 2, 9));
+      final tonight = today.single;
+      expect(tonight.scheduledTime, DateTime(2026, 10, 2, 22));
+      expect(tonight.isTaken, isFalse);
+
+      final recorded = await repo.logById(log.id);
+      expect(recorded!.scheduledTime, DateTime(2026, 10, 1, 22));
+      expect(recorded.isTaken, isTrue);
+      expect((await repo.getMedications()).single.remainingStock, 9);
     });
   });
 }

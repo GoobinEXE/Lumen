@@ -171,10 +171,28 @@ class ReminderPayload {
   }
 }
 
-DateTime scheduledOnToday(String time) {
+/// Horário da dose que a ação da notificação representa.
+///
+/// O alarme semanal só carrega a hora, não a data. Confirmar de madrugada
+/// uma dose da noite anterior não pode marcar o horário de hoje, que ainda
+/// não chegou. Um aviso que toca pouco antes da hora continua no mesmo dia.
+DateTime scheduledDoseInstant(String time, [DateTime? now]) {
+  final clock = now ?? DateTime.now();
   final parts = time.split(':');
   final hour = int.tryParse(parts.isEmpty ? '' : parts[0]) ?? 8;
   final minute = int.tryParse(parts.length > 1 ? parts[1] : '') ?? 0;
-  final now = DateTime.now();
-  return DateTime(now.year, now.month, now.day, hour, minute);
+  final todayAt = DateTime(clock.year, clock.month, clock.day, hour, minute);
+  if (!clock.isBefore(todayAt)) return todayAt;
+
+  final yesterdayAt = DateTime(
+    clock.year,
+    clock.month,
+    clock.day - 1,
+    hour,
+    minute,
+  );
+  final untilToday = todayAt.difference(clock);
+  final sinceYesterday = clock.difference(yesterdayAt);
+  if (sinceYesterday <= untilToday) return yesterdayAt;
+  return todayAt;
 }

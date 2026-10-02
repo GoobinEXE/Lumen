@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_stack" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{width:100vw;margin:0;padding:0;background-color:#fcf8ff;}body{overscroll-behavior:none;-webkit-tap-highlight-color:transparent;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "surface-tint": "#006c53", "surface-bright": "#fcf8ff", "surface-container-high": "#ebe5f8", "tertiary-container": "#ec7c4f", "on-tertiary-fixed-variant": "#7f2b02", "error-container": "#ffdad6", "primary-fixed": "#7bf9cf", "tertiary-fixed-dim": "#ffb59a", "primary-fixed-dim": "#5cdcb4", "on-background": "#1c1a27", "tertiary": "#9f4119", "on-primary-fixed": "#002117", "on-primary-fixed-variant": "#00513e", "on-tertiary": "#ffffff", "surface": "#fcf8ff", "primary-container": "#1faf8a", "on-secondary": "#ffffff", "surface-container-highest": "#e5e0f3", "on-secondary-container": "#4d3d86", "surface-container-lowest": "#ffffff", "inverse-primary": "#5cdcb4", "on-surface": "#1c1a27", "error": "#ba1a1a", "background": "#fcf8ff", "outline": "#6d7a74", "secondary-fixed-dim": "#ccbeff", "inverse-surface": "#312f3d", "secondary-fixed": "#e7deff", "on-surface-variant": "#3d4a44", "surface-container": "#f0ebfe", "on-error-container": "#93000a", "inverse-on-surface": "#f3eeff", "surface-container-low": "#f6f1ff", "secondary-container": "#bfadff", "primary": "#006c53", "on-secondary-fixed": "#1e0856", "on-error": "#ffffff", "on-primary-container": "#003b2c", "outline-variant": "bccac2", "on-secondary-fixed-variant": "#4a3b83", "surface-dim": "#dcd7ea", "on-tertiary-container": "#5f1d00", "on-tertiary-fixed": "#380d00", "tertiary-fixed": "#ffdbce", "surface-variant": "#e5e0f3", "on-primary": "#ffffff", "secondary": "#63539d" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "margin": "1.5rem", "space-xl": "2rem", "gutter-mobile": "0.75rem", "space-lg": "1.5rem", "gutter": "1rem", "margin-mobile": "1.25rem", "space-md": "1rem", "space-sm": "0.5rem", "space-xs": "0.25rem" }, "fontFamily": { "body-md": ["Inter"], "label-sm": ["Inter"], "headline-sm": ["Inter"], "headline-lg": ["Inter"], "headline-md": ["Inter"], "display-lg": ["Inter"], "label-md": ["Inter"], "body-lg": ["Inter"], "body-sm": ["Inter"], "label-lg": ["Inter"], "headline-lg-mobile": ["Inter"] }, "fontSize": { "body-md": ["15px", { "lineHeight": "22px", "letterSpacing": "0.005em", "fontWeight": "400" }], "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.02em", "fontWeight": "500" }], "headline-sm": ["18px", { "lineHeight": "24px", "letterSpacing": "-0.005em", "fontWeight": "600" }], "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.015em", "fontWeight": "600" }], "headline-md": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "display-lg": ["34px", { "lineHeight": "42px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500" }], "body-lg": ["17px", { "lineHeight": "26px", "letterSpacing": "0em", "fontWeight": "400" }], "body-sm": ["13px", { "lineHeight": "18px", "letterSpacing": "0.01em", "fontWeight": "400" }], "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }], "headline-lg-mobile": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }] } } } };</script><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface font-body-md text-on-surface flex flex-col min-h-screen selection:bg-primary-fixed selection:text-on-primary-fixed"><header class="fixed top-0 w-full z-50 pt-safe bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-margin-mobile flex items-center justify-between"><div class="flex items-center gap-space-sm"><button aria-label="Voltar" class="min-w-[44px] min-h-[44px] -ml-2 flex items-center justify-center rounded-full text-on-surface hover:bg-surface-container active:scale-95 transition-transform" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">arrow_back_ios_new</span></button><h1 class="font-headline-sm text-headline-sm text-on-surface tracking-tight">Check In</h1></div><div class="flex items-center min-w-[44px] min-h-[44px] justify-center"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida/AEtjO1VFh_UIF0777aNKR7Y4IzRdMqf7CdEwD-IjuPoWj-DsAuEiE794T3ResLae1WCuqY2HQ5-f5KXogreltYWPpH2P4P1s3koI0g9u2b1WFdhdIGv5mLDAU7SlZhULBU6rZ5dD6bLumdxDCEDa6ETq6hHc9qPZ6p5aLn50QtIhKaFgdNSQ51zO4ZA5fsVQ5NYQsR0piqY08v9FdoHNPTnlmcWTYXnJv0hS-3Yd5BuQ5AZ-mJTNtA06fChzKyU"/></div></div></header><main class="flex flex-col relative w-full pt-16 pb-safe px-margin-mobile bg-surface flex-grow"><div class="flex flex-col w-full pb-8">
+<div class="fixed inset-0 bg-inverse-surface/30 backdrop-blur-md z-40 transition-opacity duration-300 pointer-events-none"></div>
+<div class="relative z-50 flex flex-col w-full bg-surface-container-lowest/90 backdrop-blur-2xl rounded-t-[32px] shadow-2xl p-margin-mobile gap-space-md mt-2">
+<div class="flex justify-center w-full py-1">
+<div class="w-12 h-1.5 rounded-full bg-outline-variant/60"></div>
+</div>
+<div class="flex flex-col items-center text-center gap-space-xs pt-1">
+<div class="relative w-16 h-16 flex items-center justify-center mb-1">
+<svg class="w-16 h-16 transform -rotate-90" viewbox="0 0 64 64">
+<defs>
+<lineargradient id="orbGrad" x1="0%" x2="100%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#1FAF8A"></stop>
+<stop offset="45%" stop-color="#63539D"></stop>
+<stop offset="100%" stop-color="#EC7C4F"></stop>
+</lineargradient>
+</defs>
+<circle cx="32" cy="32" fill="none" opacity="0.9" r="26" stroke="url(#orbGrad)" stroke-width="7"></circle>
+<circle class="shadow-sm" cx="32" cy="32" fill="#ffffff" r="14"></circle>
+</svg>
+<span class="absolute inset-0 m-auto w-3 h-3 rounded-full bg-primary-fixed-dim/40 blur-[2px]"></span>
+</div>
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">Como você está se sentindo agora?</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant max-w-xs">Sem julgamentos, só um registro honesto do seu momento presente.</p>
+</div>
+<div class="flex flex-col gap-space-sm bg-surface-container-low/70 rounded-2xl p-space-md shadow-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">1. Valência Emocional</span>
+<span class="font-label-md text-label-md text-primary font-semibold" id="valence-label">Neutro / Ok</span>
+</div>
+<div class="flex items-center justify-between pt-1" id="valence-selector">
+<button class="valence-btn flex flex-col items-center gap-1 group active:scale-95 transition-transform" data-val="Muito difícil" type="button">
+<div class="w-11 h-11 rounded-full bg-surface-container flex items-center justify-center shadow-sm text-on-surface-variant group-[.active]:bg-tertiary-container group-[.active]:text-on-tertiary-container transition-colors">
+<span class="material-symbols-outlined text-[24px]">sentiment_very_dissatisfied</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Difícil</span>
+</button>
+<button class="valence-btn flex flex-col items-center gap-1 group active:scale-95 transition-transform" data-val="Pesado" type="button">
+<div class="w-11 h-11 rounded-full bg-surface-container flex items-center justify-center shadow-sm text-on-surface-variant group-[.active]:bg-tertiary-fixed group-[.active]:text-on-tertiary-fixed transition-colors">
+<span class="material-symbols-outlined text-[24px]">sentiment_dissatisfied</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Pesado</span>
+</button>
+<button class="valence-btn active flex flex-col items-center gap-1 group active:scale-95 transition-transform" data-val="Neutro / Ok" type="button">
+<div class="w-11 h-11 rounded-full bg-surface-container flex items-center justify-center shadow-sm text-on-surface-variant group-[.active]:bg-secondary-fixed group-[.active]:text-on-secondary-fixed transition-colors">
+<span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">sentiment_neutral</span>
+</div>
+<span class="font-label-sm text-label-sm text-primary font-medium">Neutro</span>
+</button>
+<button class="valence-btn flex flex-col items-center gap-1 group active:scale-95 transition-transform" data-val="Bem" type="button">
+<div class="w-11 h-11 rounded-full bg-surface-container flex items-center justify-center shadow-sm text-on-surface-variant group-[.active]:bg-primary-fixed group-[.active]:text-on-primary-fixed transition-colors">
+<span class="material-symbols-outlined text-[24px]">sentiment_satisfied</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Bem</span>
+</button>
+<button class="valence-btn flex flex-col items-center gap-1 group active:scale-95 transition-transform" data-val="Excelente" type="button">
+<div class="w-11 h-11 rounded-full bg-surface-container flex items-center justify-center shadow-sm text-on-surface-variant group-[.active]:bg-primary-container group-[.active]:text-on-primary transition-colors">
+<span class="material-symbols-outlined text-[24px]">sentiment_very_satisfied</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Radiante</span>
+</button>
+</div>
+</div>
+<div class="flex flex-col gap-space-sm">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">2. Matriz de Foco</span>
+<div class="grid grid-cols-2 gap-space-sm" id="focus-matrix">
+<button class="focus-chip active flex items-center gap-space-sm p-3 rounded-2xl bg-primary-container text-on-primary shadow-sm text-left active:scale-[0.98] transition-all" type="button">
+<span class="text-[20px]">🎯</span>
+<div class="flex flex-col min-w-0">
+<span class="font-label-lg text-label-lg leading-tight truncate">Focado</span>
+<span class="font-label-sm text-label-sm opacity-80 truncate">Em fluxo sereno</span>
+</div>
+</button>
+<button class="focus-chip flex items-center gap-space-sm p-3 rounded-2xl bg-surface-container text-on-surface shadow-sm text-left active:scale-[0.98] transition-all" type="button">
+<span class="text-[20px]">⚡</span>
+<div class="flex flex-col min-w-0">
+<span class="font-label-lg text-label-lg leading-tight truncate">Hiperfoco</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant truncate">Intensidade viva</span>
+</div>
+</button>
+<button class="focus-chip flex items-center gap-space-sm p-3 rounded-2xl bg-surface-container text-on-surface shadow-sm text-left active:scale-[0.98] transition-all" type="button">
+<span class="text-[20px]">🍃</span>
+<div class="flex flex-col min-w-0">
+<span class="font-label-lg text-label-lg leading-tight truncate">Disperso</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant truncate">Mente flutuante</span>
+</div>
+</button>
+<button class="focus-chip flex items-center gap-space-sm p-3 rounded-2xl bg-surface-container text-on-surface shadow-sm text-left active:scale-[0.98] transition-all" type="button">
+<span class="text-[20px]">🪨</span>
+<div class="flex flex-col min-w-0">
+<span class="font-label-lg text-label-lg leading-tight truncate">Paralisado</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant truncate">Cansaço executivo</span>
+</div>
+</button>
+</div>
+</div>
+<div class="flex flex-col gap-space-sm bg-surface-container-low/70 rounded-2xl p-space-md shadow-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">3. Nível de Energia</span>
+<span class="font-label-md text-label-md text-secondary font-semibold" id="energy-label">Estável</span>
+</div>
+<div class="grid grid-cols-5 gap-1.5 pt-1" id="energy-levels">
+<button class="energy-pill h-3.5 rounded-full bg-secondary transition-all opacity-40" data-label="Esgotado" type="button"></button>
+<button class="energy-pill h-3.5 rounded-full bg-secondary transition-all opacity-40" data-label="Baixa" type="button"></button>
+<button class="energy-pill active h-3.5 rounded-full bg-secondary transition-all opacity-100 shadow-sm" data-label="Estável" type="button"></button>
+<button class="energy-pill h-3.5 rounded-full bg-surface-container-highest transition-all" data-label="Alta" type="button"></button>
+<button class="energy-pill h-3.5 rounded-full bg-surface-container-highest transition-all" data-label="Elétrico" type="button"></button>
+</div>
+</div>
+<div class="flex flex-col gap-space-sm">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">4. Sinais Fisiológicos Rápidos</span>
+<div class="flex flex-col gap-2">
+<label class="flex items-center justify-between p-3.5 rounded-2xl bg-surface-container-low shadow-sm cursor-pointer select-none">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[22px]">medication</span>
+<span class="font-body-md text-body-md text-on-surface">Tomei medicação prescrita</span>
+</div>
+<input checked="" class="sr-only peer" id="toggle-meds" type="checkbox"/>
+<div class="w-12 h-7 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-container-lowest after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-primary relative shadow-inner"></div>
+</label>
+<label class="flex items-center justify-between p-3.5 rounded-2xl bg-surface-container-low shadow-sm cursor-pointer select-none">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-tertiary text-[22px]">hearing_disabled</span>
+<div class="flex flex-col">
+<span class="font-body-md text-body-md text-on-surface">Sobrecarga Sensorial</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Sensory overload ativo</span>
+</div>
+</div>
+<input class="sr-only peer" id="toggle-overload" type="checkbox"/>
+<div class="w-12 h-7 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-container-lowest after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-tertiary-container relative shadow-inner"></div>
+</label>
+</div>
+</div>
+<div class="flex flex-col gap-space-sm">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">5. Nuvem de Sensações (State of Mind)</span>
+<div class="flex flex-wrap gap-2" id="state-tags">
+<button class="tag-pill active px-3.5 py-1.5 rounded-full bg-primary-fixed text-on-primary-fixed font-label-md text-label-md shadow-sm active:scale-95 transition-all" type="button">calmo</button>
+<button class="tag-pill px-3.5 py-1.5 rounded-full bg-surface-container text-on-surface-variant font-label-md text-label-md shadow-sm active:scale-95 transition-all" type="button">ansioso</button>
+<button class="tag-pill px-3.5 py-1.5 rounded-full bg-surface-container text-on-surface-variant font-label-md text-label-md shadow-sm active:scale-95 transition-all" type="button">sobrecarregado</button>
+<button class="tag-pill active px-3.5 py-1.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-md text-label-md shadow-sm active:scale-95 transition-all" type="button">motivado</button>
+<button class="tag-pill px-3.5 py-1.5 rounded-full bg-surface-container text-on-surface-variant font-label-md text-label-md shadow-sm active:scale-95 transition-all" type="button">disperso</button>
+<button class="tag-pill px-3.5 py-1.5 rounded-full bg-surface-container text-on-surface-variant font-label-md text-label-md shadow-sm active:scale-95 transition-all" type="button">em paz</button>
+<button class="tag-pill px-3.5 py-1.5 rounded-full bg-surface-container text-on-surface-variant font-label-md text-label-md shadow-sm active:scale-95 transition-all" type="button">apressado</button>
+</div>
+</div>
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider" for="checkin-note">6. Nota Opcional</label>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3.5 text-on-surface-variant/60 text-[20px]">edit_note</span>
+<input class="w-full bg-surface-container-low text-on-surface placeholder:text-on-surface-variant/60 font-body-sm text-body-sm pl-10 pr-4 py-3 rounded-2xl focus:outline-none focus:bg-surface-container transition-colors shadow-sm" id="checkin-note" placeholder="Deseja anotar algo rápido? (opcional)" type="text"/>
+</div>
+</div>
+<div class="flex flex-col gap-space-sm pt-2">
+<button class="w-full py-4 px-6 rounded-2xl bg-primary-container text-on-primary font-headline-sm text-headline-sm flex items-center justify-center gap-2 shadow-lg active:scale-[0.98] transition-transform" id="submit-checkin" type="button">
+<span>Concluir Check-in</span>
+<span class="font-label-sm text-label-sm bg-on-primary/20 px-2 py-0.5 rounded-full">10s</span>
+</button>
+<button class="w-full py-2.5 text-center font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface active:scale-95 transition-all" onclick="history.back()" type="button">
+        Cancelar
+      </button>
+</div>
+</div>
+</div>
+<script>
+  document.querySelectorAll('.valence-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.valence-btn').forEach(b => {
+        b.classList.remove('active');
+        b.querySelector('span:last-child').classList.remove('text-primary', 'font-medium');
+        b.querySelector('span:last-child').classList.add('text-on-surface-variant');
+      });
+      btn.classList.add('active');
+      const label = btn.querySelector('span:last-child');
+      label.classList.remove('text-on-surface-variant');
+      label.classList.add('text-primary', 'font-medium');
+      document.getElementById('valence-label').textContent = btn.dataset.val;
+    });
+  });
+
+  document.querySelectorAll('.focus-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('.focus-chip').forEach(c => {
+        c.className = 'focus-chip flex items-center gap-space-sm p-3 rounded-2xl bg-surface-container text-on-surface shadow-sm text-left active:scale-[0.98] transition-all';
+        c.querySelector('span:last-child').className = 'font-label-sm text-label-sm text-on-surface-variant truncate';
+      });
+      chip.className = 'focus-chip active flex items-center gap-space-sm p-3 rounded-2xl bg-primary-container text-on-primary shadow-sm text-left active:scale-[0.98] transition-all';
+      chip.querySelector('span:last-child').className = 'font-label-sm text-label-sm opacity-80 truncate';
+    });
+  });
+
+  const energyPills = document.querySelectorAll('.energy-pill');
+  energyPills.forEach((pill, idx) => {
+    pill.addEventListener('click', () => {
+      document.getElementById('energy-label').textContent = pill.dataset.label;
+      energyPills.forEach((p, i) => {
+        if (i <= idx) {
+          p.className = 'energy-pill active h-3.5 rounded-full bg-secondary transition-all opacity-100 shadow-sm';
+        } else {
+          p.className = 'energy-pill h-3.5 rounded-full bg-surface-container-highest transition-all';
+        }
+      });
+    });
+  });
+
+  document.querySelectorAll('.tag-pill').forEach(tag => {
+    tag.addEventListener('click', () => {
+      if (tag.classList.contains('active')) {
+        tag.classList.remove('active', 'bg-primary-fixed', 'text-on-primary-fixed', 'bg-secondary-fixed', 'text-on-secondary-fixed');
+        tag.classList.add('bg-surface-container', 'text-on-surface-variant');
+      } else {
+        tag.classList.add('active', 'bg-primary-fixed', 'text-on-primary-fixed');
+        tag.classList.remove('bg-surface-container', 'text-on-surface-variant');
+      }
+    });
+  });
+
+  const submitBtn = document.getElementById('submit-checkin');
+  submitBtn.addEventListener('click', () => {
+    submitBtn.innerHTML = '<span class="material-symbols-outlined text-[20px]">check_circle</span> Salvo com carinho';
+    submitBtn.classList.replace('bg-primary-container', 'bg-primary');
+    setTimeout(() => {
+      window.history.back();
+    }, 600);
+  });
+</script></main></body></html>

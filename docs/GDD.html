@@ -1,0 +1,2475 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Lumen — Game Design Document (GDD)</title>
+<style>
+/* ==========================================================================
+   PAGE SETUP & GEOMETRY
+   ========================================================================== */
+@page {
+  size: A4;
+  margin: 22mm 16mm 22mm 16mm;
+}
+@page :first {
+  margin: 0;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: #1E293B;
+  background: #FFFFFF;
+  line-height: 1.55;
+  font-size: 9.5pt;
+  letter-spacing: -0.01em;
+}
+
+/* ==========================================================================
+   COVER PAGE (Full Bleed A4)
+   ========================================================================== */
+.cover-page {
+  box-sizing: border-box;
+  padding: 8mm 4mm 4mm 4mm;
+  height: 246mm;
+  background: linear-gradient(165deg, #FAFDFB 0%, #F0F9F6 50%, #FAF8FE 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  page-break-after: always;
+  position: relative;
+  overflow: hidden;
+}
+
+.cover-page::before {
+  content: "";
+  position: absolute;
+  top: -100px;
+  right: -100px;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(31, 175, 138, 0.12) 0%, rgba(139, 123, 200, 0.05) 50%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.cover-top {
+  position: relative;
+  z-index: 2;
+}
+
+.brand-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.brand-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #E6F7F3;
+  color: #147A60;
+  border: 1px solid #B4E8DC;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 8.5pt;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+
+.brand-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #1FAF8A;
+  box-shadow: 0 0 6px rgba(31, 175, 138, 0.6);
+}
+
+.brand-version-pill {
+  background: #FFFFFF;
+  color: #64748B;
+  border: 1px solid #E2E8F0;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 8.5pt;
+  font-weight: 600;
+}
+
+.brand-logo-title {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 10px 0 14px 0;
+}
+
+.brand-icon-svg {
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
+}
+
+.brand-title {
+  font-size: 36pt;
+  font-weight: 800;
+  color: #0F172A;
+  letter-spacing: -2px;
+  line-height: 1.05;
+}
+
+.brand-subtitle {
+  font-size: 13pt;
+  font-weight: 700;
+  color: #1FAF8A;
+  margin: 0 0 16px 0;
+  letter-spacing: -0.3px;
+  line-height: 1.35;
+}
+
+.brand-desc {
+  font-size: 10.5pt;
+  color: #475569;
+  max-width: 620px;
+  line-height: 1.65;
+  margin: 0 0 16px 0;
+}
+
+/* Glass card metadata box */
+.executive-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: 16px;
+  padding: 16px 20px;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
+  margin-bottom: 16px;
+}
+
+.meta-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px 20px;
+}
+
+.meta-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.meta-label {
+  font-size: 7.5pt;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #94A3B8;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.meta-val {
+  font-size: 9.5pt;
+  font-weight: 600;
+  color: #1E293B;
+  line-height: 1.3;
+}
+
+.meta-val code {
+  background: #F1F5F9;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 8.5pt;
+  color: #0F172A;
+  border: 1px solid #E2E8F0;
+}
+
+.pillars-preview {
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 1px solid #EDF2F7;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+}
+
+.pillar-box {
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 10px;
+  padding: 8px 10px;
+  text-align: center;
+}
+
+.pillar-box-title {
+  font-size: 8pt;
+  font-weight: 700;
+  color: #0F172A;
+  margin-bottom: 2px;
+}
+
+.pillar-box-sub {
+  font-size: 6.8pt;
+  color: #64748B;
+  line-height: 1.2;
+}
+
+.palette-section {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.palette-swatch {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  font-size: 8pt;
+  font-weight: 600;
+}
+
+.swatch-teal { background: #E6F7F3; color: #147A60; border: 1px solid #B4E8DC; }
+.swatch-lavender { background: #F3F0FA; color: #6B57B2; border: 1px solid #D6CEEC; }
+.swatch-coral { background: #FFF3ED; color: #C24D1E; border: 1px solid #FFD3C2; }
+
+.cover-bottom {
+  border-top: 1px solid #E2E8F0;
+  padding-top: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 8.5pt;
+  color: #64748B;
+}
+
+/* ==========================================================================
+   CONTENT TYPOGRAPHY & LAYOUT
+   ========================================================================== */
+.document-content {
+  padding-top: 6px;
+}
+
+.chapter-header {
+  break-before: page;
+  margin-top: 0;
+  padding-top: 0;
+  margin-bottom: 18px;
+}
+
+.chapter-header h2 {
+  font-size: 16pt;
+  font-weight: 800;
+  color: #0F172A;
+  letter-spacing: -0.5px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #E2E8F0;
+}
+
+.chapter-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: #E6F7F3;
+  color: #147A60;
+  border: 1px solid #B4E8DC;
+  border-radius: 8px;
+  font-size: 11pt;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.chapter-title {
+  flex: 1;
+}
+
+h3 {
+  break-after: avoid;
+  font-size: 11.5pt;
+  font-weight: 700;
+  color: #0F172A;
+  margin: 20px 0 10px 0;
+  letter-spacing: -0.2px;
+}
+
+h4 {
+  break-after: avoid;
+  font-size: 10pt;
+  font-weight: 600;
+  color: #334155;
+  margin: 14px 0 6px 0;
+}
+
+p {
+  margin: 0 0 10px 0;
+  color: #334155;
+}
+
+p strong {
+  color: #0F172A;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid #E2E8F0;
+  margin: 20px 0;
+}
+
+/* ==========================================================================
+   TABLE OF CONTENTS (TOC)
+   ========================================================================== */
+.toc-container {
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 14px;
+  padding: 22px 24px;
+  margin-bottom: 28px;
+  /* break-after: page; */
+}
+
+.toc-container h2 {
+  margin-top: 0;
+  font-size: 15pt;
+  font-weight: 800;
+  color: #0F172A;
+  border-bottom: 1px solid #E2E8F0;
+  padding-bottom: 10px;
+  margin-bottom: 16px;
+}
+
+.toc-list {
+  columns: 2;
+  column-gap: 32px;
+  padding-left: 20px;
+  margin: 0;
+}
+
+.toc-list li {
+  margin-bottom: 8px;
+  font-size: 9pt;
+  font-weight: 600;
+  color: #334155;
+  break-inside: avoid;
+}
+
+.toc-list li a {
+  color: #147A60;
+  text-decoration: none;
+}
+
+/* ==========================================================================
+   TABLES
+   ========================================================================== */
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: 12px 0 20px 0;
+  border: 1px solid #E2E8F0;
+  border-radius: 10px;
+  overflow: hidden;
+  font-size: 8.5pt;
+  background: #FFFFFF;
+  break-inside: auto;
+}
+
+tr {
+  break-inside: avoid;
+}
+
+th {
+  background: #F8FAFC;
+  color: #0F172A;
+  font-weight: 700;
+  font-size: 7.8pt;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 8px 10px;
+  border-bottom: 1.5px solid #CBD5E1;
+  text-align: left;
+}
+
+td {
+  padding: 7px 10px;
+  border-bottom: 1px solid #F1F5F9;
+  color: #334155;
+  vertical-align: top;
+  line-height: 1.45;
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+tbody tr:nth-child(even) {
+  background-color: #FAFCFE;
+}
+
+/* ==========================================================================
+   BADGES & LABELS
+   ========================================================================== */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2.5px 8px;
+  border-radius: 999px;
+  font-size: 7.5pt;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+}
+
+.badge-icon {
+  font-size: 7.5pt;
+  font-weight: 800;
+}
+
+.badge-done {
+  background: #E6F7F3;
+  color: #0E7058;
+  border: 1px solid #B4E8DC;
+}
+
+.badge-partial {
+  background: #FEF3C7;
+  color: #92400E;
+  border: 1px solid #FDE68A;
+}
+
+.badge-missing {
+  background: #FFE4E6;
+  color: #9F1239;
+  border: 1px solid #FECDD3;
+}
+
+.badge-future {
+  background: #F3F0FA;
+  color: #6B57B2;
+  border: 1px solid #D6CEEC;
+}
+
+.id-tag {
+  display: inline-block;
+  background: #F1F5F9;
+  color: #0F172A;
+  font-family: "SF Mono", Menlo, Consolas, Monaco, monospace;
+  font-size: 8pt;
+  font-weight: 700;
+  padding: 1.5px 6px;
+  border-radius: 5px;
+  border: 1px solid #E2E8F0;
+}
+
+.priority-badge {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 6px;
+  font-size: 7.5pt;
+  font-weight: 700;
+}
+
+.priority-badge.p0 { background: #FEE2E2; color: #991B1B; border: 1px solid #FCA5A5; }
+.priority-badge.p1 { background: #FEF3C7; color: #92400E; border: 1px solid #FCD34D; }
+.priority-badge.p2 { background: #E0F2FE; color: #075985; border: 1px solid #BAE6FD; }
+
+.status-symbol {
+  font-weight: 800;
+}
+.status-symbol.done { color: #1FAF8A; }
+.status-symbol.partial { color: #D97706; }
+.status-symbol.missing { color: #E11D48; }
+.status-symbol.future { color: #8B7BC8; }
+
+/* ==========================================================================
+   BLOCKQUOTES & CALLOUTS
+   ========================================================================== */
+blockquote {
+  background: #F8FAFC;
+  border-left: 4px solid #1FAF8A;
+  padding: 12px 16px;
+  margin: 14px 0;
+  border-radius: 0 10px 10px 0;
+  color: #334155;
+  font-size: 9pt;
+  border-top: 1px solid #E2E8F0;
+  border-right: 1px solid #E2E8F0;
+  border-bottom: 1px solid #E2E8F0;
+  break-inside: avoid;
+}
+
+blockquote p {
+  margin: 0;
+}
+
+/* ==========================================================================
+   CODE & PRE
+   ========================================================================== */
+pre {
+  background: #0F172A;
+  color: #E2E8F0;
+  font-family: "SF Mono", Menlo, Consolas, Monaco, monospace;
+  font-size: 8.2pt;
+  line-height: 1.45;
+  padding: 12px 16px;
+  border-radius: 10px;
+  margin: 12px 0;
+  overflow-x: auto;
+  border: 1px solid #1E293B;
+  break-inside: avoid;
+}
+
+code {
+  font-family: "SF Mono", Menlo, Consolas, Monaco, monospace;
+  font-size: 8pt;
+  background: #F1F5F9;
+  color: #0F172A;
+  padding: 1px 5px;
+  border-radius: 4px;
+  border: 1px solid #E2E8F0;
+}
+
+pre code {
+  background: transparent;
+  color: inherit;
+  padding: 0;
+  border: none;
+  font-size: inherit;
+}
+
+/* ==========================================================================
+   TASK LISTS & CHECKBOXES
+   ========================================================================== */
+ul {
+  padding-left: 20px;
+  margin: 8px 0;
+}
+
+li {
+  margin-bottom: 4px;
+}
+
+.task-item {
+  list-style: none;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-left: -20px;
+  margin-bottom: 6px;
+  font-size: 9pt;
+}
+
+.custom-checkbox {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  border: 1.5px solid #CBD5E1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9pt;
+  margin-top: 2px;
+  flex-shrink: 0;
+  background: #FFFFFF;
+}
+
+.custom-checkbox.checked {
+  background: #1FAF8A;
+  border-color: #1FAF8A;
+  color: #FFFFFF;
+  font-weight: 800;
+}
+
+.task-item.completed .task-text {
+  color: #334155;
+}
+
+.task-item.pending .task-text {
+  color: #64748B;
+}
+
+/* ==========================================================================
+   PERSONAS & USER FLOWS
+   ========================================================================== */
+.persona-header {
+  margin-top: 18px;
+  margin-bottom: 8px;
+  break-after: avoid;
+}
+
+.persona-tag {
+  display: inline-block;
+  font-size: 7.5pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  margin-bottom: 4px;
+}
+
+.persona-primary { background: #E6F7F3; color: #147A60; border: 1px solid #B4E8DC; }
+.persona-clinical { background: #F3F0FA; color: #6B57B2; border: 1px solid #D6CEEC; }
+.persona-secondary { background: #E0F2FE; color: #0369A1; border: 1px solid #BAE6FD; }
+
+.persona-header h3 {
+  margin-top: 2px;
+  margin-bottom: 4px;
+}
+
+.flow-header {
+  margin-top: 16px;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  break-after: avoid;
+}
+
+.flow-badge {
+  background: #0F172A;
+  color: #FFFFFF;
+  font-size: 7pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+}
+
+.flow-header h3 {
+  margin: 0;
+  font-size: 10.5pt;
+}
+
+</style>
+</head>
+<body>
+
+<!-- COVER PAGE -->
+<div class="cover-page">
+  <div class="cover-top">
+    <div class="brand-badge-row">
+      <div class="brand-pill">
+        <span class="brand-dot"></span> Game Design Document (GDD)
+      </div>
+      <div class="brand-version-pill">
+        Documento de Produto & Engenharia · v1.0
+      </div>
+    </div>
+
+    <div class="brand-logo-title">
+      <!-- Custom SVG Logo: Glowing lens ring in Teal/Lavender -->
+      <svg class="brand-icon-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="46" stroke="url(#lumen_grad)" stroke-width="8" stroke-linecap="round" stroke-dasharray="210 40"/>
+        <circle cx="50" cy="50" r="28" fill="url(#lumen_inner)" opacity="0.9"/>
+        <circle cx="50" cy="50" r="12" fill="#FFFFFF"/>
+        <defs>
+          <linearGradient id="lumen_grad" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#1FAF8A"/>
+            <stop offset="0.6" stop-color="#8B7BC8"/>
+            <stop offset="1" stop-color="#FF8A5C"/>
+          </linearGradient>
+          <linearGradient id="lumen_inner" x1="20" y1="20" x2="80" y2="80" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#1FAF8A"/>
+            <stop offset="1" stop-color="#8B7BC8"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <div>
+        <div class="brand-title">Lumen</div>
+      </div>
+    </div>
+
+    <div class="brand-subtitle">Companion Offline-First para TDAH & Saúde Integrada</div>
+    <div class="brand-desc">
+      Especificação técnica de produto, arquitetura de software Flutter, design system <em>Soft Liquid Glass</em>,
+      fluxos cognitivos de baixa fricção, assistência Des-Trava anti-paralisia executiva e integração com Apple Health / Health Connect.
+    </div>
+
+    <!-- Metadata Grid Card -->
+    <div class="executive-card">
+      <div class="meta-grid">
+        <div class="meta-item">
+          <span class="meta-label">Versão do Documento</span>
+          <span class="meta-val">1.0 — Oficial</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Data de Emissão</span>
+          <span class="meta-val">24 de Setembro de 2026</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Stack Tecnológica</span>
+          <span class="meta-val">Flutter · Riverpod · HealthKit</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">App Identifier / Android</span>
+          <span class="meta-val"><code>dev.prism.lumen</code> (package <code>noa</code>)</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Plataformas-Alvo</span>
+          <span class="meta-val">iOS (primário), Android, Web</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Estado de Desenvolvimento</span>
+          <span class="meta-val">Fase 0 Concluída (MVP Operacional)</span>
+        </div>
+      </div>
+
+      <!-- 6 Pillars preview -->
+      <div class="pillars-preview">
+        <div class="pillar-box">
+          <div class="pillar-box-title">Micro Check-in</div>
+          <div class="pillar-box-sub">Humor & Foco ~10s</div>
+        </div>
+        <div class="pillar-box">
+          <div class="pillar-box-title">Rotina do Dia</div>
+          <div class="pillar-box-sub">Âncora & Hábitos</div>
+        </div>
+        <div class="pillar-box">
+          <div class="pillar-box-title">Medicação</div>
+          <div class="pillar-box-sub">Janela de Eficácia</div>
+        </div>
+        <div class="pillar-box">
+          <div class="pillar-box-title">Des-Trava</div>
+          <div class="pillar-box-sub">3 Micro-passos</div>
+        </div>
+        <div class="pillar-box">
+          <div class="pillar-box-title">Sono & Biometria</div>
+          <div class="pillar-box-sub">Apple HealthKit</div>
+        </div>
+        <div class="pillar-box">
+          <div class="pillar-box-title">Hub Clínico</div>
+          <div class="pillar-box-sub">Export p/ Terapia</div>
+        </div>
+      </div>
+
+      <!-- Design Palette -->
+      <div class="palette-section">
+        <div class="palette-swatch swatch-teal">
+          <span>Teal Primário (Identidade & Ações)</span>
+          <code>#1FAF8A</code>
+        </div>
+        <div class="palette-swatch swatch-lavender">
+          <span>Lavanda Acento (Sono & State of Mind)</span>
+          <code>#8B7BC8</code>
+        </div>
+        <div class="palette-swatch swatch-coral">
+          <span>Coral Ação (Des-Trava Anti-paralisia)</span>
+          <code>#FF8A5C</code>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cover-bottom">
+    <span>Documento de Especificação de Produto & Engenharia · Lumen Health</span>
+    <span>Sem gamificação punitiva · Baixa fricção cognitiva · Sem culpa</span>
+  </div>
+</div>
+
+<!-- DOCUMENT BODY -->
+<div class="document-content">
+
+
+    <div class="toc-container">
+      <div class="section-title-wrapper">
+        <h2 style="break-before: avoid; margin-top: 0;">Índice do Documento</h2>
+      </div>
+      <div class="toc-grid">
+        <ol class="toc-list">
+          
+<li><a href="#1-vis%C3%A3o-do-produto">Visão do produto</a></li>
+<li><a href="#2-identidade-e-posicionamento">Identidade e posicionamento</a></li>
+<li><a href="#3-p%C3%BAblico-e-personas">Público e personas</a></li>
+<li><a href="#4-princ%C3%ADpios-de-design-ux-tdah">Princípios de design (UX TDAH)</a></li>
+<li><a href="#5-arquitetura-t%C3%A9cnica">Arquitetura técnica</a></li>
+<li><a href="#6-mapa-de-features-atuais">Mapa de features atuais</a></li>
+<li><a href="#7-modelos-de-dados">Modelos de dados</a></li>
+<li><a href="#8-fluxos-de-usu%C3%A1rio">Fluxos de usuário</a></li>
+<li><a href="#9-integra%C3%A7%C3%B5es">Integrações</a></li>
+<li><a href="#10-i18n-tema-e-design-system">i18n, tema e design system</a></li>
+<li><a href="#11-tasks-de-desenvolvimento-estado-atual">Tasks de desenvolvimento (estado atual)</a></li>
+<li><a href="#12-roadmap">Roadmap</a></li>
+<li><a href="#13-backlog--features-futuras">Backlog / features futuras</a></li>
+<li><a href="#14-crit%C3%A9rios-de-aceite-e-qualidade">Critérios de aceite e qualidade</a></li>
+<li><a href="#15-gloss%C3%A1rio">Glossário</a></li>
+<li><a href="#16-como-atualizar-este-gdd">Como atualizar este GDD</a></li>
+
+        </ol>
+      </div>
+    </div>
+  
+<hr>
+<div class="chapter-header"><h2><span class="chapter-num">1</span><span class="chapter-title">Visão do produto</span></h2></div>
+<h3>Elevator pitch</h3>
+<p><strong>Lumen</strong> é um companion offline-first para pessoas com TDAH: registra humor, foco, rotina e medicação em segundos, correlaciona com sono/recuperação do Apple Health e gera resumos compartilháveis com o terapeuta — sem pressão, sem gamificação punitiva.</p>
+<h3>Problema</h3>
+<p>Pessoas com TDAH:</p>
+<ul>
+<li>esquecem doses e perdem a janela de eficácia do estimulante;</li>
+<li>têm dificuldade em manter diários longos;</li>
+<li>chegam na terapia sem dados concretos (“foi uma semana difícil”);</li>
+<li>sofrem overload sensorial e paralisia executiva sem ferramentas imediatas;</li>
+<li>já geram dados ricos no Apple Health (sono, HRV, State of Mind) que ninguém interpreta no contexto TDAH.</li>
+</ul>
+<h3>Solução</h3>
+<p>Um único hub com:</p>
+<table>
+<thead>
+<tr>
+<th>Pilar</th>
+<th>O que faz</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Check-in micro</strong></td>
+<td>Humor + foco + energia em ~10s</td>
+</tr>
+<tr>
+<td><strong>Rotina do dia</strong></td>
+<td>Âncora, micro-hábitos, água, State of Mind</td>
+</tr>
+<tr>
+<td><strong>Medicação</strong></td>
+<td>Agenda, estoque, tomada/snooze/pular, janela de eficácia</td>
+</tr>
+<tr>
+<td><strong>Des-Trava</strong></td>
+<td>Assistente de 3 micro-passos + timer 60s</td>
+</tr>
+<tr>
+<td><strong>Sono &amp; recuperação</strong></td>
+<td>Cards + correlações acionáveis</td>
+</tr>
+<tr>
+<td><strong>Hub clínico</strong></td>
+<td>PDF, WhatsApp, card visual semanal</td>
+</tr>
+</tbody></table>
+<h3>Não-objetivos (por enquanto)</h3>
+<ul>
+<li>Diagnóstico médico ou prescrição.</li>
+<li>Rede social / feed.</li>
+<li>Coach de produtividade genérico (Pomodoro agressivo, streaks punitivos).</li>
+<li>Conta obrigatória na nuvem (MVP é local-first).</li>
+</ul>
+<hr>
+<div class="chapter-header"><h2><span class="chapter-num">2</span><span class="chapter-title">Identidade e posicionamento</span></h2></div>
+<table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Valor</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Nome de produto</td>
+<td><strong>Lumen</strong></td>
+</tr>
+<tr>
+<td>Package / código</td>
+<td><code>noa</code></td>
+</tr>
+<tr>
+<td>Tom de voz</td>
+<td>Calmo, direto, sem culpa (“sem pressão”)</td>
+</tr>
+<tr>
+<td>Metáfora visual</td>
+<td>Soft Liquid Glass — superfícies leves, CTAs vivos, fundo creme/preto suave</td>
+</tr>
+<tr>
+<td>Cores-chave</td>
+<td>Teal <code>#1FAF8A</code> (primária), lavanda <code>#8B7BC8</code> (acento), coral <code>#FF8A5C</code> (Des-Trava)</td>
+</tr>
+<tr>
+<td>Locales</td>
+<td><code>pt</code> (fonte), <code>en</code>, <code>es</code>, <code>ja</code></td>
+</tr>
+</tbody></table>
+<h3>Nome no código vs. produto</h3>
+<ul>
+<li>UI / l10n / docs de produto → <strong>Lumen</strong></li>
+<li><code>pubspec.name</code> → <strong>noa</strong></li>
+<li>Identificador iOS, Android e macOS → <code>dev.prism.lumen</code></li>
+<li>Channel HealthKit → <code>dev.prism.lumen/healthkit_bridge</code></li>
+</ul>
+<hr>
+<div class="chapter-header"><h2><span class="chapter-num">3</span><span class="chapter-title">Público e personas</span></h2></div>
+<div class="persona-header"><span class="persona-tag persona-primary">Persona A · Usuário Primário</span><h3>“Marcelo” (Adulto com TDAH, iPhone + Apple Watch)</h3></div>
+<ul>
+<li>Adulto com TDAH diagnosticado, em acompanhamento.</li>
+<li>Usa iPhone + Apple Watch.</li>
+<li>Toma estimulante (ex.: 10h de duração).</li>
+<li>Quer dados objetivos para a sessão de terapia.</li>
+<li>Evita apps com muitos campos obrigatórios.</li>
+</ul>
+<div class="persona-header"><span class="persona-tag persona-clinical">Persona B · Profissional Clínico</span><h3>Terapeuta & Psiquiatra (Consumidor de Dados / Relatórios)</h3></div>
+<ul>
+<li>Recebe PDF, texto WhatsApp ou card semanal.</li>
+<li>Precisa de padrões (sono REM × paralisia, adesão, overload sensorial), não de raw dumps.</li>
+</ul>
+<div class="persona-header"><span class="persona-tag persona-secondary">Persona C · Usuário Secundário</span><h3>Usuário Android (Health Connect / Standalone)</h3></div>
+<ul>
+<li>Mesma UX local; Health Connect parcial; bridge State of Mind / ambiente = no-op ou vazio.</li>
+</ul>
+<hr>
+<div class="chapter-header"><h2><span class="chapter-num">4</span><span class="chapter-title">Princípios de design (UX TDAH)</span></h2></div>
+<ol>
+<li><strong>Baixa fricção</strong> — ações principais em 1–2 toques; check-in cabível em bottom sheet.</li>
+<li><strong>Sem culpa</strong> — copy sem “você falhou”; pular dose tem espaço para motivo.</li>
+<li><strong>Uma coisa por tela/seção</strong> — home é hub; cada card leva a um job claro.</li>
+<li><strong>Feedback imediato</strong> — haptic no Des-Trava; snackbars curtos; skeletons em vez de spinners longos.</li>
+<li><strong>Offline-first</strong> — SharedPreferences; Health é enriquecimento, não bloqueio.</li>
+<li><strong>Acessibilidade cognitiva</strong> — contraste alto, tipografia legível, ícones Material consistentes (<code>AppIcons</code>).</li>
+<li><strong>Glass com propósito</strong> — sheets e CTAs secundários; fundo sólido (sem auras/ruído).</li>
+</ol>
+<hr>
+<div class="chapter-header"><h2><span class="chapter-num">5</span><span class="chapter-title">Arquitetura técnica</span></h2></div>
+<pre><code>lib/
+├── main.dart                 # bootstrap + LumenApp
+├── core/                     # tema, i18n providers, widgets, ícones
+├── features/
+│   ├── home/                 # HomeScreen (hub)
+│   ├── routine_mood/         # check-in, rotina diária, mood repo
+│   ├── medications/          # meds + logs + lembretes + efficacy
+│   ├── sleep_analytics/      # cards + CorrelationEngine
+│   ├── state_of_mind/        # modelo/labels/editor (clone Apple)
+│   ├── health_sync/          # consent + mirror → Health
+│   ├── therapist_export/     # PDF / WhatsApp / share card
+│   └── unstuck_assistant/    # Des-Trava
+├── integrations/
+│   ├── health/               # HealthService + AppleHealthService
+│   └── healthkit_bridge/     # MethodChannel iOS extra
+└── l10n/                     # ARB + gen-l10n
+</code></pre>
+<h3>Padrões</h3>
+<table>
+<thead>
+<tr>
+<th>Camada</th>
+<th>Padrão</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Estado</td>
+<td>Riverpod (<code>Provider</code>, <code>StateNotifier</code>, <code>FutureProvider</code>)</td>
+</tr>
+<tr>
+<td>Persistência</td>
+<td>SharedPreferences (JSON maps)</td>
+</tr>
+<tr>
+<td>Domínio</td>
+<td>classes imutáveis + <code>toMap</code> / <code>fromMap</code></td>
+</tr>
+<tr>
+<td>Health</td>
+<td>interface <code>HealthService</code> → <code>AppleHealthService</code></td>
+</tr>
+<tr>
+<td>UI</td>
+<td>Material 3 + glass surfaces; navegação <code>MaterialPageRoute</code></td>
+</tr>
+</tbody></table>
+<h3>Dependências relevantes</h3>
+<p><code>flutter_riverpod</code>, <code>health</code>, <code>fl_chart</code>, <code>pdf</code> + <code>printing</code>, <code>share_plus</code>, <code>shared_preferences</code>, <code>uuid</code>, <code>url_launcher</code>, <code>flutter_local_notifications</code>, <code>intl</code> / <code>flutter_localizations</code>.</p>
+<hr>
+<div class="chapter-header"><h2><span class="chapter-num">6</span><span class="chapter-title">Mapa de features atuais</span></h2></div>
+<p>Legenda de status: <span class="status-symbol done">✓</span> feito · <span class="status-symbol partial">◐</span> parcial · <span class="status-symbol missing">✕</span> ausente · <span class="status-symbol future">✦</span> futuro (ver §13)</p>
+<h3>6.1 Home (hub)</h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Feature</th>
+<th>Status</th>
+<th>Arquivo-chave</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><span class="id-tag">H01</span></td>
+<td>Saudação + subtítulo “sem pressão”</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td><code>home_screen.dart</code></td>
+</tr>
+<tr>
+<td><span class="id-tag">H02</span></td>
+<td>Toggle tema claro/escuro/sistema</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td><code>theme_mode_provider.dart</code></td>
+</tr>
+<tr>
+<td><span class="id-tag">H03</span></td>
+<td>Seletor de idioma</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td><code>language_selector_dialog.dart</code></td>
+</tr>
+<tr>
+<td><span class="id-tag">H04</span></td>
+<td>CTA Check-in rápido</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td>→ <code>QuickCheckinModal</code></td>
+</tr>
+<tr>
+<td><span class="id-tag">H05</span></td>
+<td>CTA Des-Trava</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td>→ <code>UnstuckSheet</code></td>
+</tr>
+<tr>
+<td><span class="id-tag">H06</span></td>
+<td>Atalho Rotina do dia</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td>→ <code>DailyRoutineScreen</code></td>
+</tr>
+<tr>
+<td><span class="id-tag">H07</span></td>
+<td>Card Medicações (resumo do dia)</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td>logs pending/taken</td>
+</tr>
+<tr>
+<td><span class="id-tag">H08</span></td>
+<td>Card Sono</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td><code>SleepDashboardCard</code></td>
+</tr>
+<tr>
+<td><span class="id-tag">H09</span></td>
+<td>Card Recuperação</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td><code>RecoveryDashboardCard</code></td>
+</tr>
+<tr>
+<td><span class="id-tag">H10</span></td>
+<td>Hub terapeuta</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td><code>TherapistExportHubScreen</code></td>
+</tr>
+<tr>
+<td><span class="id-tag">H11</span></td>
+<td>Insights “padrões do cérebro”</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td><code>correlationInsightsProvider</code></td>
+</tr>
+<tr>
+<td><span class="id-tag">H12</span></td>
+<td>Lista entradas recentes (mood)</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td>últimos 4</td>
+</tr>
+<tr>
+<td><span class="id-tag">H13</span></td>
+<td>Pull-to-refresh (sono + mood)</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td></td>
+</tr>
+<tr>
+<td><span class="id-tag">H14</span></td>
+<td>Perfil / nome dinâmico</td>
+<td><span class="badge badge-partial"><span class="badge-icon">◐</span> Parcial</span></td>
+<td>nome fixo “Marcelo”</td>
+</tr>
+</tbody></table>
+<h3>6.2 Check-in rápido (mood)</h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Feature</th>
+<th>Status</th>
+<th>Notas</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><span class="id-tag">C01</span></td>
+<td>Valência 1–5</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td></td>
+</tr>
+<tr>
+<td><span class="id-tag">C02</span></td>
+<td>Estado de foco (4)</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td>focused / hyperfocus / scattered / paralyzed</td>
+</tr>
+<tr>
+<td><span class="id-tag">C03</span></td>
+<td>Energia (5)</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td>drained → hyper</td>
+</tr>
+<tr>
+<td><span class="id-tag">C04</span></td>
+<td>Toggle medicação tomada</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td></td>
+</tr>
+<tr>
+<td><span class="id-tag">C05</span></td>
+<td>Toggle overload sensorial</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td></td>
+</tr>
+<tr>
+<td><span class="id-tag">C06</span></td>
+<td>Labels emocionais (State of Mind)</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td>busca + chips multilíngues</td>
+</tr>
+<tr>
+<td><span class="id-tag">C07</span></td>
+<td>Nota livre opcional</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td></td>
+</tr>
+<tr>
+<td><span class="id-tag">C08</span></td>
+<td>Persistência local</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td><code>MoodRepository</code></td>
+</tr>
+<tr>
+<td><span class="id-tag">C09</span></td>
+<td>Espelho automático no Apple SoM</td>
+<td><span class="badge badge-partial"><span class="badge-icon">◐</span> Parcial</span></td>
+<td>via rotina/mirror; check-in grava local</td>
+</tr>
+</tbody></table>
+<h3>6.3 Rotina do dia</h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Feature</th>
+<th>Status</th>
+<th>Notas</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><span class="id-tag">R01</span></td>
+<td>Âncora / foco principal do dia</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td>texto livre</td>
+</tr>
+<tr>
+<td><span class="id-tag">R02</span></td>
+<td>Editor State of Mind</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td>valence + labels + associations</td>
+</tr>
+<tr>
+<td><span class="id-tag">R03</span></td>
+<td>Micro-hábitos (CRUD + check)</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td>lista custom</td>
+</tr>
+<tr>
+<td><span class="id-tag">R04</span></td>
+<td>Água (copos)</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td></td>
+</tr>
+<tr>
+<td><span class="id-tag">R05</span></td>
+<td>Toggle medicação prescrita</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td>flag diária (além do módulo meds)</td>
+</tr>
+<tr>
+<td><span class="id-tag">R06</span></td>
+<td>Notas para o terapeuta</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td></td>
+</tr>
+<tr>
+<td><span class="id-tag">R07</span></td>
+<td>Reflexão noturna</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td>campo no modelo</td>
+</tr>
+<tr>
+<td><span class="id-tag">R08</span></td>
+<td>Salvar + snackbar</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td></td>
+</tr>
+<tr>
+<td><span class="id-tag">R09</span></td>
+<td>Mirror Health (água, mindfulness, SoM)</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td>se sync habilitado</td>
+</tr>
+<tr>
+<td><span class="id-tag">R10</span></td>
+<td>Preferências de micro-hábitos default</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td><code>micro_habits_prefs.dart</code></td>
+</tr>
+</tbody></table>
+<h3>6.4 Medicações</h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Feature</th>
+<th>Status</th>
+<th>Notas</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><span class="id-tag">M01</span></td>
+<td>CRUD medicamento</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td>nome, dose, ícone, horários, dias, duração, estoque</td>
+</tr>
+<tr>
+<td><span class="id-tag">M02</span></td>
+<td>Logs do dia (gerar a partir da agenda)</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td></td>
+</tr>
+<tr>
+<td><span class="id-tag">M03</span></td>
+<td>Marcar tomado / pular / snooze</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td></td>
+</tr>
+<tr>
+<td><span class="id-tag">M04</span></td>
+<td>Janela de eficácia (pico / crash)</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td><code>EfficacyWindowBar</code></td>
+</tr>
+<tr>
+<td><span class="id-tag">M05</span></td>
+<td>Alerta de refil</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td>threshold</td>
+</tr>
+<tr>
+<td><span class="id-tag">M06</span></td>
+<td>Importar meds do Apple Health</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td>bridge <code>readMedications</code></td>
+</tr>
+<tr>
+<td><span class="id-tag">M07</span></td>
+<td>Sync dose events Apple ↔ Lumen</td>
+<td><span class="badge badge-partial"><span class="badge-icon">◐</span> Parcial</span></td>
+<td>read + write na bridge; UX parcial</td>
+</tr>
+<tr>
+<td><span class="id-tag">M08</span></td>
+<td>Notificações locais</td>
+<td><span class="badge badge-partial"><span class="badge-icon">◐</span> Parcial</span></td>
+<td>snooze show; agenda diária recorrente incompleta</td>
+</tr>
+<tr>
+<td><span class="id-tag">M09</span></td>
+<td>Vincular med local ↔ concept Apple</td>
+<td><span class="badge badge-partial"><span class="badge-icon">◐</span> Parcial</span></td>
+<td>campos <code>appleConceptId</code> / <code>rxNormCode</code></td>
+</tr>
+</tbody></table>
+<h3>6.5 Sono &amp; analytics</h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Feature</th>
+<th>Status</th>
+<th>Notas</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><span class="id-tag">S01</span></td>
+<td>Histórico sono 14 dias</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td>Health</td>
+</tr>
+<tr>
+<td><span class="id-tag">S02</span></td>
+<td>Card última noite (estágios, score)</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td>REM/deep/light</td>
+</tr>
+<tr>
+<td><span class="id-tag">S03</span></td>
+<td>Déficit sono / REM flags</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td>domínio <code>SleepRecord</code></td>
+</tr>
+<tr>
+<td><span class="id-tag">S04</span></td>
+<td>Recuperação (HRV, RHR, passos, exercício)</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td></td>
+</tr>
+<tr>
+<td><span class="id-tag">S05</span></td>
+<td>Ambiente (luz, dB ambiental/fones)</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td>iOS bridge</td>
+</tr>
+<tr>
+<td><span class="id-tag">S06</span></td>
+<td>Gráficos (<code>fl_chart</code>)</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td>nos cards</td>
+</tr>
+<tr>
+<td><span class="id-tag">S07</span></td>
+<td>Correlação sono × humor × recuperação</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td><code>CorrelationEngine</code></td>
+</tr>
+<tr>
+<td><span class="id-tag">S08</span></td>
+<td>Insights acionáveis na home</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td>multilíngue</td>
+</tr>
+</tbody></table>
+<p><strong>Insights implementados:</strong></p>
+<ul>
+<li>Coletando dados (estado vazio)</li>
+<li>Déficit REM × paralisia / esgotamento</li>
+<li>Fluxo mental (dias bons)</li>
+<li>Overload sensorial (contagem)</li>
+<li>HRV baixa × dias difíceis</li>
+<li>Poucos passos × travamento</li>
+<li>Pouca luz do dia × humor baixo</li>
+<li>Ruído alto × overload sensorial</li>
+</ul>
+<h3>6.6 State of Mind</h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Feature</th>
+<th>Status</th>
+<th>Notas</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><span class="id-tag">SM01</span></td>
+<td>Modelo alinhado HKStateOfMind</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td>kind, valence −1…1, labels, associations</td>
+</tr>
+<tr>
+<td><span class="id-tag">SM02</span></td>
+<td>Labels + associations localizados</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td><code>state_of_mind_*.dart</code></td>
+</tr>
+<tr>
+<td><span class="id-tag">SM03</span></td>
+<td>Editor na rotina</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td></td>
+</tr>
+<tr>
+<td><span class="id-tag">SM04</span></td>
+<td>Leitura histórico Apple</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td>bridge</td>
+</tr>
+<tr>
+<td><span class="id-tag">SM05</span></td>
+<td>Escrita Apple</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td>mirror + bridge</td>
+</tr>
+<tr>
+<td><span class="id-tag">SM06</span></td>
+<td>Merge “mais recente vence”</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td></td>
+</tr>
+</tbody></table>
+<h3>6.7 Health Sync</h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Feature</th>
+<th>Status</th>
+<th>Notas</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><span class="id-tag">HS01</span></td>
+<td>Consent sheet explicativo</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td></td>
+</tr>
+<tr>
+<td><span class="id-tag">HS02</span></td>
+<td>Request permissions (plugin + bridge)</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td></td>
+</tr>
+<tr>
+<td><span class="id-tag">HS03</span></td>
+<td>Flag sync enabled (prefs)</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td></td>
+</tr>
+<tr>
+<td><span class="id-tag">HS04</span></td>
+<td>Mirror água / mindfulness / SoM</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td></td>
+</tr>
+<tr>
+<td><span class="id-tag">HS05</span></td>
+<td>Health Connect Android completo</td>
+<td><span class="badge badge-partial"><span class="badge-icon">◐</span> Parcial</span></td>
+<td>contrato existe; cobertura parcial</td>
+</tr>
+<tr>
+<td><span class="id-tag">HS06</span></td>
+<td>Onboarding sync no primeiro uso</td>
+<td><span class="badge badge-partial"><span class="badge-icon">◐</span> Parcial</span></td>
+<td>sheet existe; trigger pontual</td>
+</tr>
+</tbody></table>
+<h3>6.8 Hub terapeuta / export</h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Feature</th>
+<th>Status</th>
+<th>Notas</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><span class="id-tag">T01</span></td>
+<td>Hub com preview card semanal</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td></td>
+</tr>
+<tr>
+<td><span class="id-tag">T02</span></td>
+<td>Telefone do terapeuta (prefs)</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td></td>
+</tr>
+<tr>
+<td><span class="id-tag">T03</span></td>
+<td>Enviar resumo WhatsApp</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td>fallback clipboard</td>
+</tr>
+<tr>
+<td><span class="id-tag">T04</span></td>
+<td>Compartilhar card imagem</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td><code>ShareCardExporter</code></td>
+</tr>
+<tr>
+<td><span class="id-tag">T05</span></td>
+<td>Relatório PDF (preview + print/share)</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td><code>TherapistPdfGenerator</code></td>
+</tr>
+<tr>
+<td><span class="id-tag">T06</span></td>
+<td>Incluir sono, mood, recovery, insights</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td></td>
+</tr>
+<tr>
+<td><span class="id-tag">T07</span></td>
+<td>Nome do paciente configurável</td>
+<td><span class="badge badge-partial"><span class="badge-icon">◐</span> Parcial</span></td>
+<td>hardcoded “Marcelo P.”</td>
+</tr>
+<tr>
+<td><span class="id-tag">T08</span></td>
+<td>Período custom (7/14/30)</td>
+<td><span class="badge badge-partial"><span class="badge-icon">◐</span> Parcial</span></td>
+<td>PDF usa <code>periodDays</code>; UI limitada</td>
+</tr>
+</tbody></table>
+<h3>6.9 Des-Trava (Unstuck)</h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Feature</th>
+<th>Status</th>
+<th>Notas</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><span class="id-tag">U01</span></td>
+<td>Bottom sheet glass</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td></td>
+</tr>
+<tr>
+<td><span class="id-tag">U02</span></td>
+<td>3 micro-passos sequenciais</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td></td>
+</tr>
+<tr>
+<td><span class="id-tag">U03</span></td>
+<td>Timer 60s + orb animada</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td></td>
+</tr>
+<tr>
+<td><span class="id-tag">U04</span></td>
+<td>Haptic + snack de conclusão</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td></td>
+</tr>
+<tr>
+<td><span class="id-tag">U05</span></td>
+<td>Passos personalizáveis / contexto mood</td>
+<td><span class="badge badge-future"><span class="badge-icon">✦</span> Futuro</span></td>
+<td></td>
+</tr>
+</tbody></table>
+<h3>6.10 Plataforma / infra</h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Feature</th>
+<th>Status</th>
+<th>Notas</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><span class="id-tag">P01</span></td>
+<td>i18n pt/en/es/ja + doloc</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td>ver <code>docs/i18n.md</code></td>
+</tr>
+<tr>
+<td><span class="id-tag">P02</span></td>
+<td>Tema claro/escuro/sistema</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td></td>
+</tr>
+<tr>
+<td><span class="id-tag">P03</span></td>
+<td>Design system (cores, spacing, glass)</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td></td>
+</tr>
+<tr>
+<td><span class="id-tag">P04</span></td>
+<td>Skeletons / FadeSwap</td>
+<td><span class="badge badge-done"><span class="badge-icon">✓</span> Feito</span></td>
+<td></td>
+</tr>
+<tr>
+<td><span class="id-tag">P05</span></td>
+<td>Widget tests básicos</td>
+<td><span class="badge badge-partial"><span class="badge-icon">◐</span> Parcial</span></td>
+<td><code>test/widget_test.dart</code></td>
+</tr>
+<tr>
+<td><span class="id-tag">P06</span></td>
+<td>Auth / cloud backup</td>
+<td><span class="badge badge-missing"><span class="badge-icon">✕</span> Ausente</span></td>
+<td></td>
+</tr>
+<tr>
+<td><span class="id-tag">P07</span></td>
+<td>Analytics de produto</td>
+<td><span class="badge badge-missing"><span class="badge-icon">✕</span> Ausente</span></td>
+<td></td>
+</tr>
+</tbody></table>
+<hr>
+<div class="chapter-header"><h2><span class="chapter-num">7</span><span class="chapter-title">Modelos de dados</span></h2></div>
+<h3>MoodEntry</h3>
+<table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Tipo</th>
+<th>Descrição</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>id</td>
+<td>String (uuid)</td>
+<td></td>
+</tr>
+<tr>
+<td>timestamp</td>
+<td>DateTime</td>
+<td></td>
+</tr>
+<tr>
+<td>valence</td>
+<td>int 1–5</td>
+<td></td>
+</tr>
+<tr>
+<td>energy</td>
+<td>EnergyLevel</td>
+<td></td>
+</tr>
+<tr>
+<td>focus</td>
+<td>FocusState</td>
+<td></td>
+</tr>
+<tr>
+<td>tookMedication</td>
+<td>bool</td>
+<td></td>
+</tr>
+<tr>
+<td>sensoryOverload</td>
+<td>bool</td>
+<td></td>
+</tr>
+<tr>
+<td>note</td>
+<td>String?</td>
+<td></td>
+</tr>
+<tr>
+<td>emotionLabels</td>
+<td>Set&lt;String&gt;</td>
+<td>IDs Apple-like</td>
+</tr>
+<tr>
+<td>emotionSource</td>
+<td>StateOfMindSource</td>
+<td>lumen / appleHealth</td>
+</tr>
+</tbody></table>
+<h3>DailyRoutineState</h3>
+<table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Tipo</th>
+<th>Descrição</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>date</td>
+<td>DateTime</td>
+<td>dia civil</td>
+</tr>
+<tr>
+<td>mainFocusAnchor</td>
+<td>String</td>
+<td>âncora</td>
+</tr>
+<tr>
+<td>stateOfMind</td>
+<td>StateOfMindEntry?</td>
+<td></td>
+</tr>
+<tr>
+<td>eveningReflection</td>
+<td>String</td>
+<td></td>
+</tr>
+<tr>
+<td>microHabits</td>
+<td>List&lt;String&gt;</td>
+<td></td>
+</tr>
+<tr>
+<td>completedHabits</td>
+<td>Set&lt;String&gt;</td>
+<td></td>
+</tr>
+<tr>
+<td>waterGlasses</td>
+<td>int</td>
+<td></td>
+</tr>
+<tr>
+<td>tookPrescribedMedication</td>
+<td>bool</td>
+<td></td>
+</tr>
+<tr>
+<td>therapistNotes</td>
+<td>String?</td>
+<td></td>
+</tr>
+</tbody></table>
+<h3>Medication</h3>
+<table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Tipo</th>
+<th>Descrição</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>id, name, dosage</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>shapeIcon</td>
+<td>capsule/tablet/liquid/drop</td>
+<td></td>
+</tr>
+<tr>
+<td>scheduledTimes</td>
+<td>List&lt;String&gt;</td>
+<td>HH:mm</td>
+</tr>
+<tr>
+<td>daysOfWeek</td>
+<td>List&lt;int&gt;</td>
+<td>1–7</td>
+</tr>
+<tr>
+<td>totalStock / remainingStock</td>
+<td>int</td>
+<td></td>
+</tr>
+<tr>
+<td>refillWarningThreshold</td>
+<td>int</td>
+<td>default 5</td>
+</tr>
+<tr>
+<td>durationHours</td>
+<td>int</td>
+<td>janela eficácia</td>
+</tr>
+<tr>
+<td>instructions</td>
+<td>String</td>
+<td></td>
+</tr>
+<tr>
+<td>active</td>
+<td>bool</td>
+<td></td>
+</tr>
+<tr>
+<td>appleConceptId / rxNormCode</td>
+<td>String?</td>
+<td></td>
+</tr>
+<tr>
+<td>source</td>
+<td>local / appleHealth / linked</td>
+<td></td>
+</tr>
+</tbody></table>
+<h3>MedicationLog</h3>
+<p>takenAt · skipped · skipReason · snoozedUntil · source (lumen / appleHealth)</p>
+<h3>SleepRecord / DailyRecoverySnapshot / DailyEnvironmentSnapshot</h3>
+<p>Ver <code>lib/integrations/health/models/</code>. Thresholds de insight:</p>
+<ul>
+<li>Sono déficit: <code>&lt; 6h</code></li>
+<li>REM déficit: <code>&lt; 75 min</code></li>
+<li>HRV baixa: <code>&lt; 40 ms</code></li>
+<li>Passos baixos: <code>&lt; 4000</code></li>
+<li>Luz baixa: <code>&lt; 20 min</code></li>
+<li>Ruído alto: ambiental <code>≥ 70 dB</code> ou fones <code>≥ 80 dB</code></li>
+</ul>
+<h3>Persistência (chaves conceituais)</h3>
+<p>Tudo via SharedPreferences + JSON. Preferências extras: sync Health, telefone terapeuta, tema, locale, micro-hábitos, contadores de mirror diário.</p>
+<hr>
+<div class="chapter-header"><h2><span class="chapter-num">8</span><span class="chapter-title">Fluxos de usuário</span></h2></div>
+<div class="flow-header"><span class="flow-badge">Fluxo</span><h3>F1 — Check-in matinal (caminho feliz)</h3></div>
+<pre><code>Home → Check-in → valência/foco/energia/[labels] → Salvar
+  → MoodRepository
+  → Home atualiza “entradas recentes” + insights (se dados suficientes)
+</code></pre>
+<div class="flow-header"><span class="flow-badge">Fluxo</span><h3>F2 — Rotina com mirror Health</h3></div>
+<pre><code>Home → Rotina → editar âncora / SoM / hábitos / água → Salvar
+  → RoutineRepository
+  → RoutineHealthMirror (se HS enabled)
+      → writeWater / writeMindfulness / writeStateOfMind
+</code></pre>
+<div class="flow-header"><span class="flow-badge">Fluxo</span><h3>F3 — Tomar medicação</h3></div>
+<pre><code>Home → Medicações → card dose pendente → Tomar
+  → log.takenAt = now; estoque--; EfficacyWindowBar
+  → (opcional) writeDoseEvent Apple
+</code></pre>
+<div class="flow-header"><span class="flow-badge">Fluxo</span><h3>F4 — Paralisia executiva</h3></div>
+<pre><code>Home → Des-Trava → passo 1 → timer 60s → passo 2 → passo 3 → snack
+</code></pre>
+<div class="flow-header"><span class="flow-badge">Fluxo</span><h3>F5 — Preparar sessão clínica</h3></div>
+<pre><code>Home → Hub terapeuta → (config telefone) → WhatsApp | Share card | PDF
+</code></pre>
+<div class="flow-header"><span class="flow-badge">Fluxo</span><h3>F6 — Conectar Apple Health</h3></div>
+<pre><code>Consent sheet → permissions plugin + bridge → syncEnabled=true
+  → invalidate sleep/recovery providers
+</code></pre>
+<hr>
+<div class="chapter-header"><h2><span class="chapter-num">9</span><span class="chapter-title">Integrações</span></h2></div>
+<h3>Apple Health / HealthKit</h3>
+<table>
+<thead>
+<tr>
+<th>Dado</th>
+<th>Direção</th>
+<th>Via</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Sono (estágios)</td>
+<td>←</td>
+<td>plugin <code>health</code></td>
+</tr>
+<tr>
+<td>HRV, RHR, passos, exercício</td>
+<td>←</td>
+<td>plugin <code>health</code></td>
+</tr>
+<tr>
+<td>Time in daylight, áudio</td>
+<td>←</td>
+<td><code>HealthKitBridge</code></td>
+</tr>
+<tr>
+<td>State of Mind</td>
+<td>↔</td>
+<td>bridge</td>
+</tr>
+<tr>
+<td>Medicamentos / dose events</td>
+<td>↔</td>
+<td>bridge</td>
+</tr>
+<tr>
+<td>Água / mindfulness</td>
+<td>→</td>
+<td>plugin / serviço</td>
+</tr>
+</tbody></table>
+<h3>WhatsApp</h3>
+<p><code>url_launcher</code> com deep link; fallback clipboard.</p>
+<h3>Notificações</h3>
+<p><code>flutter_local_notifications</code> — canal <code>medication_reminders</code>; uso atual focado em snooze.</p>
+<h3>Tradução</h3>
+<p>doloc.io a partir de <code>app_pt.arb</code> → en/es/ja. Ver <a href="./i18n.md">i18n.md</a>.</p>
+<hr>
+<div class="chapter-header"><h2><span class="chapter-num">10</span><span class="chapter-title">i18n, tema e design system</span></h2></div>
+<h3>i18n</h3>
+<ul>
+<li>Fonte: <code>lib/l10n/app_pt.arb</code></li>
+<li>Acesso: <code>AppLocalizations.of(context)</code> ou <code>appLocalizationsProvider</code></li>
+<li>Labels SoM: mapas por <code>languageCode</code> (não ARB)</li>
+</ul>
+<h3>Tema</h3>
+<ul>
+<li><code>AppTheme.lightTheme</code> / <code>darkTheme</code></li>
+<li>Tokens: <code>AppColors</code>, <code>AppSpacing</code>, <code>AppRadii</code>, <code>GlassSurface</code> / <code>GlassSheet</code></li>
+<li>Responsive: <code>responsive.dart</code> (<code>kMinBodySecondary</code>, etc.)</li>
+</ul>
+<h3>Navegação atual</h3>
+<p>Sem router nomeado: <code>Navigator.push</code> + modals. Home = root.</p>
+<hr>
+<div class="chapter-header"><h2><span class="chapter-num">11</span><span class="chapter-title">Tasks de desenvolvimento (estado atual)</span></h2></div>
+<p>Use esta lista como board. IDs batem com features da §6.</p>
+<h3>Epic A — Fundação (concluído)</h3>
+<ul>
+<li class="task-item completed"><span class="custom-checkbox checked">✓</span><span class="task-text">A1 Bootstrap Flutter + Riverpod + SharedPreferences</span></li>
+<li class="task-item completed"><span class="custom-checkbox checked">✓</span><span class="task-text">A2 Design system Soft Liquid Glass</span></li>
+<li class="task-item completed"><span class="custom-checkbox checked">✓</span><span class="task-text">A3 Home hub com CTAs principais</span></li>
+<li class="task-item completed"><span class="custom-checkbox checked">✓</span><span class="task-text">A4 i18n 4 locales + pipeline doloc</span></li>
+<li class="task-item completed"><span class="custom-checkbox checked">✓</span><span class="task-text">A5 Tema claro/escuro/sistema</span></li>
+</ul>
+<h3>Epic B — Humor &amp; rotina (concluído / polish)</h3>
+<ul>
+<li class="task-item completed"><span class="custom-checkbox checked">✓</span><span class="task-text">B1 MoodEntry + repository</span></li>
+<li class="task-item completed"><span class="custom-checkbox checked">✓</span><span class="task-text">B2 Quick check-in modal completo</span></li>
+<li class="task-item completed"><span class="custom-checkbox checked">✓</span><span class="task-text">B3 Daily routine screen + save</span></li>
+<li class="task-item completed"><span class="custom-checkbox checked">✓</span><span class="task-text">B4 State of Mind editor + labels</span></li>
+<li class="task-item pending"><span class="custom-checkbox"></span><span class="task-text">B5 Unificar flag “med tomada” (check-in × rotina × MedicationLog)</span></li>
+<li class="task-item pending"><span class="custom-checkbox"></span><span class="task-text">B6 Nome do usuário dinâmico (remover hardcode)</span></li>
+</ul>
+<h3>Epic C — Medicações</h3>
+<ul>
+<li class="task-item completed"><span class="custom-checkbox checked">✓</span><span class="task-text">C1 Modelo Medication + MedicationLog</span></li>
+<li class="task-item completed"><span class="custom-checkbox checked">✓</span><span class="task-text">C2 UI lista + add sheet + card ações</span></li>
+<li class="task-item completed"><span class="custom-checkbox checked">✓</span><span class="task-text">C3 Efficacy window</span></li>
+<li class="task-item completed"><span class="custom-checkbox checked">✓</span><span class="task-text">C4 Import Apple meds</span></li>
+<li class="task-item pending"><span class="custom-checkbox"></span><span class="task-text">C5 Agendar notificações recorrentes por horário</span></li>
+<li class="task-item pending"><span class="custom-checkbox"></span><span class="task-text">C6 Deep link notificação → tela meds / ação tomada</span></li>
+<li class="task-item pending"><span class="custom-checkbox"></span><span class="task-text">C7 Escrita consistente de dose events no Health</span></li>
+<li class="task-item pending"><span class="custom-checkbox"></span><span class="task-text">C8 UI de vincular med local ↔ Apple concept</span></li>
+<li class="task-item pending"><span class="custom-checkbox"></span><span class="task-text">C9 Histórico multi-dia de adesão (gráficos)</span></li>
+</ul>
+<h3>Epic D — Health &amp; insights</h3>
+<ul>
+<li class="task-item completed"><span class="custom-checkbox checked">✓</span><span class="task-text">D1 HealthService abstrato + AppleHealthService</span></li>
+<li class="task-item completed"><span class="custom-checkbox checked">✓</span><span class="task-text">D2 Sleep + recovery cards</span></li>
+<li class="task-item completed"><span class="custom-checkbox checked">✓</span><span class="task-text">D3 CorrelationEngine (vários insights)</span></li>
+<li class="task-item completed"><span class="custom-checkbox checked">✓</span><span class="task-text">D4 Consent + mirror rotina</span></li>
+<li class="task-item completed"><span class="custom-checkbox checked">✓</span><span class="task-text">D5 Bridge luz/áudio/SoM/meds</span></li>
+<li class="task-item pending"><span class="custom-checkbox"></span><span class="task-text">D6 Implementação sólida Health Connect (Android)</span></li>
+<li class="task-item pending"><span class="custom-checkbox"></span><span class="task-text">D7 Cache local de snapshots Health (offline resiliente)</span></li>
+<li class="task-item pending"><span class="custom-checkbox"></span><span class="task-text">D8 Onboarding guiado na 1ª abertura</span></li>
+<li class="task-item pending"><span class="custom-checkbox"></span><span class="task-text">D9 Insights com período configurável e confiança estatística</span></li>
+</ul>
+<h3>Epic E — Export clínico</h3>
+<ul>
+<li class="task-item completed"><span class="custom-checkbox checked">✓</span><span class="task-text">E1 Hub + WhatsApp formatter</span></li>
+<li class="task-item completed"><span class="custom-checkbox checked">✓</span><span class="task-text">E2 Share card PNG</span></li>
+<li class="task-item completed"><span class="custom-checkbox checked">✓</span><span class="task-text">E3 PDF generator rico</span></li>
+<li class="task-item pending"><span class="custom-checkbox"></span><span class="task-text">E4 Perfil paciente (nome, idade, diagnóstico opcional)</span></li>
+<li class="task-item pending"><span class="custom-checkbox"></span><span class="task-text">E5 Seletor de período 7/14/30 na UI</span></li>
+<li class="task-item pending"><span class="custom-checkbox"></span><span class="task-text">E6 Incluir adesão meds + notas de rotina no PDF</span></li>
+<li class="task-item pending"><span class="custom-checkbox"></span><span class="task-text">E7 Export CSV / JSON para o próprio usuário</span></li>
+</ul>
+<h3>Epic F — Des-Trava</h3>
+<ul>
+<li class="task-item completed"><span class="custom-checkbox checked">✓</span><span class="task-text">F1 Fluxo 3 passos + timer</span></li>
+<li class="task-item pending"><span class="custom-checkbox"></span><span class="task-text">F2 Variantes por contexto (paralisia vs scattered vs overload)</span></li>
+<li class="task-item pending"><span class="custom-checkbox"></span><span class="task-text">F3 Histórico “quantas vezes usei esta semana”</span></li>
+<li class="task-item pending"><span class="custom-checkbox"></span><span class="task-text">F4 Integração opcional: criar micro-hábito a partir do passo</span></li>
+</ul>
+<h3>Epic G — Qualidade &amp; release</h3>
+<ul>
+<li class="task-item pending"><span class="custom-checkbox"></span><span class="task-text">G1 Cobertura de testes unitários (domínio + engine)</span></li>
+<li class="task-item pending"><span class="custom-checkbox"></span><span class="task-text">G2 Testes de widget por feature crítica</span></li>
+<li class="task-item pending"><span class="custom-checkbox"></span><span class="task-text">G3 CI (analyze + test + gen-l10n check)</span></li>
+<li class="task-item pending"><span class="custom-checkbox"></span><span class="task-text">G4 Privacy Nutrition Labels / política de privacidade</span></li>
+<li class="task-item pending"><span class="custom-checkbox"></span><span class="task-text">G5 Screenshots App Store / Play</span></li>
+<li class="task-item pending"><span class="custom-checkbox"></span><span class="task-text">G6 Soft launch TestFlight</span></li>
+</ul>
+<hr>
+<div class="chapter-header"><h2><span class="chapter-num">12</span><span class="chapter-title">Roadmap</span></h2></div>
+<h3>Fase 0 — MVP interno (atual) <span class="status-symbol done">✓</span></h3>
+<p>App usável localmente no iPhone do usuário-alvo: check-in, rotina, meds, sono, insights, export.</p>
+<p><strong>Critério de saída:</strong> uso diário real por ≥1 semana sem crash bloqueante.</p>
+<h3>Fase 1 — Polish clínico &amp; meds (próxima)</h3>
+<p><strong>Objetivo:</strong> adesão e export “prontos para sessão”.</p>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Prioridade</th>
+<th>Epic</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Notificações recorrentes de dose</td>
+<td><span class="id-tag">P0</span></td>
+<td>C5–C6</td>
+</tr>
+<tr>
+<td>Perfil paciente (nome)</td>
+<td><span class="id-tag">P0</span></td>
+<td>B6, E4</td>
+</tr>
+<tr>
+<td>Período no export</td>
+<td><span class="id-tag">P1</span></td>
+<td><span class="id-tag">E5</span></td>
+</tr>
+<tr>
+<td>PDF com adesão + notas rotina</td>
+<td><span class="id-tag">P1</span></td>
+<td><span class="id-tag">E6</span></td>
+</tr>
+<tr>
+<td>Onboarding Health + permissões</td>
+<td><span class="id-tag">P1</span></td>
+<td><span class="id-tag">D8</span></td>
+</tr>
+<tr>
+<td>Unificar medicação tomada</td>
+<td><span class="id-tag">P2</span></td>
+<td><span class="id-tag">B5</span></td>
+</tr>
+</tbody></table>
+<p><strong>Meta:</strong> v1.1 TestFlight.</p>
+<h3>Fase 2 — Android parity &amp; resiliência</h3>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Prioridade</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Health Connect: sono + recovery mínimos</td>
+<td><span class="id-tag">P0</span></td>
+</tr>
+<tr>
+<td>Cache Health offline</td>
+<td><span class="id-tag">P1</span></td>
+</tr>
+<tr>
+<td>Notificações Android estáveis</td>
+<td><span class="id-tag">P0</span></td>
+</tr>
+<tr>
+<td>Testes engine + repos</td>
+<td><span class="id-tag">P1</span></td>
+</tr>
+</tbody></table>
+<p><strong>Meta:</strong> v1.2 dual-platform.</p>
+<h3>Fase 3 — Inteligência &amp; personalização</h3>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Prioridade</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Des-Trava contextual</td>
+<td><span class="id-tag">P1</span></td>
+</tr>
+<tr>
+<td>Mais regras de correlação + transparência (“com base em N dias”)</td>
+<td><span class="id-tag">P1</span></td>
+</tr>
+<tr>
+<td>Gráficos de adesão e humor 30 dias</td>
+<td><span class="id-tag">P1</span></td>
+</tr>
+<tr>
+<td>Lembretes suaves de check-in (não spam)</td>
+<td><span class="id-tag">P2</span></td>
+</tr>
+</tbody></table>
+<p><strong>Meta:</strong> v1.3 “padrões confiáveis”.</p>
+<h3>Fase 4 — Conta opcional &amp; sync (futuro)</h3>
+<p>Ver §13. Só após validar retenção local.</p>
+<pre><code>Fase 0 (agora) ──► Fase 1 (meds+export) ──► Fase 2 (Android)
+                                              │
+                                              ▼
+                                    Fase 3 (insights+)
+                                              │
+                                              ▼
+                                    Fase 4 (conta/cloud) …
+</code></pre>
+<hr>
+<div class="chapter-header"><h2><span class="chapter-num">13</span><span class="chapter-title">Backlog / features futuras</span></h2></div>
+<blockquote>
+<p>Área reservada para ideias <strong>não comprometidas</strong>. Mova para o roadmap (§12) só com prioridade e epic.</p>
+</blockquote>
+<h3>13.1 Produto / UX</h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Ideia</th>
+<th>Notas</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><span class="id-tag">FUT-01</span></td>
+<td>Onboarding narrativo (3 telas)</td>
+<td>valores Lumen + permissões</td>
+</tr>
+<tr>
+<td><span class="id-tag">FUT-02</span></td>
+<td>Perfil completo</td>
+<td>nome, avatar, fuso, terapeuta</td>
+</tr>
+<tr>
+<td><span class="id-tag">FUT-03</span></td>
+<td>Widgets iOS (check-in / próxima dose)</td>
+<td></td>
+</tr>
+<tr>
+<td><span class="id-tag">FUT-04</span></td>
+<td>Shortcuts / App Intents “check-in”</td>
+<td></td>
+</tr>
+<tr>
+<td><span class="id-tag">FUT-05</span></td>
+<td>Modo “dia difícil” (UI reduzida)</td>
+<td>menos estímulos</td>
+</tr>
+<tr>
+<td><span class="id-tag">FUT-06</span></td>
+<td>Rotina com templates (dias úteis / fds)</td>
+<td></td>
+</tr>
+<tr>
+<td><span class="id-tag">FUT-07</span></td>
+<td>Reflexão noturna com prompt guiado</td>
+<td></td>
+</tr>
+<tr>
+<td><span class="id-tag">FUT-08</span></td>
+<td>Streaks <strong>não punitivos</strong> (opcional, off by default)</td>
+<td></td>
+</tr>
+<tr>
+<td><span class="id-tag">FUT-09</span></td>
+<td>Dark mode automático por horário de sono</td>
+<td></td>
+</tr>
+<tr>
+<td><span class="id-tag">FUT-10</span></td>
+<td>Acessibilidade: Dynamic Type + Reduce Motion</td>
+<td></td>
+</tr>
+</tbody></table>
+<h3>13.2 Medicação</h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Ideia</th>
+<th>Notas</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><span class="id-tag">FUT-20</span></td>
+<td>Protocolo multi-dose complexo</td>
+<td>PRN, efervescente</td>
+</tr>
+<tr>
+<td><span class="id-tag">FUT-21</span></td>
+<td>Crash predictor (notificar ~1h antes do fim da janela)</td>
+<td></td>
+</tr>
+<tr>
+<td><span class="id-tag">FUT-22</span></td>
+<td>Interação med × sono no insight</td>
+<td></td>
+</tr>
+<tr>
+<td><span class="id-tag">FUT-23</span></td>
+<td>Inventário / foto da caixa</td>
+<td></td>
+</tr>
+<tr>
+<td><span class="id-tag">FUT-24</span></td>
+<td>Compartilhar plano de meds com prescritor (PDF dedicado)</td>
+<td></td>
+</tr>
+</tbody></table>
+<h3>13.3 Saúde &amp; dados</h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Ideia</th>
+<th>Notas</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><span class="id-tag">FUT-30</span></td>
+<td>Ciclo menstrual / fatores hormonais (opt-in)</td>
+<td></td>
+</tr>
+<tr>
+<td><span class="id-tag">FUT-31</span></td>
+<td>Cafeína / álcool como tags no check-in</td>
+<td></td>
+</tr>
+<tr>
+<td><span class="id-tag">FUT-32</span></td>
+<td>Localização aproximada / clima (opt-in)</td>
+<td>correlacionar</td>
+</tr>
+<tr>
+<td><span class="id-tag">FUT-33</span></td>
+<td>Import CSV histórico</td>
+<td></td>
+</tr>
+<tr>
+<td><span class="id-tag">FUT-34</span></td>
+<td>Export GDPR / exclusão total com 1 toque</td>
+<td></td>
+</tr>
+<tr>
+<td><span class="id-tag">FUT-35</span></td>
+<td>Watch complication / app watchOS</td>
+<td></td>
+</tr>
+</tbody></table>
+<h3>13.4 Clínico / B2B</h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Ideia</th>
+<th>Notas</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><span class="id-tag">FUT-40</span></td>
+<td>Portal web somente-leitura para terapeuta</td>
+<td>auth + consent</td>
+</tr>
+<tr>
+<td><span class="id-tag">FUT-41</span></td>
+<td>Código de vínculo paciente↔clínica</td>
+<td></td>
+</tr>
+<tr>
+<td><span class="id-tag">FUT-42</span></td>
+<td>Templates de relatório por especialidade</td>
+<td>psiq / TCC</td>
+</tr>
+<tr>
+<td><span class="id-tag">FUT-43</span></td>
+<td>Escalas validadas (ASRS, PHQ-9) opcionais</td>
+<td>não diagnóstico</td>
+</tr>
+</tbody></table>
+<h3>13.5 Plataforma</h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Ideia</th>
+<th>Notas</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><span class="id-tag">FUT-50</span></td>
+<td>Conta Apple/Google opcional + backup iCloud/Drive</td>
+<td></td>
+</tr>
+<tr>
+<td><span class="id-tag">FUT-51</span></td>
+<td>Sync multi-device E2E</td>
+<td></td>
+</tr>
+<tr>
+<td><span class="id-tag">FUT-52</span></td>
+<td>go_router + deep links</td>
+<td></td>
+</tr>
+<tr>
+<td><span class="id-tag">FUT-53</span></td>
+<td>Feature flags remotas</td>
+<td></td>
+</tr>
+<tr>
+<td><span class="id-tag">FUT-54</span></td>
+<td>Crashlytics / analytics privacy-first</td>
+<td></td>
+</tr>
+<tr>
+<td><span class="id-tag">FUT-55</span></td>
+<td>Monetização: freemium clínico / família</td>
+<td>TBD ética</td>
+</tr>
+</tbody></table>
+<h3>13.6 Des-Trava &amp; bem-estar</h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Ideia</th>
+<th>Notas</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><span class="id-tag">FUT-60</span></td>
+<td>Biblioteca de protocolos (body double, body scan, 5-4-3-2-1)</td>
+<td></td>
+</tr>
+<tr>
+<td><span class="id-tag">FUT-61</span></td>
+<td>Áudio guiado curto (local)</td>
+<td></td>
+</tr>
+<tr>
+<td><span class="id-tag">FUT-62</span></td>
+<td>Modo “body doubling” timer com check silencioso</td>
+<td></td>
+</tr>
+<tr>
+<td><span class="id-tag">FUT-63</span></td>
+<td>Integração Focus modes iOS</td>
+<td></td>
+</tr>
+</tbody></table>
+<h3>13.7 Caixa livre (rascunhos)</h3>
+<p><em>Use esta lista em brainstorms. Não priorizar aqui.</em></p>
+<ul>
+<li class="task-item pending"><span class="custom-checkbox"></span><span class="task-text">…</span></li>
+<li class="task-item pending"><span class="custom-checkbox"></span><span class="task-text">…</span></li>
+<li class="task-item pending"><span class="custom-checkbox"></span><span class="task-text">…</span></li>
+</ul>
+<hr>
+<div class="chapter-header"><h2><span class="chapter-num">14</span><span class="chapter-title">Critérios de aceite e qualidade</span></h2></div>
+<h3>Aceite por feature (checklist genérico)</h3>
+<ol>
+<li>Funciona offline (exceto dados Health).</li>
+<li>Strings em <code>app_pt.arb</code> + doloc rodado se novas chaves.</li>
+<li>Light + dark sem overflow / contraste ilegível.</li>
+<li>Empty / loading / error states cobertos.</li>
+<li>Não bloqueia UX se Health negar permissão.</li>
+<li>Sem emojis decorativos novos (preferir <code>AppIcons</code>); exceção legado efficacy ⚡ — migrar quando possível.</li>
+</ol>
+<h3>Definition of Done (release)</h3>
+<ul>
+<li class="task-item pending"><span class="custom-checkbox"></span><span class="task-text"><code>flutter analyze</code> limpo</span></li>
+<li class="task-item pending"><span class="custom-checkbox"></span><span class="task-text">Testes críticos passando</span></li>
+<li class="task-item pending"><span class="custom-checkbox"></span><span class="task-text">Privacy copy alinhada ao que o app realmente lê/escreve</span></li>
+<li class="task-item pending"><span class="custom-checkbox"></span><span class="task-text">README + este GDD atualizados se mudou escopo</span></li>
+</ul>
+<h3>Métricas de produto (sugeridas — ainda não instrumentadas)</h3>
+<table>
+<thead>
+<tr>
+<th>Métrica</th>
+<th>Meta inicial</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Check-ins / semana</td>
+<td>≥ 5</td>
+</tr>
+<tr>
+<td>Taxa de abertura do Des-Trava em dias “paralyzed”</td>
+<td>acompanhar</td>
+</tr>
+<tr>
+<td>Export usado antes de consulta</td>
+<td>≥ 1× / 2 semanas</td>
+</tr>
+<tr>
+<td>Crash-free sessions</td>
+<td>≥ 99%</td>
+</tr>
+</tbody></table>
+<hr>
+<div class="chapter-header"><h2><span class="chapter-num">15</span><span class="chapter-title">Glossário</span></h2></div>
+<table>
+<thead>
+<tr>
+<th>Termo</th>
+<th>Significado</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Check-in</td>
+<td>Registro rápido de humor/foco/energia</td>
+</tr>
+<tr>
+<td>Des-Trava</td>
+<td>Assistente anti-paralisia (Unstuck)</td>
+</tr>
+<tr>
+<td>Janela de eficácia</td>
+<td>Período estimado pós-dose (pico → crash)</td>
+</tr>
+<tr>
+<td>Insight</td>
+<td>Correlação textual acionável</td>
+</tr>
+<tr>
+<td>Mirror</td>
+<td>Escrita de dados locais no Apple Health</td>
+</tr>
+<tr>
+<td>State of Mind (SoM)</td>
+<td>Modelo emocional estilo Apple Health</td>
+</tr>
+<tr>
+<td>Âncora</td>
+<td>Único foco principal do dia</td>
+</tr>
+<tr>
+<td>Hub clínico</td>
+<td>Tela de export para terapeuta</td>
+</tr>
+</tbody></table>
+<hr>
+<div class="chapter-header"><h2><span class="chapter-num">16</span><span class="chapter-title">Como atualizar este GDD</span></h2></div>
+<ol>
+<li><strong>Nova feature shipped</strong> → marque <span class="status-symbol done">✓</span> na §6 e <code>[x]</code> na §11; se era FUT-*, remova do §13.</li>
+<li><strong>Mudança de escopo</strong> → atualize §1 e §12; bump versão do doc no topo.</li>
+<li><strong>Nova ideia</strong> → só §13 (caixa livre ou tabela); não misture com “atual”.</li>
+<li><strong>Task em andamento</strong> → pode linkar issue/PR ao lado do ID (<code>C5</code>).</li>
+<li>Mantenha este arquivo como <strong>fonte de verdade de produto</strong>; código é fonte de verdade de implementação — se divergirem, alinhe o GDD.</li>
+</ol>
+<hr>
+<h2>Apêndice A — Mapa rápido tela → arquivo</h2>
+<table>
+<thead>
+<tr>
+<th>Tela / sheet</th>
+<th>Path</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Home</td>
+<td><code>lib/features/home/presentation/home_screen.dart</code></td>
+</tr>
+<tr>
+<td>Check-in</td>
+<td><code>lib/features/routine_mood/presentation/quick_checkin_modal.dart</code></td>
+</tr>
+<tr>
+<td>Rotina</td>
+<td><code>lib/features/routine_mood/presentation/daily_routine_screen.dart</code></td>
+</tr>
+<tr>
+<td>Medicações</td>
+<td><code>lib/features/medications/presentation/medications_screen.dart</code></td>
+</tr>
+<tr>
+<td>Des-Trava</td>
+<td><code>lib/features/unstuck_assistant/presentation/unstuck_sheet.dart</code></td>
+</tr>
+<tr>
+<td>Hub terapeuta</td>
+<td><code>lib/features/therapist_export/presentation/therapist_export_hub_screen.dart</code></td>
+</tr>
+<tr>
+<td>PDF</td>
+<td><code>lib/features/therapist_export/service/therapist_pdf_generator.dart</code></td>
+</tr>
+<tr>
+<td>Consent Health</td>
+<td><code>lib/features/health_sync/presentation/health_sync_consent_sheet.dart</code></td>
+</tr>
+<tr>
+<td>Bridge iOS</td>
+<td><code>ios/Runner/HealthKitBridge.swift</code></td>
+</tr>
+</tbody></table>
+<h2>Apêndice B — Comandos úteis</h2>
+<pre><code class="language-bash">flutter pub get
+flutter run
+flutter gen-l10n
+export API_TOKEN=… &amp;&amp; dart run tool/doloc.dart &amp;&amp; flutter gen-l10n
+flutter test
+flutter analyze
+</code></pre>
+<hr>
+<p><em>Fim do GDD v1.0 — Lumen</em></p>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,1055 @@
+{
+  "@@locale": "ja",
+  "appTitle": "Lumen - ADHD & ヘルス",
+  "welcomeUser": "こんにちは、{name}さん",
+  "@welcomeUser": {
+    "description": "Greeting with user name",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "greetingMorning": "おはよう、{name}",
+  "@greetingMorning": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "greetingAfternoon": "こんにちは、{name}",
+  "@greetingAfternoon": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "greetingEvening": "こんばんは、{name}",
+  "@greetingEvening": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "noPressureSubtitle": "急がなくていい。一歩ずつ。",
+  "biorhythmCalm": "ゆるやかなリズム",
+  "routineGuiltLine": "{done} / {total}。今日全部できなくても、明日またで大丈夫。",
+  "@routineGuiltLine": {
+    "placeholders": {
+      "done": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "sleepTotalLabel": "睡眠時間",
+  "navHome": "ホーム",
+  "navRoutine": "習慣",
+  "navMeds": "薬",
+  "hideIntimateNotes": "プライベートなメモを隠す",
+  "navClinic": "臨床",
+  "checkinDurationHint": "およそ10秒",
+  "unstuckRescueHint": "固まりをほどく",
+  "quickCheckinTitle": "クイックチェックイン",
+  "quickCheckinSubtitle": "今、心と頭はどう感じていますか？",
+  "unstuckButton": "ほどく",
+  "unstuckButtonSub": "固まりをほどく",
+  "routineTitle": "日課と気分の記録",
+  "routineSubtitle": "今日のアンカー、朝の気分、生体リズム",
+  "routineAnchorLabel": "今日たった1つのフォーカスアンカー",
+  "routineAnchorHint": "例：完璧を求めず、ドラフトの作成を少し進める...",
+  "morningFeelingTitle": "目覚めの状態",
+  "microHabitsTitle": "心身を整える小さなステップ",
+  "waterAndMedsTitle": "水分と服薬のケア",
+  "therapistNotesTitle": "セラピストに相談したいこと",
+  "saveRoutineButton": "日課を保存",
+  "checkinModalTitle": "3秒チェックイン",
+  "checkinModalSubtitle": "自分を責めない。ありのままの今を記録。",
+  "howAreYouFeeling": "今の全体的な気分は？",
+  "mentalFocusState": "現在の集中状態：",
+  "energyBatteryState": "エネルギー残量：",
+  "tookMedicationChip": "薬を服用した",
+  "sensoryOverloadChip": "感覚過負荷（刺激過多）",
+  "optionalNoteHint": "簡単なメモ（例：タスクXで手が止まっている）...",
+  "saveCheckinButton": "チェックインを保存",
+  "focusFocused": "集中できている",
+  "focusHyperfocus": "過集中",
+  "focusScattered": "気が散っている",
+  "focusParalyzed": "フリーズ / 行動できない",
+  "sleepCardTitle": "睡眠と回復",
+  "syncHealthButton": "同期",
+  "totalSleepLabel": "総睡眠時間",
+  "stageDeep": "深い睡眠",
+  "stageRem": "レム睡眠（脳の回復）",
+  "stageLight": "浅い睡眠",
+  "stageAwake": "覚醒",
+  "remDeficitAlert": "ADHDサポート通知：レム睡眠が不足しています。今日は焦らず、自分に優しく過ごしてください。",
+  "@remDeficitAlert": {
+    "description": "Clinical alert shown when REM sleep is below ideal"
+  },
+  "sleepNoDataTitle": "睡眠データが見つかりません。",
+  "sleepNoDataHint": "「同期」をタップして Apple Health に接続し、実際の睡眠データを取得しましょう。",
+  "healthSyncSheetTitle": "Apple Health と同期",
+  "healthSyncSheetSubtitle": "Lumen は Apple Health と双方向でデータをやり取りします。共有内容はあなたが制御します。",
+  "healthSyncReadTitle": "Apple Health から読み取るもの",
+  "healthSyncReadBody": "睡眠・心拍・HRV・歩数・運動・気分・日照時間・環境音・共有を選んだ薬／服薬記録。回復・気分・過負荷の相関に使います。",
+  "@healthSyncReadBody": {
+    "description": "Explains which Health metrics Lumen reads"
+  },
+  "healthSyncWriteTitle": "Apple Health へ書き込むもの",
+  "healthSyncWriteBody": "水分、呼吸／マインドフルネス（iPhone）、Lumen で記録した感情状態。服薬リマインダーと在庫は Lumen のみです。",
+  "healthSyncMedsNote": "Apple Health で共有を選んだ薬と服薬記録を読み取ります。リマインダーと在庫は Lumen 側のままです。",
+  "healthSyncSystemNote": "次に、Apple Health または Health Connect の公式権限ダイアログが表示されます。",
+  "healthSyncConfirmButton": "接続して同期",
+  "healthSyncLaterButton": "あとで",
+  "healthSyncSuccessMessage": "Apple Health に接続し、データを同期しました。",
+  "healthSyncDeniedMessage": "許可がありません。設定 → ヘルスケア → データアクセスとデバイス から有効にできます。",
+  "healthSyncConnectedLabel": "同期済み",
+  "medicationsCardTitle": "お薬とリマインダー",
+  "medicationsCardSubtitle": "服薬記録、効果の持続時間、処方箋の管理",
+  "dosesTodayTitle": "今日の服薬",
+  "takenTodayAt": "服用完了：{time}",
+  "@takenTodayAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "snoozedUntilTime": "リマインダー延期中：{time}",
+  "@snoozedUntilTime": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "pendingScheduled": "予定時刻：{time}",
+  "@pendingScheduled": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "takeNowButton": "今すぐ服用",
+  "snooze15mButton": "15分後に通知",
+  "skipButton": "スキップ",
+  "controlledRxAlert": "処方箋残量注意：残りの錠剤が少なくなっています。医師に処方箋を依頼してください。",
+  "@controlledRxAlert": {
+    "description": "Warning when controlled Rx stock is low"
+  },
+  "newMedicationButton": "薬を追加",
+  "unstuckSheetTitle": "フリーズ解消アシスタント",
+  "unstuckSheetSubtitle": "実行機能のフリーズを罪悪感なく解きほぐす。",
+  "startTimerButton": "プレッシャーなしで60秒開始",
+  "finishUnstuckButton": "完了して日常に戻る",
+  "therapistHubTitle": "セラピスト共有ハブ",
+  "therapistHubSubtitle": "WhatsApp、PDF、画像カード、またはテキストで送信",
+  "sendWhatsAppButton": "WhatsAppで送信",
+  "shareCardButton": "画像を共有",
+  "exportPdfButton": "PDFレポートを表示・出力",
+  "copyTextButton": "テキストをコピー",
+  "textCopiedMessage": "テキストをクリップボードにコピーしました！",
+  "languageSelectorTitle": "言語を選択",
+  "systemDefault": "自動（端末のシステム設定に同期）",
+  "portuguese": "ポルトガル語 (Português)",
+  "english": "英語 (English)",
+  "japanese": "日本語 (Japanese)",
+  "spanish": "スペイン語 (Español)",
+  "themeToggleTooltip": "テーマ切替（ライト / ダーク / システム）",
+  "themeLight": "ライト",
+  "themeDark": "ダーク",
+  "themeSystem": "システム",
+  "okButton": "OK",
+  "cancelButton": "キャンセル",
+  "saveButton": "保存",
+  "confirmButton": "確認",
+  "errorWithDetails": "エラー: {error}",
+  "@errorWithDetails": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoading": "読み込みエラー: {error}",
+  "@errorLoading": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "dateFormatFullPattern": "M月d日(EEEE)",
+  "@dateFormatFullPattern": {
+    "description": "intl DateFormat pattern for full date on routine screen"
+  },
+  "homeNoMedsToday": "今日の薬はありません。タップして登録。",
+  "homeTakenTodayCount": "今日 {taken}/{total} 服用済み",
+  "@homeTakenTodayCount": {
+    "placeholders": {
+      "taken": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "homePendingCount": "{count} 件保留",
+  "@homePendingCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "homeTherapistBlurb": "セッションで直近7日間を思い出す必要はありません。WhatsAppで1タップ送信、グラフ画像の共有、正式なPDF生成ができます。",
+  "@homeTherapistBlurb": {
+    "description": "Home card blurb for therapist export"
+  },
+  "homeBrainPatternsTitle": "あなたの脳のパターン",
+  "homeRecentEntriesTitle": "最近の記録",
+  "homeNoEntriesYet": "まだ記録がありません。最初のチェックインを！",
+  "routineSavedSuccess": "日課を保存しました！",
+  "routineAppBarTitle": "日課と気分",
+  "routineCompassTitle": "今日のコンパス",
+  "routineCompassSubtitle": "このスペースはアプリネイティブで、iPhoneとAndroidで同じく動作し、生体データを自動同期します。",
+  "routineAnchorSubtitle": "頭の中に15個のタブを開いて迷子にならないために：",
+  "routineEmotionalStateTitle": "感情の状態",
+  "routineEmotionalStateSubtitle": "Apple Healthと同じ流れ — Androidでも利用可能：",
+  "routineMicroHabitsSubtitle": "ステップの追加・削除 — リストはあなた専用：",
+  "removeTooltip": "削除",
+  "microHabitHint": "例：10分歩く",
+  "addMicroHabitButton": "マイクロステップを追加",
+  "routineBioCareSubtitle": "脱水はADHDの散漫症状を悪化させます：",
+  "waterGlassesLabel": "飲んだ水の杯数：",
+  "prescribedMedTakenLabel": "処方薬を服用した",
+  "prescribedMedTakenHint": "セラピストとの集中の相関に役立ちます",
+  "therapistNotesSubtitle": "セッションで忘れないよう、今日あったことをメモ：",
+  "therapistNotesHint": "例：工事の騒音で過負荷になり、罪悪感を感じた...",
+  "microHabitSun": "5分間日光を浴びる",
+  "microHabitWater": "起床時に水を一杯",
+  "microHabitScreenPause": "昼食後に画面なしの休憩",
+  "microHabitStretch": "ストレッチまたは深呼吸",
+  "focusFocusedDesc": "安定した集中",
+  "focusHyperfocusDesc": "特定のことへの深い没入",
+  "focusScatteredDesc": "多くのタブ／タスクを飛び回る心",
+  "focusParalyzedDesc": "実行機能の麻痺、始めるのが極端に難しい",
+  "@focusParalyzedDesc": {
+    "description": "Clinical description of executive paralysis focus state"
+  },
+  "energyDrained": "枯渇",
+  "energyDrainedDesc": "社会的・身体的エネルギーがゼロ",
+  "energyLow": "低い",
+  "energyLowDesc": "中程度の疲労",
+  "energyBalanced": "バランス",
+  "energyBalancedDesc": "一日分の十分なエネルギー",
+  "energyEnergized": "高い",
+  "energyEnergizedDesc": "やる気と活力がある",
+  "energyHyper": "過活動",
+  "energyHyperDesc": "運動性の落ち着きのなさ、または思考の加速",
+  "valenceVeryBad": "とても悪い",
+  "valenceHeavy": "重い",
+  "valenceNeutral": "普通",
+  "valenceGood": "良い",
+  "valenceExcellent": "最高",
+  "valenceVeryDifficult": "とてもつらい",
+  "valenceBom": "良い",
+  "checkinWordsOptional": "言葉（任意）",
+  "searchEmotionHint": "感情を検索…",
+  "emotionsSelectedCount": "{count} 件選択",
+  "@emotionsSelectedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "checkinSavedSuccess": "記録しました！あなたを大切に。",
+  "medicationsAppBarTitle": "お薬とリマインダー",
+  "importFromHealthTooltip": "Apple Healthからインポート",
+  "importHealthUnavailable": "このiOS/SDKではApple Healthからの薬のインポートはまだ利用できません。ローカル登録は引き続き使えます。",
+  "importHealthCount": "Apple Healthから{count}件の薬をインポートしました。",
+  "@importHealthCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "importHealthNone": "インポートする新しい薬はありません。",
+  "registerMedicationTooltip": "薬を登録",
+  "medsGuiltFreeTitle": "罪悪感のない服薬",
+  "medsGuiltFreeSubtitle": "「飲んだっけ？」の不安を減らし、効果の窓を確認し、処方箋が切れる前にアラートを受け取ります。",
+  "@medsGuiltFreeSubtitle": {
+    "description": "Medications screen hero subtitle"
+  },
+  "errorLoadingDoses": "服薬の読み込みエラー: {error}",
+  "@errorLoadingDoses": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noMedsScheduledToday": "今日予定されている薬はありません。",
+  "registerFirstMedButton": "最初の薬を登録",
+  "medsStockSectionTitle": "ボトルと処方箋の在庫",
+  "medsRxAlertRemaining": "処方箋アラート：残り{count}カプセルのみ",
+  "@medsRxAlertRemaining": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "medsStockCount": "在庫: {remaining}/{total} カプセル",
+  "@medsStockCount": {
+    "placeholders": {
+      "remaining": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "capsulesCount": "{count} カプセル",
+  "@capsulesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "controlledRxRemainingAlert": "処方箋管理薬：残り{count}回分のみ。医師に相談してください。",
+  "@controlledRxRemainingAlert": {
+    "description": "Per-medication controlled Rx low stock alert",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "medTakenRegisteredSnack": "{name} を {time} に記録しました！",
+  "@medTakenRegisteredSnack": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "snooze15mSnack": "リマインダーを15分延期しました！",
+  "skipDoseTooltip": "今日の服薬をスキップ",
+  "skipDoseDialogTitle": "今日の服薬をスキップしますか？",
+  "skipDoseDialogBody": "罪悪感は不要です。日によっては休みが必要だったり、遅く起きたりします。セラピストがルーティンを理解できるよう記録します。",
+  "@skipDoseDialogBody": {
+    "description": "Skip dose confirmation dialog body"
+  },
+  "skipReasonVoluntary": "自主的に一時停止",
+  "defaultMedInstructions": "食後に水と一緒に服用。",
+  "defaultMedInstructionsShort": "水と一緒に服用。",
+  "newMedicationSheetTitle": "新しい薬",
+  "frequentSuggestionsLabel": "よくある候補：",
+  "medNameLabel": "薬の名前",
+  "medNameHint": "例：ビバンセ",
+  "medDosageLabel": "用量",
+  "medDosageHint": "例：30mg",
+  "medReminderLabel": "リマインダー: {time}",
+  "@medReminderLabel": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "medCapsulesInBottleLabel": "ボトル内のカプセル数",
+  "medInstructionsLabel": "指示／注意",
+  "medInstructionsHint": "例：朝食後すぐに服用...",
+  "defaultDoseFallback": "1回分",
+  "medRegisteredSuccess": "{name} を登録しました！",
+  "@medRegisteredSuccess": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "saveMedicationButton": "薬を保存",
+  "defaultInstructionsMorning": "朝、コーヒーの後に服用。",
+  "efficacyWindowTitle": "推定作用ウィンドウ（{hours}時間）",
+  "@efficacyWindowTitle": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "efficacyPeakNow": "いまピーク作用中",
+  "efficacyEnded": "効果が終了",
+  "efficacyTakenAt": "服用: {time}",
+  "@efficacyTakenAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "efficacyPeakRange": "ピーク: {start} - {end}",
+  "@efficacyPeakRange": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "efficacyEndAt": "終了（~{time}）",
+  "@efficacyEndAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "efficacyAdhdTip": "ADHDヒント：夕方はリバウンド（ドーパミン低下）が起きやすい時間帯です。一時的なイライラが出ることがあります。要求は控えめに。",
+  "@efficacyAdhdTip": {
+    "description": "Clinical tip about stimulant rebound window"
+  },
+  "medReminderChannelName": "服薬リマインダー",
+  "medReminderChannelDesc": "ADHD服薬のタイムリーな通知（非難なし）",
+  "medSnoozeNotificationTitle": "⏰ 延期リマインダー: {name}",
+  "@medSnoozeNotificationTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "medDoseReminderTitle": "{name}の時間",
+  "@medDoseReminderTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "medDoseReminderBody": "深呼吸して、できるときに服用してください。",
+  "notificationActionTaken": "服用",
+  "notificationActionSnooze": "延期",
+  "medSnoozeNotificationBody": "{minutes}分のリマインダーです。深呼吸して、できるときに服用してください。",
+  "@medSnoozeNotificationBody": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "unstuckStep1Title": "1. すばやい身体リセット",
+  "unstuckStep1Instruction": "水を一口飲んで肩の力を抜く。実行機能の麻痺は体から始まります。",
+  "unstuckStep1Action": "水を飲んで呼吸した",
+  "unstuckStep2Title": "2. ばかばかしいマイクロステップ",
+  "unstuckStep2Instruction": "全部やろうとしなくていい。書類を開くか、ノートを机に置くだけ。本番はあとでいい。",
+  "unstuckStep2Action": "できた — 環境だけ整えた",
+  "unstuckStep3Title": "3. 2分テスト",
+  "unstuckStep3Instruction": "下のタイマーを開始し、60〜120秒なにかする。その後やめても完全にOK。",
+  "unstuckStep3Action": "マイクロ集中ブロックを開始",
+  "unstuckTimerHint": "少しだけでいいから...",
+  "unstuckCongratsSnack": "最初の一歩で十分。ここで止めても大丈夫。",
+  "recoveryCardTitle": "回復",
+  "recoveryCardSubtitle": "Healthから同期したHRV・歩数・日照・環境音。",
+  "recoveryReadError": "回復シグナルを読めませんでした。",
+  "recoveryNoData": "まだデータがありません。Healthに接続し、数日ウォッチ／スマホを使ってください。",
+  "labelDaylight": "日照",
+  "labelAmbientNoise": "環境音",
+  "labelHeadphoneNoise": "イヤホン",
+  "labelHrv": "HRV",
+  "labelRestingHr": "安静時心拍",
+  "labelSteps": "歩数",
+  "labelExercise": "運動",
+  "recoveryWeeklyHrv": "週次HRV ~ {value} ms",
+  "@recoveryWeeklyHrv": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "recoveryAvgSteps": "平均歩数 ~ {value}/日",
+  "@recoveryAvgSteps": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "recoveryAvgLight": "日照 ~ {value} 分/日",
+  "@recoveryAvgLight": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "sleepScoreLabel": "スコア: {score}/100",
+  "@sleepScoreLabel": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "sleepAvgNightHr": "夜間平均心拍: {bpm} bpm",
+  "@sleepAvgNightHr": {
+    "placeholders": {
+      "bpm": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingSleep": "睡眠の読み込みエラー: {error}",
+  "@errorLoadingSleep": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "healthSourceUnavailable": "このプラットフォームでは利用不可",
+  "healthSourceApple": "Apple Health (HealthKit)",
+  "healthSourceAndroid": "Health Connect / Samsung Health",
+  "insightCollectingTitle": "パターン収集中",
+  "insightCollectingDescHealth": "日々を記録し続けて。Apple Healthのデータが3〜5日あれば、生体パターンがここに表示されます。",
+  "@insightCollectingDescHealth": {
+    "description": "Empty-state insight when no Health/mood data yet"
+  },
+  "insightCollectingDescGeneric": "日々を記録し続けて。データが3〜5日あれば、生体パターンがここに表示されます。",
+  "insightCollectingAdvice": "昼食後に短いマイクロチェックインを試してみて。",
+  "insightRemParalysisTitle": "レム睡眠とタスク麻痺",
+  "@insightRemParalysisTitle": {
+    "description": "Clinical correlation insight title"
+  },
+  "insightRemParalysisDesc": "実行機能の麻痺や疲労を感じた場面の{percent}%で、前夜のレム睡眠が理想を下回っていました（< 1時間15分）。",
+  "@insightRemParalysisDesc": {
+    "description": "REM deficit correlated with executive paralysis",
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "insightRemParalysisAdvice": "ADHDではレム睡眠がドーパミン受容体の感度を調節します。不足後の日は決断を減らし、タスクを極小に分けて。",
+  "@insightRemParalysisAdvice": {
+    "description": "Clinical advice after REM deficit"
+  },
+  "insightMentalFlowTitle": "メンタルフローの窓",
+  "insightMentalFlowDesc": "集中と気分の最良スコアは、7時間超の睡眠で途中覚醒が少なかった夜と一致します。",
+  "insightMentalFlowAdvice": "ADHDの概日リズムでは、就寝時刻より起床時刻を固定する方が重要です。",
+  "insightSensoryTitle": "刺激への敏感さ",
+  "insightSensoryDesc": "最近{count}回、感覚過負荷を記録しました。騒音や速い画面は認知バッテリーをより早く消耗します。",
+  "@insightSensoryDesc": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "insightSensoryAdvice": "ノイズキャンセリングヘッドホンや3分の呼吸で脳のリセットに役立ちます。",
+  "insightHrvTitle": "HRVと自律神経の過負荷",
+  "@insightHrvTitle": {
+    "description": "Clinical correlation: low HRV and hard days"
+  },
+  "insightHrvDesc": "フリーズ・疲労・過負荷／ストレスなどの言葉が出た日の{percent}%で、HRVが低かったです（< 40 ms）。",
+  "@insightHrvDesc": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "insightHrvAdvice": "そうした日は回復日として：決断を減らし、短い休憩と水分補給を。",
+  "insightMovementTitle": "運動とメンタルエネルギー",
+  "insightMovementDesc": "集中／エネルギーのつらい日の{percent}%で、歩数が4,000未満でした。",
+  "@insightMovementDesc": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "insightMovementAdvice": "短い散歩（10分でも）はドーパミンを回復し、ADHDの散漫を減らしやすいです。",
+  "insightDaylightTitle": "日照と気分",
+  "insightDaylightDesc": "気分が低い日の{percent}%で、日照時間が20分未満でした。",
+  "@insightDaylightDesc": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "insightDaylightAdvice": "朝の自然光はADHDの概日リズムと気分調節に役立ちます。",
+  "insightNoiseTitle": "環境音と過負荷",
+  "insightNoiseDesc": "感覚過負荷の報告の{percent}%で、平均環境音が高かったです（≥ 70 dB）。",
+  "@insightNoiseDesc": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "insightNoiseAdvice": "ノイズキャンセリングや静かな場所での休憩が感覚負荷を下げます。",
+  "therapistExportHubTitle": "臨床共有ハブ",
+  "configureTherapistPhoneTooltip": "セラピストの電話番号を設定",
+  "errorLoadingData": "データの読み込みエラー: {error}",
+  "@errorLoadingData": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingMood": "気分の読み込みエラー: {error}",
+  "@errorLoadingMood": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "therapistSendHowTitle": "今日はどう送りますか？",
+  "therapistSendHowSubtitle": "WhatsApp、コンパクト画像、または完全なPDFで。",
+  "sendWhatsAppTitle": "WhatsAppで送信",
+  "sendWhatsAppSubtitle": "睡眠・フリーズ・週のハイライト入りの準備済みメッセージ。",
+  "textCopiedWhatsAppHint": "クリップボードにコピーしました！セラピストのWhatsAppに貼り付けて。",
+  "textCopiedSuccessShort": "テキストをコピーしました！",
+  "visualCardTitle": "ビジュアル要約カード",
+  "visualCardSubtitle": "スマホで速読できる高解像度のコンパクトインフォグラフィック。",
+  "shareCardTitleTemplate": "週次臨床サマリー - {name}（Lumen）",
+  "@shareCardTitleTemplate": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "shareCardImageFailed": "いま画像を生成できませんでした。",
+  "pdfReportTitle": "臨床PDFレポート",
+  "pdfReportSubtitle": "カルテ・印刷・正式送付用の完全ドキュメント。",
+  "cardPreviewTitle": "カードのプレビュー",
+  "exportablePngBadge": "PNGで書き出し可能",
+  "therapistPhoneDialogTitle": "セラピストのWhatsApp",
+  "therapistPhoneDialogBody": "市外局番付きの番号を保存すると、送信ボタンで直接チャットが開きます：",
+  "therapistPhoneHint": "+81 90 1234 5678",
+  "phoneSavedSuccess": "番号を保存しました！",
+  "therapistReportAppBarTitle": "セラピストレポート",
+  "privacyInfoTooltip": "プライバシー情報",
+  "privacyDialogTitle": "プライバシーとセキュリティ",
+  "privacyDialogBody": "このレポートは100%端末内で生成されます。同意なく健康データや個人記録が外部サーバーに送られることはありません。共有のタイミングと相手はあなたが選びます。",
+  "@privacyDialogBody": {
+    "description": "On-device privacy assurance for clinical report"
+  },
+  "understoodButton": "了解",
+  "pdfFileName": "ADHD_Clinical_Report_Lumen.pdf",
+  "compilingMetricsMessage": "睡眠と気分の指標を集計中...",
+  "shareCardSubject": "ADHD臨床サマリー（Lumen）",
+  "weeklyCardHeader": "LUMEN • 臨床サマリー",
+  "weeklyCardLast7Days": "直近7日",
+  "weeklyCardSubtitle": "睡眠トラッキング（Apple Health）と集中（ADHD）",
+  "weeklyCardAvgSleep": "平均睡眠",
+  "weeklyCardNightsUnder6h": "{count}夜 < 6時間",
+  "@weeklyCardNightsUnder6h": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "weeklyCardParalysis": "実行機能の麻痺",
+  "weeklyCardReportsCount": "{count} 件の報告",
+  "@weeklyCardReportsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "weeklyCardStuckMoments": "固まった瞬間",
+  "weeklyCardFluidFocus": "流れる集中",
+  "weeklyCardGoodConcentration": "良い集中",
+  "weeklyCardSyncedFooter": "Apple Health & Lumenと同期",
+  "weeklyCardPersonalUse": "個人の臨床利用",
+  "pdfHeaderTitle": "LUMEN - 治療的臨床サマリー",
+  "pdfHeaderSubtitle": "睡眠・集中・気分の追跡（ADHD）",
+  "pdfPatientPeriod": "患者: {name}  |  期間: 直近{days}日",
+  "@pdfPatientPeriod": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "pdfIssuedAt": "発行: {date}",
+  "@pdfIssuedAt": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "pdfSourceLine": "ソース: Apple Health / Lumen App",
+  "pdfSection1Sleep": "1. 睡眠バイオメトリクス（Apple Health）",
+  "pdfAvgSleepTitle": "平均睡眠",
+  "pdfAvgSleepValue": "{hours}時間 / 夜",
+  "@pdfAvgSleepValue": {
+    "placeholders": {
+      "hours": {
+        "type": "String"
+      }
+    }
+  },
+  "pdfDeficitNights": "不足（<6時間）の夜: {count}/{total}",
+  "@pdfDeficitNights": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "pdfAvgRemTitle": "平均レム",
+  "pdfRemDeficitAlert": "レム不足アラート",
+  "pdfRemWithinExpected": "想定範囲内",
+  "pdfColDate": "日付",
+  "pdfColBedtime": "就寝時刻",
+  "pdfColWake": "起床時刻",
+  "pdfColTotal": "総時間",
+  "pdfColRem": "レム睡眠",
+  "pdfColDeep": "深い睡眠",
+  "pdfColScore": "スコア",
+  "pdfSection1bRecovery": "1b. 客観的な回復サイン",
+  "pdfHrvAvgTitle": "平均HRV",
+  "pdfHrvSubtitle": "心拍変動",
+  "pdfRestingHrTitle": "安静時心拍",
+  "pdfPeriodAverage": "期間平均",
+  "pdfStepsPerDayTitle": "歩数/日",
+  "pdfExerciseTitle": "運動",
+  "pdfDailyAverage": "日次平均",
+  "pdfDaylightTitle": "日照",
+  "pdfNoiseTitle": "環境音",
+  "pdfSomFromAppleHealth": "Apple Health から取り込んだ State of Mind 記録が {count} 件含まれます。",
+  "@pdfSomFromAppleHealth": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pdfSection2Executive": "2. 実行機能と報告された気分",
+  "pdfStatParalyzed": "フリーズ／麻痺",
+  "pdfStatScattered": "散漫／落ち着かない",
+  "pdfStatFocused": "安定した集中",
+  "pdfStatHyperfocus": "強い過集中",
+  "pdfStatSensory": "感覚過負荷",
+  "pdfReportsLabel": "{count} 件",
+  "@pdfReportsLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pdfTimesLabel": "{count} 回",
+  "@pdfTimesLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pdfTopEmotionWords": "よく使われた感情語（State of Mind）：",
+  "pdfMedicationTaken": "服薬: {taken}/{total} 記録",
+  "@pdfMedicationTaken": {
+    "placeholders": {
+      "taken": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "pdfSection3Correlations": "3. 生理学的相関",
+  "pdfClinicalSuggestion": "臨床の提案: {advice}",
+  "@pdfClinicalSuggestion": {
+    "placeholders": {
+      "advice": {
+        "type": "String"
+      }
+    }
+  },
+  "pdfSection4Triggers": "4. 患者が報告した記録とトリガー",
+  "pdfEntryLine": "{date} {time} | 集中: {focus} | 気分: {mood}{labels}",
+  "@pdfEntryLine": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      },
+      "focus": {
+        "type": "String"
+      },
+      "mood": {
+        "type": "String"
+      },
+      "labels": {
+        "type": "String"
+      }
+    }
+  },
+  "pdfFooterDisclaimer": "Lumenアプリが生成した文書です。生体データはApple Health / Health Connect経由で同期され、対面の診断評価の代わりにはなりません。",
+  "@pdfFooterDisclaimer": {
+    "description": "Legal/clinical disclaimer on PDF footer"
+  },
+  "waWeeklyTitle": "*週次臨床サマリー - {name}*",
+  "@waWeeklyTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "waPeriod": "期間: {start}〜{end}",
+  "@waPeriod": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "waGeneratedBy": "Lumenアプリ（健康＆ADHD）が生成",
+  "waSectionSleep": "*睡眠バイオメトリクス（Apple Health）：*",
+  "waAvgSleep": "- 平均: 1夜あたり *{hours}時間*",
+  "@waAvgSleep": {
+    "placeholders": {
+      "hours": {
+        "type": "String"
+      }
+    }
+  },
+  "waDeficitNights": "- 不足の夜（<6時間）: *{count}*/{total} 夜",
+  "@waDeficitNights": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "waAvgRemAlert": "- 平均レム睡眠: *{hours}時間*（不足アラート）",
+  "@waAvgRemAlert": {
+    "placeholders": {
+      "hours": {
+        "type": "String"
+      }
+    }
+  },
+  "waAvgRemOk": "- 平均レム睡眠: *{hours}時間*（適切）",
+  "@waAvgRemOk": {
+    "placeholders": {
+      "hours": {
+        "type": "String"
+      }
+    }
+  },
+  "waSectionRecovery": "*客観サイン（回復）：*",
+  "waHrvAvg": "- 平均HRV: *{value} ms*",
+  "@waHrvAvg": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "waRestingHrAvg": "- 平均安静時心拍: *{value} bpm*",
+  "@waRestingHrAvg": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "waStepsAvg": "- 平均歩数/日: *{value}*",
+  "@waStepsAvg": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "waExerciseAvg": "- 平均運動: *{value} 分/日*",
+  "@waExerciseAvg": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "waDaylightAvg": "- 平均日照: *{value} 分/日*",
+  "@waDaylightAvg": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "waNoiseAvg": "- 平均環境音: *{value} dB*",
+  "@waNoiseAvg": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "waSomFromAppleHealth": "- State of Mind: Apple Health から *{count}* 日分を取り込み",
+  "@waSomFromAppleHealth": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "waSectionExecutive": "*実行機能と気分：*",
+  "waParalysisCount": "- 麻痺／フリーズ: *{count} 件*",
+  "@waParalysisCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "waScatteredCount": "- 散漫／落ち着きのなさ: *{count} 件*",
+  "@waScatteredCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "waFocusedCount": "- 流れる集中: *{count} 件*",
+  "@waFocusedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "waHyperfocusCount": "- 強い過集中: *{count} 件*",
+  "@waHyperfocusCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "waSensoryCount": "- 感覚過負荷: *{count} 回*",
+  "@waSensoryCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "waMedTaken": "- 服薬: *{taken}/{total} 記録*",
+  "@waMedTaken": {
+    "placeholders": {
+      "taken": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "waTopWordsHeader": "- よく使われた言葉：",
+  "waWordCountLine": "  · {label}（{count}回）",
+  "@waWordCountLine": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "waSectionPatterns": "*セッション向けに観察されたパターン：*",
+  "waInsightLine": "- *{title}*: {description}",
+  "@waInsightLine": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "description": {
+        "type": "String"
+      }
+    }
+  },
+  "waSectionHighlights": "*週のハイライトとトリガー：*",
+  "waNoteLine": "- 「{note}」（{date} - {focus}）",
+  "@waNoteLine": {
+    "placeholders": {
+      "note": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      },
+      "focus": {
+        "type": "String"
+      }
+    }
+  },
+  "waFooter": "_セラピーセッションでの議論用に送信。_",
+  "somKindTitle": "記録の種類",
+  "somKindMomentary": "いまの気分",
+  "somKindDaily": "その日の全体的な気分",
+  "somFeelingLabel": "いまの感じ: {caption}",
+  "@somFeelingLabel": {
+    "placeholders": {
+      "caption": {
+        "type": "String"
+      }
+    }
+  },
+  "somValenceVeryUnpleasant": "とても不快",
+  "somValenceUnpleasant": "不快",
+  "somValenceNeutral": "普通",
+  "somValencePleasant": "快い",
+  "somValenceVeryPleasant": "とても快い",
+  "somWordsPrompt": "いまの気持ちを表す言葉",
+  "somAssociationsPrompt": "いまいちばん影響していること",
+  "showAllLabels": "すべて表示",
+  "showFewerLabels": "少なく表示",
+  "medNameRequiredError": "薬の名前を入力してください",
+  "phoneInvalidError": "有効な電話番号を入力（10桁以上）",
+  "habitEmptyError": "追加する前にマイクロステップを入力",
+  "habitDuplicateError": "そのマイクロステップは既にリストにあります",
+  "deleteMedConfirmTitle": "薬を削除しますか？",
+  "deleteMedConfirmBody": "{name} をリストから削除します。元に戻せません。",
+  "@deleteMedConfirmBody": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteMedConfirmButton": "削除"
+}

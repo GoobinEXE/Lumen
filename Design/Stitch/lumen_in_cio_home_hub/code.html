@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_tab" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{width:100vw;margin:0;padding:0;background-color:#fcf8ff;}body{overscroll-behavior:none;-webkit-tap-highlight-color:transparent;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "surface-tint": "#006c53", "surface-bright": "#fcf8ff", "surface-container-high": "#ebe5f8", "tertiary-container": "#ec7c4f", "on-tertiary-fixed-variant": "#7f2b02", "error-container": "#ffdad6", "primary-fixed": "#7bf9cf", "tertiary-fixed-dim": "#ffb59a", "primary-fixed-dim": "#5cdcb4", "on-background": "#1c1a27", "tertiary": "#9f4119", "on-primary-fixed": "#002117", "on-primary-fixed-variant": "#00513e", "on-tertiary": "#ffffff", "surface": "#fcf8ff", "primary-container": "#1faf8a", "on-secondary": "#ffffff", "surface-container-highest": "#e5e0f3", "on-secondary-container": "#4d3d86", "surface-container-lowest": "#ffffff", "inverse-primary": "#5cdcb4", "on-surface": "#1c1a27", "error": "#ba1a1a", "background": "#fcf8ff", "outline": "#6d7a74", "secondary-fixed-dim": "#ccbeff", "inverse-surface": "#312f3d", "secondary-fixed": "#e7deff", "on-surface-variant": "#3d4a44", "surface-container": "#f0ebfe", "on-error-container": "#93000a", "inverse-on-surface": "#f3eeff", "surface-container-low": "#f6f1ff", "secondary-container": "#bfadff", "primary": "#006c53", "on-secondary-fixed": "#1e0856", "on-error": "#ffffff", "on-primary-container": "#003b2c", "outline-variant": "bccac2", "on-secondary-fixed-variant": "#4a3b83", "surface-dim": "#dcd7ea", "on-tertiary-container": "#5f1d00", "on-tertiary-fixed": "#380d00", "tertiary-fixed": "#ffdbce", "surface-variant": "#e5e0f3", "on-primary": "#ffffff", "secondary": "#63539d" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "margin": "1.5rem", "space-xl": "2rem", "gutter-mobile": "0.75rem", "space-lg": "1.5rem", "gutter": "1rem", "margin-mobile": "1.25rem", "space-md": "1rem", "space-sm": "0.5rem", "space-xs": "0.25rem" }, "fontFamily": { "body-md": ["Inter"], "label-sm": ["Inter"], "headline-sm": ["Inter"], "headline-lg": ["Inter"], "headline-md": ["Inter"], "display-lg": ["Inter"], "label-md": ["Inter"], "body-lg": ["Inter"], "body-sm": ["Inter"], "label-lg": ["Inter"], "headline-lg-mobile": ["Inter"] }, "fontSize": { "body-md": ["15px", { "lineHeight": "22px", "letterSpacing": "0.005em", "fontWeight": "400" }], "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.02em", "fontWeight": "500" }], "headline-sm": ["18px", { "lineHeight": "24px", "letterSpacing": "-0.005em", "fontWeight": "600" }], "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.015em", "fontWeight": "600" }], "headline-md": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "display-lg": ["34px", { "lineHeight": "42px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500" }], "body-lg": ["17px", { "lineHeight": "26px", "letterSpacing": "0em", "fontWeight": "400" }], "body-sm": ["13px", { "lineHeight": "18px", "letterSpacing": "0.01em", "fontWeight": "400" }], "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }], "headline-lg-mobile": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }] } } } };</script><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface font-body-md text-on-surface flex flex-col min-h-screen selection:bg-primary-fixed selection:text-on-primary-fixed"><header class="fixed top-0 w-full z-50 pt-safe bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-margin-mobile flex items-center justify-between"><div class="flex items-center gap-space-sm"><div class="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center text-primary"><span class="material-symbols-outlined text-[22px]">spa</span></div><div class="flex flex-col"><span class="font-headline-sm text-headline-sm text-on-surface tracking-tight leading-none">Lumen</span><span class="font-label-sm text-label-sm text-on-surface-variant font-normal leading-none mt-1">Início</span></div></div><div class="relative flex items-center justify-center min-w-[44px] min-h-[44px]"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida/AEtjO1VFh_UIF0777aNKR7Y4IzRdMqf7CdEwD-IjuPoWj-DsAuEiE794T3ResLae1WCuqY2HQ5-f5KXogreltYWPpH2P4P1s3koI0g9u2b1WFdhdIGv5mLDAU7SlZhULBU6rZ5dD6bLumdxDCEDa6ETq6hHc9qPZ6p5aLn50QtIhKaFgdNSQ51zO4ZA5fsVQ5NYQsR0piqY08v9FdoHNPTnlmcWTYXnJv0hS-3Yd5BuQ5AZ-mJTNtA06fChzKyU"/><span class="absolute bottom-2 right-1.5 w-2.5 h-2.5 rounded-full bg-primary ring-2 ring-surface"></span></div></div></header><main class="flex flex-col relative w-full pt-16 pb-28 px-margin-mobile bg-surface flex-grow"><div class="flex flex-col w-full gap-space-lg">
+<!-- Ambient Organic Sphere Indicator (Inspiration Graphic) -->
+<div class="relative w-full overflow-hidden rounded-[28px] bg-gradient-to-b from-surface-container-low/90 to-surface-container/70 backdrop-blur-xl p-space-lg shadow-[0_12px_32px_-8px_rgba(99,83,157,0.08)]">
+<!-- Gentle backglow orbs -->
+<div class="absolute -top-12 -right-12 w-40 h-40 rounded-full bg-secondary-fixed/40 blur-2xl pointer-events-none"></div>
+<div class="absolute -bottom-10 -left-10 w-36 h-36 rounded-full bg-primary-fixed/30 blur-2xl pointer-events-none"></div>
+<div class="relative z-10 flex flex-col gap-space-md">
+<!-- Greeting & Top utility controls -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs px-space-sm py-1 rounded-full bg-surface-container-lowest/80 backdrop-blur-md shadow-sm">
+<span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-medium">Biorritmo Calmo</span>
+</div>
+<div class="flex items-center gap-space-xs">
+<!-- Quick Mode Toggle -->
+<button aria-label="Alternar tom sensorial" class="w-8 h-8 rounded-full bg-surface-container-lowest/70 backdrop-blur-md flex items-center justify-center text-on-surface-variant hover:text-primary transition-all active:scale-95 shadow-sm" id="themeToggleBtn" type="button">
+<span class="material-symbols-outlined text-[17px]">light_mode</span>
+</button>
+<!-- Quick Lang Toggle -->
+<button aria-label="Idioma" class="px-2.5 h-8 rounded-full bg-surface-container-lowest/70 backdrop-blur-md flex items-center justify-center text-on-surface font-label-sm text-label-sm font-semibold hover:text-primary transition-all active:scale-95 shadow-sm" type="button">
+            PT
+          </button>
+</div>
+</div>
+<!-- Welcome Message & Soft Mood Capsule -->
+<div class="flex items-center gap-space-md">
+<!-- SVG Inspired Ring from user image -->
+<div class="relative flex-shrink-0 w-14 h-14 rounded-full flex items-center justify-center shadow-[0_6px_20px_rgba(99,83,157,0.14)] p-1 bg-surface-container-lowest">
+<svg class="w-full h-full transform -rotate-90" viewbox="0 0 48 48">
+<defs>
+<lineargradient id="haloGrad" x1="0%" x2="100%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#1faf8a"></stop>
+<stop offset="45%" stop-color="#63539d"></stop>
+<stop offset="80%" stop-color="#ec7c4f"></stop>
+<stop offset="100%" stop-color="#bfadff"></stop>
+</lineargradient>
+</defs>
+<circle class="text-surface-container-high" cx="24" cy="24" fill="none" r="17" stroke="currentColor" stroke-width="7"></circle>
+<circle cx="24" cy="24" fill="none" r="17" stroke="url(#haloGrad)" stroke-dasharray="106.8" stroke-dashoffset="18" stroke-linecap="round" stroke-width="7"></circle>
+</svg>
+<div class="absolute inset-0 m-auto w-5 h-5 rounded-full bg-surface-container-lowest shadow-inner flex items-center justify-center">
+<div class="w-2.5 h-2.5 rounded-full bg-primary-container/80"></div>
+</div>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-space-xs">
+<span class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface font-semibold tracking-tight">Bom dia, Marcelo</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate">Sem pressa, um passo de cada vez. 🌤️</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Hero Quick Actions: 2-Column Responsive Glass Grid -->
+<div class="grid grid-cols-2 gap-space-md w-full">
+<!-- Action 1: Check-in Rápido -->
+<button class="group relative flex flex-col justify-between text-left p-space-md rounded-[22px] bg-primary-container text-on-primary shadow-[0_12px_28px_-6px_rgba(31,175,138,0.38)] active:scale-[0.98] transition-all overflow-hidden" type="button">
+<!-- Glow gradient accent inside -->
+<div class="absolute -right-4 -bottom-4 w-20 h-20 bg-primary-fixed/30 rounded-full blur-xl pointer-events-none group-hover:scale-125 transition-transform"></div>
+<div class="flex items-center justify-between w-full mb-space-md relative z-10">
+<div class="w-10 h-10 rounded-xl bg-surface-container-lowest/20 backdrop-blur-md flex items-center justify-center">
+<span class="material-symbols-outlined text-[24px] text-surface-bright" style="font-variation-settings: 'FILL' 1;">spa</span>
+</div>
+<span class="material-symbols-outlined text-[18px] opacity-70 group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
+</div>
+<div class="relative z-10 flex flex-col">
+<span class="font-label-lg text-label-lg font-semibold tracking-tight leading-snug">Check-in Rápido</span>
+<span class="font-label-sm text-label-sm opacity-90 mt-0.5 leading-tight">Leva ~10 segundos</span>
+</div>
+</button>
+<!-- Action 2: Des-Trava (Emergency Relief) -->
+<button class="group relative flex flex-col justify-between text-left p-space-md rounded-[22px] bg-tertiary-container text-on-tertiary shadow-[0_12px_28px_-6px_rgba(236,124,79,0.35)] active:scale-[0.98] transition-all overflow-hidden" type="button">
+<!-- Pulsing warm aura inside -->
+<div class="absolute -right-3 -top-3 w-16 h-16 bg-tertiary-fixed/35 rounded-full blur-lg pointer-events-none group-hover:scale-110 transition-transform"></div>
+<div class="flex items-center justify-between w-full mb-space-md relative z-10">
+<div class="w-10 h-10 rounded-xl bg-surface-container-lowest/25 backdrop-blur-md flex items-center justify-center">
+<span class="material-symbols-outlined text-[24px] text-surface-bright" style="font-variation-settings: 'FILL' 1;">bolt</span>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-surface-container-lowest/25 font-label-sm text-label-sm font-semibold tracking-wide">SOS</span>
+</div>
+<div class="relative z-10 flex flex-col">
+<span class="font-label-lg text-label-lg font-semibold tracking-tight leading-snug">Des-Trava</span>
+<span class="font-label-sm text-label-sm opacity-90 mt-0.5 leading-tight">Resgate anti-paralisia</span>
+</div>
+</button>
+</div>
+<!-- Card 1: Medicações & Janela de Eficácia -->
+<div class="flex flex-col w-full p-space-md rounded-[24px] bg-surface-container-lowest/80 backdrop-blur-xl shadow-[0_10px_28px_-8px_rgba(110,107,123,0.07)]">
+<div class="flex items-center justify-between mb-space-md">
+<div class="flex items-center gap-space-xs">
+<div class="w-8 h-8 rounded-lg bg-primary-fixed/40 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[19px]">pill</span>
+</div>
+<div>
+<span class="font-label-lg text-label-lg text-on-surface font-semibold block leading-none">Medicação &amp; Foco</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">2 de 3 doses tomadas hoje</span>
+</div>
+</div>
+<span class="px-2.5 py-1 rounded-full bg-primary-fixed/30 text-on-primary-fixed font-label-sm text-label-sm font-semibold">
+        Platô Ativo
+      </span>
+</div>
+<!-- Visual Therapeutic Window Timeline -->
+<div class="flex flex-col gap-space-xs p-space-sm rounded-xl bg-surface-container-low/70">
+<div class="flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm">
+<span class="flex items-center gap-1 font-medium text-on-surface">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+          Janela de Eficácia Sustentada
+        </span>
+<span class="font-semibold text-primary">2h 40m restantes</span>
+</div>
+<!-- Glowing horizontal plateau track -->
+<div class="relative w-full h-3 rounded-full bg-surface-container-high overflow-hidden my-1">
+<!-- Baseline gradient track -->
+<div class="absolute inset-y-0 left-0 w-[72%] rounded-full bg-gradient-to-r from-primary-container via-primary to-tertiary-container shadow-[0_0_12px_rgba(31,175,138,0.5)]"></div>
+<!-- Active indicator pulse pin -->
+<div class="absolute top-0 bottom-0 left-[68%] w-1.5 bg-surface-container-lowest rounded-full shadow-md"></div>
+</div>
+<div class="flex justify-between items-center text-on-surface-variant font-label-sm text-label-sm opacity-80 pt-0.5">
+<span>08:00 (Início)</span>
+<span class="font-medium text-on-surface">Pico Atual</span>
+<span>16:30 (Descida suave)</span>
+</div>
+</div>
+<div class="mt-space-sm flex items-center justify-between pt-space-xs">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Próxima dose: Melatonina 0.5mg</span>
+<span class="font-label-sm text-label-sm text-secondary font-semibold">21:30</span>
+</div>
+</div>
+<!-- Card 2: Rotina do Dia (Zero Guilt Architecture) -->
+<div class="flex flex-col w-full p-space-md rounded-[24px] bg-surface-container-lowest/80 backdrop-blur-xl shadow-[0_10px_28px_-8px_rgba(110,107,123,0.07)]">
+<div class="flex items-center justify-between mb-space-sm">
+<div class="flex items-center gap-space-xs">
+<div class="w-8 h-8 rounded-lg bg-secondary-fixed/50 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[19px]">center_focus_strong</span>
+</div>
+<span class="font-label-lg text-label-lg text-on-surface font-semibold">Âncora do Dia</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">1 prioridade clara</span>
+</div>
+<!-- The Non-Negotiable Gentle Anchor -->
+<div class="p-space-md rounded-xl bg-surface-container/60 mb-space-md">
+<div class="flex items-start gap-space-sm">
+<span class="material-symbols-outlined text-[22px] text-tertiary-container mt-0.5" style="font-variation-settings: 'FILL' 1;">stars</span>
+<div class="flex flex-col">
+<span class="font-body-md text-body-md text-on-surface font-semibold">Finalizar rascunho da proposta</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Apenas a estrutura dos tópicos já basta para hoje.</span>
+</div>
+</div>
+</div>
+<!-- Micro-Habits without punitive streaks -->
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between mb-1">
+<span class="font-label-md text-label-md text-on-surface font-semibold">Micro-rituais de cuidado</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">2 de 4</span>
+</div>
+<!-- Habit item 1: Done -->
+<div class="flex items-center justify-between p-2.5 rounded-lg bg-primary-fixed/20 text-on-surface">
+<div class="flex items-center gap-2.5">
+<div class="w-5 h-5 rounded-full bg-primary-container text-surface-bright flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-[14px]">check</span>
+</div>
+<span class="font-body-sm text-body-sm font-medium">Beber copo d'água ao acordar</span>
+</div>
+<span class="font-label-sm text-label-sm text-primary font-medium">Feito com leveza</span>
+</div>
+<!-- Habit item 2: Done -->
+<div class="flex items-center justify-between p-2.5 rounded-lg bg-primary-fixed/20 text-on-surface">
+<div class="flex items-center gap-2.5">
+<div class="w-5 h-5 rounded-full bg-primary-container text-surface-bright flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-[14px]">check</span>
+</div>
+<span class="font-body-sm text-body-sm font-medium">5 minutos de respiração ou luz do sol</span>
+</div>
+<span class="font-label-sm text-label-sm text-primary font-medium">Concluído</span>
+</div>
+<!-- Habit item 3: Gentle pending (no red/alert) -->
+<div class="flex items-center justify-between p-2.5 rounded-lg bg-surface-container-low/60 text-on-surface">
+<div class="flex items-center gap-2.5">
+<div class="w-5 h-5 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface-variant">
+<span class="w-1.5 h-1.5 rounded-full bg-on-surface-variant/40"></span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Alongar ombros após almoço</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant/70">Quando couber</span>
+</div>
+</div>
+<!-- Zero-Guilt Philosophy Banner -->
+<div class="mt-space-sm px-space-sm py-2 rounded-lg bg-surface-container-low/40 flex items-center gap-2">
+<span class="material-symbols-outlined text-[17px] text-secondary">sentiment_satisfied</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant italic leading-tight">
+        Você está no seu ritmo. Tudo bem se não fizer tudo hoje.
+      </p>
+</div>
+</div>
+<!-- Card 3: Sono & Recuperação (Apple Health Sync) -->
+<div class="flex flex-col w-full p-space-md rounded-[24px] bg-surface-container-lowest/80 backdrop-blur-xl shadow-[0_10px_28px_-8px_rgba(110,107,123,0.07)]">
+<div class="flex items-center justify-between mb-space-sm">
+<div class="flex items-center gap-space-xs">
+<div class="w-8 h-8 rounded-lg bg-secondary-container/40 flex items-center justify-center text-on-secondary-container">
+<span class="material-symbols-outlined text-[19px]">bedtime</span>
+</div>
+<div>
+<span class="font-label-lg text-label-lg text-on-surface font-semibold block leading-none">Sono &amp; Recuperação</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Apple Health sincronizado</span>
+</div>
+</div>
+<div class="px-2.5 py-1 rounded-full bg-secondary-fixed/60 text-on-secondary-fixed-variant font-label-sm text-label-sm font-semibold">
+        84% Bateria
+      </div>
+</div>
+<!-- Sleep metric overview -->
+<div class="grid grid-cols-2 gap-space-sm my-space-xs">
+<div class="flex flex-col p-space-sm rounded-xl bg-surface-container-low/70">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Tempo em repouso</span>
+<span class="font-headline-md text-headline-md text-on-surface font-semibold tracking-tight mt-0.5">7h 40m</span>
+<span class="font-label-sm text-label-sm text-primary font-medium mt-0.5">Dentro da janela ideal</span>
+</div>
+<div class="flex flex-col p-space-sm rounded-xl bg-surface-container-low/70">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Fase REM profunda</span>
+<div class="flex items-baseline gap-1 mt-0.5">
+<span class="font-headline-md text-headline-md text-secondary font-semibold tracking-tight">95 min</span>
+</div>
+<span class="font-label-sm text-label-sm text-secondary font-medium mt-0.5">+18% sobre a média</span>
+</div>
+</div>
+<!-- Micro sleep stage inline SVG bar -->
+<div class="flex flex-col gap-1 mt-space-xs">
+<div class="flex justify-between text-label-sm font-label-sm text-on-surface-variant">
+<span>Arquitetura da Noite</span>
+<span>Boa recarga neural</span>
+</div>
+<div class="flex h-2 w-full rounded-full overflow-hidden bg-surface-container-high">
+<div class="bg-surface-dim" style="width: 18%" title="Acordado"></div>
+<div class="bg-secondary-fixed" style="width: 48%" title="Sono Leve"></div>
+<div class="bg-secondary" style="width: 21%" title="Sono REM"></div>
+<div class="bg-on-secondary-container" style="width: 13%" title="Sono Profundo"></div>
+</div>
+</div>
+</div>
+<!-- Card 4: Padrões do Cérebro (Cognitive Insight in Calm Lavender) -->
+<div class="flex flex-col w-full p-space-md rounded-[24px] bg-secondary-fixed/30 backdrop-blur-xl shadow-[0_10px_28px_-8px_rgba(99,83,157,0.06)]">
+<div class="flex items-start gap-space-sm">
+<div class="w-9 h-9 rounded-xl bg-secondary text-on-secondary flex items-center justify-center flex-shrink-0 shadow-sm mt-0.5">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">psychology</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-lg text-label-lg text-on-surface font-semibold">Padrão Cognitivo Revelado</span>
+<span class="material-symbols-outlined text-[16px] text-secondary">auto_awesome</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1 leading-relaxed">
+          Identificamos que noites com sono REM acima de <span class="text-on-surface font-semibold">80 min</span> aumentaram seu foco sustentado no período da tarde em <span class="text-primary font-semibold">42%</span> esta semana.
+        </p>
+</div>
+</div>
+</div>
+<!-- Card 5: Feed de Entradas Recentes -->
+<div class="flex flex-col w-full p-space-md rounded-[24px] bg-surface-container-lowest/80 backdrop-blur-xl shadow-[0_10px_28px_-8px_rgba(110,107,123,0.07)]">
+<div class="flex items-center justify-between mb-space-sm">
+<div class="flex items-center gap-space-xs">
+<div class="w-8 h-8 rounded-lg bg-surface-container-high flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined text-[19px]">history</span>
+</div>
+<span class="font-label-lg text-label-lg text-on-surface font-semibold">Micro Check-ins Recentes</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Hoje</span>
+</div>
+<!-- Timeline sequence without punitive indicators -->
+<div class="flex flex-col gap-space-sm pt-space-xs">
+<!-- Item 1 -->
+<div class="flex items-center justify-between p-space-sm rounded-xl bg-surface-container-low/50">
+<div class="flex items-center gap-space-sm min-w-0">
+<span class="font-label-sm text-label-sm font-semibold text-secondary min-w-[42px]">14:20</span>
+<div class="w-2 h-2 rounded-full bg-primary-container"></div>
+<span class="font-body-sm text-body-sm text-on-surface font-medium truncate">Focado e sereno</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Em fluxo</span>
+</div>
+<!-- Item 2 -->
+<div class="flex items-center justify-between p-space-sm rounded-xl bg-surface-container-low/50">
+<div class="flex items-center gap-space-sm min-w-0">
+<span class="font-label-sm text-label-sm font-semibold text-secondary min-w-[42px]">11:00</span>
+<div class="w-2 h-2 rounded-full bg-tertiary-container"></div>
+<span class="font-body-sm text-body-sm text-on-surface font-medium truncate">Leve dispersão pós-reunião</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Normal</span>
+</div>
+<!-- Item 3 -->
+<div class="flex items-center justify-between p-space-sm rounded-xl bg-surface-container-low/50">
+<div class="flex items-center gap-space-sm min-w-0">
+<span class="font-label-sm text-label-sm font-semibold text-secondary min-w-[42px]">08:30</span>
+<div class="w-2 h-2 rounded-full bg-primary-container"></div>
+<span class="font-body-sm text-body-sm text-on-surface font-medium truncate">Energia estável</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Após café</span>
+</div>
+</div>
+</div>
+<!-- Soft Clinical Export / Therapeutic Support Shortcut -->
+<div class="flex items-center justify-center pt-space-xs pb-space-sm">
+<a class="inline-flex items-center gap-space-xs px-space-md py-2.5 rounded-full bg-surface-container-high/60 hover:bg-surface-container-high text-on-surface-variant font-label-md text-label-md transition-all active:scale-95 shadow-sm" href="#">
+<span class="material-symbols-outlined text-[17px] text-secondary">clinical_notes</span>
+<span>Ver Resumo para Consulta Terapêutica</span>
+<span class="material-symbols-outlined text-[15px]">arrow_outward</span>
+</a>
+</div>
+</div>
+<script>
+  // Simple micro-interaction for theme visual preview toggle
+  const themeToggle = document.getElementById('themeToggleBtn');
+  if (themeToggle) {
+    themeToggle.addEventListener('click', () => {
+      document.documentElement.classList.toggle('dark');
+      const icon = themeToggle.querySelector('.material-symbols-outlined');
+      if (document.documentElement.classList.contains('dark')) {
+        icon.textContent = 'dark_mode';
+      } else {
+        icon.textContent = 'light_mode';
+      }
+    });
+  }
+</script></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-surface/85 backdrop-blur-xl shadow-[0_-4px_24px_rgba(110,107,123,0.06)]" data-active-classes="text-primary font-label-lg"><div class="flex justify-between items-center h-20 px-gutter-mobile max-w-[420px] mx-auto"><a class="flex flex-col items-center justify-center min-w-[44px] min-h-[44px] flex-1 text-on-surface-variant hover:text-on-surface transition-colors" data-path="inicio" href="#"><span class="material-symbols-outlined text-[24px]">nest_clock_farsight_analog</span><span class="font-label-sm text-label-sm mt-1">Início</span></a><a class="flex flex-col items-center justify-center min-w-[44px] min-h-[44px] flex-1 text-on-surface-variant hover:text-on-surface transition-colors" data-path="rotina" href="#"><span class="material-symbols-outlined text-[24px]">wb_sunny</span><span class="font-label-sm text-label-sm mt-1">Rotina</span></a><div class="flex items-center justify-center flex-1"><a class="flex flex-col items-center justify-center -translate-y-3 min-w-[52px] min-h-[52px] w-[52px] h-[52px] rounded-full bg-primary-container text-on-primary shadow-[0_8px_20px_rgba(31,175,138,0.35)] active:scale-95 transition-transform" data-path="check-in" href="#"><span class="material-symbols-outlined text-[28px]">favorite</span></a></div><a class="flex flex-col items-center justify-center min-w-[44px] min-h-[44px] flex-1 text-on-surface-variant hover:text-on-surface transition-colors" data-path="remedios" href="#"><span class="material-symbols-outlined text-[24px]">pill</span><span class="font-label-sm text-label-sm mt-1">Remédios</span></a><a class="flex flex-col items-center justify-center min-w-[44px] min-h-[44px] flex-1 text-on-surface-variant hover:text-on-surface transition-colors" data-path="clinico" href="#"><span class="material-symbols-outlined text-[24px]">monitoring</span><span class="font-label-sm text-label-sm mt-1">Clínico</span></a></div></nav></body></html>

@@ -1,0 +1,1055 @@
+{
+  "@@locale": "en",
+  "appTitle": "Lumen - ADHD & Health",
+  "welcomeUser": "Hello, {name}",
+  "@welcomeUser": {
+    "description": "Greeting with user name",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "greetingMorning": "Good morning, {name}",
+  "@greetingMorning": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "greetingAfternoon": "Good afternoon, {name}",
+  "@greetingAfternoon": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "greetingEvening": "Good evening, {name}",
+  "@greetingEvening": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "noPressureSubtitle": "No rush. One step at a time.",
+  "biorhythmCalm": "Calm biorhythm",
+  "routineGuiltLine": "{done} of {total}. If you don't finish them today, continue tomorrow without guilt.",
+  "@routineGuiltLine": {
+    "placeholders": {
+      "done": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "sleepTotalLabel": "Time asleep",
+  "navHome": "Home",
+  "navRoutine": "Routine",
+  "navMeds": "Meds",
+  "hideIntimateNotes": "Hide private notes",
+  "navClinic": "Clinical",
+  "checkinDurationHint": "About 10 seconds",
+  "unstuckRescueHint": "Break the freeze",
+  "quickCheckinTitle": "Quick Check-in",
+  "quickCheckinSubtitle": "How is your mind feeling right now?",
+  "unstuckButton": "Unstuck",
+  "unstuckButtonSub": "Break the freeze",
+  "routineTitle": "Daily Routine & Feelings",
+  "routineSubtitle": "Daily anchor, morning mood and biological rhythm",
+  "routineAnchorLabel": "The Single Focus Anchor for Today",
+  "routineAnchorHint": "E.g.: Finish project draft without perfectionism pressure...",
+  "morningFeelingTitle": "How Your Mind Woke Up",
+  "microHabitsTitle": "Restorative Micro-Steps",
+  "waterAndMedsTitle": "Biological Self-Care",
+  "therapistNotesTitle": "Topics for My Therapist",
+  "saveRoutineButton": "Save Daily Routine",
+  "checkinModalTitle": "Micro Check-in (3s)",
+  "checkinModalSubtitle": "Zero judgment. Just where you are right now.",
+  "howAreYouFeeling": "How are you feeling overall?",
+  "mentalFocusState": "Your mental focus state:",
+  "energyBatteryState": "Energy battery level:",
+  "tookMedicationChip": "Took medication",
+  "sensoryOverloadChip": "Sensory overload",
+  "optionalNoteHint": "Optional quick note (e.g.: stuck on task X)...",
+  "saveCheckinButton": "Save Check-in",
+  "focusFocused": "Focused",
+  "focusHyperfocus": "Hyperfocus",
+  "focusScattered": "Scattered",
+  "focusParalyzed": "Stuck / Paralyzed",
+  "sleepCardTitle": "Sleep & Recovery",
+  "syncHealthButton": "Sync",
+  "totalSleepLabel": "of total sleep",
+  "stageDeep": "Deep",
+  "stageRem": "REM (Mind)",
+  "stageLight": "Light",
+  "stageAwake": "Awake",
+  "remDeficitAlert": "ADHD Alert: Reduced REM sleep. Your frustration tolerance might be lower today. Be gentle with yourself.",
+  "@remDeficitAlert": {
+    "description": "Clinical alert shown when REM sleep is below ideal"
+  },
+  "sleepNoDataTitle": "No sleep data found.",
+  "sleepNoDataHint": "Tap Sync to connect Apple Health and unlock your real sleep data.",
+  "healthSyncSheetTitle": "Sync with Apple Health",
+  "healthSyncSheetSubtitle": "Lumen exchanges data with Apple Health both ways — you stay in control of what is shared.",
+  "healthSyncReadTitle": "What we read from Apple Health",
+  "healthSyncReadBody": "Sleep, heart rate, HRV, steps, exercise, state of mind, time in daylight, environmental sound and medications/doses you choose to share — to correlate recovery, mood and overload.",
+  "@healthSyncReadBody": {
+    "description": "Explains which Health metrics Lumen reads"
+  },
+  "healthSyncWriteTitle": "What we send to Apple Health",
+  "healthSyncWriteBody": "Water, breathing/mindfulness pauses (iPhone) and emotional states you log in Lumen. Medication reminders and stock stay in Lumen only.",
+  "healthSyncMedsNote": "We read medications and doses you choose to share in Apple Health; reminders and stock stay in Lumen.",
+  "healthSyncSystemNote": "Next, the system will show the official Apple Health or Health Connect permission dialog.",
+  "healthSyncConfirmButton": "Connect and sync",
+  "healthSyncLaterButton": "Not now",
+  "healthSyncSuccessMessage": "Connected to Apple Health. Data synced.",
+  "healthSyncDeniedMessage": "Permission not granted. You can enable it in Settings → Health → Data Access & Devices.",
+  "healthSyncConnectedLabel": "Synced",
+  "medicationsCardTitle": "Medications & Reminders",
+  "medicationsCardSubtitle": "Daily dose tracking, efficacy curve and prescription safety",
+  "dosesTodayTitle": "Today's Doses",
+  "takenTodayAt": "Taken today at {time}",
+  "@takenTodayAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "snoozedUntilTime": "Reminder snoozed until {time}",
+  "@snoozedUntilTime": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "pendingScheduled": "Scheduled for {time}",
+  "@pendingScheduled": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "takeNowButton": "Take Now",
+  "snooze15mButton": "Snooze 15m",
+  "skipButton": "Skip",
+  "controlledRxAlert": "Controlled medication: few doses left. Request a refill with your doctor.",
+  "@controlledRxAlert": {
+    "description": "Warning when controlled Rx stock is low"
+  },
+  "newMedicationButton": "New Medication",
+  "unstuckSheetTitle": "Unstuck Assistant",
+  "unstuckSheetSubtitle": "Break executive dysfunction paralysis with zero shame.",
+  "startTimerButton": "Start 60s Without Pressure",
+  "finishUnstuckButton": "Complete & Return to Day",
+  "therapistHubTitle": "Therapist Hub",
+  "therapistHubSubtitle": "Send via WhatsApp, PDF, Visual Card or Plain Text",
+  "sendWhatsAppButton": "Open in WhatsApp",
+  "shareCardButton": "Share Image",
+  "exportPdfButton": "Preview & Export PDF",
+  "copyTextButton": "Copy Text",
+  "textCopiedMessage": "Text copied to clipboard!",
+  "languageSelectorTitle": "Select Language",
+  "systemDefault": "Automatic (System Default)",
+  "portuguese": "Português (Portuguese)",
+  "english": "English (US)",
+  "japanese": "日本語 (Japanese)",
+  "spanish": "Español (Spanish)",
+  "themeToggleTooltip": "Toggle theme (light / dark / system)",
+  "themeLight": "Light",
+  "themeDark": "Dark",
+  "themeSystem": "System",
+  "okButton": "OK",
+  "cancelButton": "Cancel",
+  "saveButton": "Save",
+  "confirmButton": "Confirm",
+  "errorWithDetails": "Error: {error}",
+  "@errorWithDetails": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoading": "Error loading: {error}",
+  "@errorLoading": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "dateFormatFullPattern": "EEEE, MMMM d",
+  "@dateFormatFullPattern": {
+    "description": "intl DateFormat pattern for full date on routine screen"
+  },
+  "homeNoMedsToday": "No meds for today. Tap to add one.",
+  "homeTakenTodayCount": "{taken} of {total} taken today",
+  "@homeTakenTodayCount": {
+    "placeholders": {
+      "taken": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "homePendingCount": "{count} pending",
+  "@homePendingCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "homeTherapistBlurb": "Stop trying to remember how the last 7 days went in session. Send via WhatsApp with 1 tap, share an image with charts, or generate a formal PDF.",
+  "@homeTherapistBlurb": {
+    "description": "Home card blurb for therapist export"
+  },
+  "homeBrainPatternsTitle": "Patterns of Your Brain",
+  "homeRecentEntriesTitle": "Recent Entries",
+  "homeNoEntriesYet": "No entries yet. Do your first check-in!",
+  "routineSavedSuccess": "Routine saved successfully!",
+  "routineAppBarTitle": "Routine & Feelings",
+  "routineCompassTitle": "Your Daily Compass",
+  "routineCompassSubtitle": "This space is 100% native to the app, working the same on iPhone and Android, with automatic biometric sync.",
+  "routineAnchorSubtitle": "To avoid opening 15 mental tabs and getting lost:",
+  "routineEmotionalStateTitle": "Emotional State",
+  "routineEmotionalStateSubtitle": "Same flow as Apple Health — also available on Android:",
+  "routineMicroHabitsSubtitle": "Add or remove steps — the list is yours alone:",
+  "removeTooltip": "Remove",
+  "microHabitHint": "E.g.: Walk 10 minutes",
+  "addMicroHabitButton": "Add micro-step",
+  "routineBioCareSubtitle": "Dehydration worsens ADHD distraction symptoms:",
+  "waterGlassesLabel": "Glasses of Water Drunk:",
+  "prescribedMedTakenLabel": "Prescribed Medication Taken",
+  "prescribedMedTakenHint": "Helps correlate focus with your therapist",
+  "therapistNotesSubtitle": "Note something that happened today so you don't forget in session:",
+  "therapistNotesHint": "E.g.: I had an overload crisis with construction noise and felt guilty...",
+  "microHabitSun": "Get sunlight for 5 minutes",
+  "microHabitWater": "Glass of water on waking",
+  "microHabitScreenPause": "Screen-free pause after lunch",
+  "microHabitStretch": "Stretch or take a deep breath",
+  "focusFocusedDesc": "Stable, fluid concentration",
+  "focusHyperfocusDesc": "Deep, intense immersion in something specific",
+  "focusScatteredDesc": "Mind jumping between many tabs/tasks",
+  "focusParalyzedDesc": "Executive paralysis, extreme difficulty starting",
+  "@focusParalyzedDesc": {
+    "description": "Clinical description of executive paralysis focus state"
+  },
+  "energyDrained": "Drained",
+  "energyDrainedDesc": "Social and physical battery at zero",
+  "energyLow": "Low",
+  "energyLowDesc": "Moderate tiredness",
+  "energyBalanced": "Balanced",
+  "energyBalancedDesc": "Enough energy for the day",
+  "energyEnergized": "High",
+  "energyEnergizedDesc": "Motivation and vigor present",
+  "energyHyper": "Hyperactive",
+  "energyHyperDesc": "Motor restlessness or racing mind",
+  "valenceVeryBad": "Very bad",
+  "valenceHeavy": "Heavy",
+  "valenceNeutral": "Neutral",
+  "valenceGood": "Good",
+  "valenceExcellent": "Excellent",
+  "valenceVeryDifficult": "Very difficult",
+  "valenceBom": "Good",
+  "checkinWordsOptional": "Words (optional)",
+  "searchEmotionHint": "Search emotion…",
+  "emotionsSelectedCount": "{count} selected",
+  "@emotionsSelectedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "checkinSavedSuccess": "Saved successfully! Taking care of you.",
+  "medicationsAppBarTitle": "Medications & Reminders",
+  "importFromHealthTooltip": "Import from Apple Health",
+  "importHealthUnavailable": "Medication import from Apple Health is not yet available on this iOS/SDK. Local entry still works.",
+  "importHealthCount": "{count} medication(s) imported from Apple Health.",
+  "@importHealthCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "importHealthNone": "No new medications to import.",
+  "registerMedicationTooltip": "Register Medication",
+  "medsGuiltFreeTitle": "Guilt-Free Adherence",
+  "medsGuiltFreeSubtitle": "Fight the \"did I take it?\" doubt, see your efficacy window, and get alerts before the controlled Rx runs out.",
+  "@medsGuiltFreeSubtitle": {
+    "description": "Medications screen hero subtitle"
+  },
+  "errorLoadingDoses": "Error loading doses: {error}",
+  "@errorLoadingDoses": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noMedsScheduledToday": "No medications scheduled for today.",
+  "registerFirstMedButton": "Register First Medication",
+  "medsStockSectionTitle": "Bottles & Prescription Stock",
+  "medsRxAlertRemaining": "Rx alert: only {count} capsules left",
+  "@medsRxAlertRemaining": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "medsStockCount": "Stock: {remaining} of {total} capsules",
+  "@medsStockCount": {
+    "placeholders": {
+      "remaining": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "capsulesCount": "{count} capsules",
+  "@capsulesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "controlledRxRemainingAlert": "Controlled Rx: only {count} doses left. Schedule with your doctor.",
+  "@controlledRxRemainingAlert": {
+    "description": "Per-medication controlled Rx low stock alert",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "medTakenRegisteredSnack": "{name} logged at {time}!",
+  "@medTakenRegisteredSnack": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "snooze15mSnack": "Reminder snoozed for 15 minutes!",
+  "skipDoseTooltip": "Skip dose today",
+  "skipDoseDialogTitle": "Skip dose today?",
+  "skipDoseDialogBody": "No guilt. Sometimes the day asks for a pause or you woke up late. This will be noted so your therapist understands your routine.",
+  "@skipDoseDialogBody": {
+    "description": "Skip dose confirmation dialog body"
+  },
+  "skipReasonVoluntary": "Paused voluntarily",
+  "defaultMedInstructions": "Take with water after a meal.",
+  "defaultMedInstructionsShort": "Take with water.",
+  "newMedicationSheetTitle": "New Medication",
+  "frequentSuggestionsLabel": "Frequent Suggestions:",
+  "medNameLabel": "Medication Name",
+  "medNameHint": "E.g.: Vyvanse",
+  "medDosageLabel": "Dosage",
+  "medDosageHint": "E.g.: 30mg",
+  "medReminderLabel": "Reminder: {time}",
+  "@medReminderLabel": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "medCapsulesInBottleLabel": "Capsules in Bottle",
+  "medInstructionsLabel": "Instructions / Care",
+  "medInstructionsHint": "E.g.: Take right after breakfast...",
+  "defaultDoseFallback": "1 dose",
+  "medRegisteredSuccess": "{name} registered successfully!",
+  "@medRegisteredSuccess": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "saveMedicationButton": "Save Medication",
+  "defaultInstructionsMorning": "Take in the morning after coffee.",
+  "efficacyWindowTitle": "Estimated Action Window ({hours} h)",
+  "@efficacyWindowTitle": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "efficacyPeakNow": "Peak Action Now",
+  "efficacyEnded": "Effect Ended",
+  "efficacyTakenAt": "Taken: {time}",
+  "@efficacyTakenAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "efficacyPeakRange": "Peak: {start} - {end}",
+  "@efficacyPeakRange": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "efficacyEndAt": "End (~{time})",
+  "@efficacyEndAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "efficacyAdhdTip": "ADHD tip: Late afternoon is a common rebound window (dopamine drop). Temporary irritability may occur. Go easy on demands.",
+  "@efficacyAdhdTip": {
+    "description": "Clinical tip about stimulant rebound window"
+  },
+  "medReminderChannelName": "Medication Reminders",
+  "medReminderChannelDesc": "Timely ADHD medication alerts without judgment",
+  "medSnoozeNotificationTitle": "⏰ Snoozed Reminder: {name}",
+  "@medSnoozeNotificationTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "medDoseReminderTitle": "Time for {name}",
+  "@medDoseReminderTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "medDoseReminderBody": "Take a breath and take it when you can.",
+  "notificationActionTaken": "Take",
+  "notificationActionSnooze": "Snooze",
+  "medSnoozeNotificationBody": "Your {minutes}-minute reminder is here. Take a breath and take it when you can.",
+  "@medSnoozeNotificationBody": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "unstuckStep1Title": "1. Quick Physical Reset",
+  "unstuckStep1Instruction": "Take 1 sip of water and drop your shoulders. Executive paralysis starts in the body.",
+  "unstuckStep1Action": "I drank water and breathed",
+  "unstuckStep2Title": "2. The Ridiculous Micro-Step",
+  "unstuckStep2Instruction": "Don't try to do the whole job. Just open the document or put the notebook on the desk. Starting for real can wait.",
+  "unstuckStep2Action": "Done — I just prepared the environment",
+  "unstuckStep3Title": "3. The 2-Minute Test",
+  "unstuckStep3Instruction": "Start the timer below and do ANYTHING for 60 to 120 seconds. If you want to stop after, you have full permission.",
+  "unstuckStep3Action": "Start micro focus block",
+  "unstuckTimerHint": "Just do a little bit...",
+  "unstuckCongratsSnack": "First step done. Stopping here is fine too.",
+  "recoveryCardTitle": "Recovery",
+  "recoveryCardSubtitle": "HRV, steps, daylight and ambient noise synced from Health.",
+  "recoveryReadError": "Could not read recovery signals.",
+  "recoveryNoData": "No data yet. Connect Health and use your watch/phone for a few days.",
+  "labelDaylight": "Daylight",
+  "labelAmbientNoise": "Amb. noise",
+  "labelHeadphoneNoise": "Headphones",
+  "labelHrv": "HRV",
+  "labelRestingHr": "Resting HR",
+  "labelSteps": "Steps",
+  "labelExercise": "Exercise",
+  "recoveryWeeklyHrv": "Weekly HRV ~ {value} ms",
+  "@recoveryWeeklyHrv": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "recoveryAvgSteps": "Avg steps ~ {value}/day",
+  "@recoveryAvgSteps": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "recoveryAvgLight": "Light ~ {value} min/day",
+  "@recoveryAvgLight": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "sleepScoreLabel": "Score: {score}/100",
+  "@sleepScoreLabel": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "sleepAvgNightHr": "Avg nighttime HR: {bpm} bpm",
+  "@sleepAvgNightHr": {
+    "placeholders": {
+      "bpm": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingSleep": "Error loading sleep: {error}",
+  "@errorLoadingSleep": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "healthSourceUnavailable": "Not available on this platform",
+  "healthSourceApple": "Apple Health (HealthKit)",
+  "healthSourceAndroid": "Health Connect / Samsung Health",
+  "insightCollectingTitle": "Collecting Patterns",
+  "insightCollectingDescHealth": "Keep logging your day. With 3–5 days of Apple Health data, your biological patterns will show up here.",
+  "@insightCollectingDescHealth": {
+    "description": "Empty-state insight when no Health/mood data yet"
+  },
+  "insightCollectingDescGeneric": "Keep logging your day. With 3–5 days of data, your biological patterns will show up here.",
+  "insightCollectingAdvice": "Try a quick micro check-in after lunch.",
+  "insightRemParalysisTitle": "REM Sleep & Task Paralysis",
+  "@insightRemParalysisTitle": {
+    "description": "Clinical correlation insight title"
+  },
+  "insightRemParalysisDesc": "In {percent}% of moments when you felt executive paralysis or exhaustion, your REM sleep the night before was below ideal (< 1h15m).",
+  "@insightRemParalysisDesc": {
+    "description": "REM deficit correlated with executive paralysis",
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "insightRemParalysisAdvice": "In ADHD, REM sleep regulates dopamine receptor sensitivity. On post-deficit days, reduce decisions and break tasks into tiny pieces.",
+  "@insightRemParalysisAdvice": {
+    "description": "Clinical advice after REM deficit"
+  },
+  "insightMentalFlowTitle": "Mental Flow Window",
+  "insightMentalFlowDesc": "Your best concentration and mood scores coincide with nights when you slept over 7 hours and woke without frequent interruptions.",
+  "insightMentalFlowAdvice": "Keeping a fixed wake time matters more for the ADHD circadian cycle than the exact bedtime.",
+  "insightSensoryTitle": "Stimulus Sensitivity",
+  "insightSensoryDesc": "You logged sensory overload on {count} recent occasions. Noisy environments or fast screens drain cognitive battery faster.",
+  "@insightSensoryDesc": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "insightSensoryAdvice": "Breaks with noise-cancelling headphones or 3 minutes of breathing help the brain reset.",
+  "insightHrvTitle": "HRV & Autonomic Overload",
+  "@insightHrvTitle": {
+    "description": "Clinical correlation: low HRV and hard days"
+  },
+  "insightHrvDesc": "On {percent}% of days with freeze, exhaustion, or words like overwhelmed/stressed, your HRV was low (< 40 ms).",
+  "@insightHrvDesc": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "insightHrvAdvice": "Treat those days as recovery: fewer decisions, more short breaks and hydration.",
+  "insightMovementTitle": "Movement & Mental Energy",
+  "insightMovementDesc": "On {percent}% of hard focus/energy days, you walked fewer than 4,000 steps.",
+  "@insightMovementDesc": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "insightMovementAdvice": "A short walk (even 10 minutes) often restores dopamine and reduces ADHD scatter.",
+  "insightDaylightTitle": "Daylight & Mood",
+  "insightDaylightDesc": "On {percent}% of lower-mood days, time in daylight was under 20 minutes.",
+  "@insightDaylightDesc": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "insightDaylightAdvice": "Morning natural light exposure helps circadian rhythm and mood regulation in ADHD.",
+  "insightNoiseTitle": "Ambient Noise & Overload",
+  "insightNoiseDesc": "In {percent}% of sensory overload reports, average ambient sound exposure was high (≥ 70 dB).",
+  "@insightNoiseDesc": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "insightNoiseAdvice": "Noise-cancelling headphones or quiet-space breaks help lower sensory load.",
+  "therapistExportHubTitle": "Clinical Send Hub",
+  "configureTherapistPhoneTooltip": "Configure Therapist Phone",
+  "errorLoadingData": "Error loading data: {error}",
+  "@errorLoadingData": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingMood": "Error loading mood: {error}",
+  "@errorLoadingMood": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "therapistSendHowTitle": "How do you want to send today?",
+  "therapistSendHowSubtitle": "Directly via WhatsApp, as a compact image, or as a full PDF document.",
+  "sendWhatsAppTitle": "Send via WhatsApp",
+  "sendWhatsAppSubtitle": "Ready message with sleep, freezes and weekly highlights.",
+  "textCopiedWhatsAppHint": "Text copied to clipboard! Paste it in your therapist's WhatsApp.",
+  "textCopiedSuccessShort": "Text copied successfully!",
+  "visualCardTitle": "Visual Summary Card",
+  "visualCardSubtitle": "High-res compact infographic for quick reading on the phone.",
+  "shareCardTitleTemplate": "Weekly Clinical Summary - {name} (Lumen)",
+  "@shareCardTitleTemplate": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "shareCardImageFailed": "Could not generate the image right now.",
+  "pdfReportTitle": "Clinical PDF Report",
+  "pdfReportSubtitle": "Full document for records, printing or formal send.",
+  "cardPreviewTitle": "Card Preview",
+  "exportablePngBadge": "Exportable as PNG",
+  "therapistPhoneDialogTitle": "Therapist WhatsApp",
+  "therapistPhoneDialogBody": "Save the number (with area code) so the send button opens her chat directly:",
+  "therapistPhoneHint": "+1 555 123-4567",
+  "phoneSavedSuccess": "Number saved successfully!",
+  "therapistReportAppBarTitle": "Therapist Report",
+  "privacyInfoTooltip": "Privacy Information",
+  "privacyDialogTitle": "Privacy & Security",
+  "privacyDialogBody": "This report is generated 100% on your device. No health data or personal logs are sent to external servers without your consent. You choose when and with whom to share.",
+  "@privacyDialogBody": {
+    "description": "On-device privacy assurance for clinical report"
+  },
+  "understoodButton": "Got it",
+  "pdfFileName": "ADHD_Clinical_Report_Lumen.pdf",
+  "compilingMetricsMessage": "Compiling sleep and mood metrics...",
+  "shareCardSubject": "ADHD Clinical Summary (Lumen)",
+  "weeklyCardHeader": "LUMEN • CLINICAL SUMMARY",
+  "weeklyCardLast7Days": "Last 7 days",
+  "weeklyCardSubtitle": "Sleep Tracking (Apple Health) & Focus (ADHD)",
+  "weeklyCardAvgSleep": "Avg Sleep",
+  "weeklyCardNightsUnder6h": "{count} nights < 6h",
+  "@weeklyCardNightsUnder6h": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "weeklyCardParalysis": "Executive Paralysis",
+  "weeklyCardReportsCount": "{count} reports",
+  "@weeklyCardReportsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "weeklyCardStuckMoments": "Stuck moments",
+  "weeklyCardFluidFocus": "Fluid Focus",
+  "weeklyCardGoodConcentration": "Good concentration",
+  "weeklyCardSyncedFooter": "Synced with Apple Health & Lumen",
+  "weeklyCardPersonalUse": "Personal Clinical Use",
+  "pdfHeaderTitle": "LUMEN - THERAPEUTIC CLINICAL SUMMARY",
+  "pdfHeaderSubtitle": "Sleep, Focus & Mood Tracking (ADHD)",
+  "pdfPatientPeriod": "Patient: {name}  |  Period: Last {days} days",
+  "@pdfPatientPeriod": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "pdfIssuedAt": "Issued: {date}",
+  "@pdfIssuedAt": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "pdfSourceLine": "Source: Apple Health / Lumen App",
+  "pdfSection1Sleep": "1. SLEEP BIOMETRICS (Apple Health)",
+  "pdfAvgSleepTitle": "Avg sleep",
+  "pdfAvgSleepValue": "{hours}h / night",
+  "@pdfAvgSleepValue": {
+    "placeholders": {
+      "hours": {
+        "type": "String"
+      }
+    }
+  },
+  "pdfDeficitNights": "{count} of {total} nights in deficit (<6h)",
+  "@pdfDeficitNights": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "pdfAvgRemTitle": "Avg REM",
+  "pdfRemDeficitAlert": "REM deficit alert",
+  "pdfRemWithinExpected": "Within expected range",
+  "pdfColDate": "Date",
+  "pdfColBedtime": "Bedtime",
+  "pdfColWake": "Wake Time",
+  "pdfColTotal": "Total Duration",
+  "pdfColRem": "REM Sleep",
+  "pdfColDeep": "Deep",
+  "pdfColScore": "Score",
+  "pdfSection1bRecovery": "1b. OBJECTIVE RECOVERY SIGNALS",
+  "pdfHrvAvgTitle": "Avg HRV",
+  "pdfHrvSubtitle": "Heart rate variability",
+  "pdfRestingHrTitle": "Resting HR",
+  "pdfPeriodAverage": "Period average",
+  "pdfStepsPerDayTitle": "Steps/day",
+  "pdfExerciseTitle": "Exercise",
+  "pdfDailyAverage": "Daily average",
+  "pdfDaylightTitle": "Daylight",
+  "pdfNoiseTitle": "Ambient noise",
+  "pdfSomFromAppleHealth": "Includes {count} State of Mind record(s) imported from Apple Health.",
+  "@pdfSomFromAppleHealth": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pdfSection2Executive": "2. EXECUTIVE FUNCTIONING & REPORTED MOOD",
+  "pdfStatParalyzed": "Stuck / Paralysis",
+  "pdfStatScattered": "Scattered / Restless",
+  "pdfStatFocused": "Stable Focus",
+  "pdfStatHyperfocus": "Intense Hyperfocus",
+  "pdfStatSensory": "Sensory Overload",
+  "pdfReportsLabel": "{count} reports",
+  "@pdfReportsLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pdfTimesLabel": "{count} times",
+  "@pdfTimesLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pdfTopEmotionWords": "Most frequent emotion words (State of Mind):",
+  "pdfMedicationTaken": "Medication taken: {taken} of {total} entries",
+  "@pdfMedicationTaken": {
+    "placeholders": {
+      "taken": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "pdfSection3Correlations": "3. PHYSIOLOGICAL CORRELATIONS",
+  "pdfClinicalSuggestion": "Clinical Suggestion: {advice}",
+  "@pdfClinicalSuggestion": {
+    "placeholders": {
+      "advice": {
+        "type": "String"
+      }
+    }
+  },
+  "pdfSection4Triggers": "4. PATIENT-REPORTED LOGS & TRIGGERS",
+  "pdfEntryLine": "{date} at {time} | Focus: {focus} | Mood: {mood}{labels}",
+  "@pdfEntryLine": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      },
+      "focus": {
+        "type": "String"
+      },
+      "mood": {
+        "type": "String"
+      },
+      "labels": {
+        "type": "String"
+      }
+    }
+  },
+  "pdfFooterDisclaimer": "Document generated by the Lumen app. Biometric data is synced via Apple Health / Health Connect and does not replace in-person diagnostic evaluation.",
+  "@pdfFooterDisclaimer": {
+    "description": "Legal/clinical disclaimer on PDF footer"
+  },
+  "waWeeklyTitle": "*WEEKLY CLINICAL SUMMARY - {name}*",
+  "@waWeeklyTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "waPeriod": "Period: {start} to {end}",
+  "@waPeriod": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "waGeneratedBy": "Generated by Lumen app (Health & ADHD)",
+  "waSectionSleep": "*SLEEP BIOMETRICS (Apple Health):*",
+  "waAvgSleep": "- Average: *{hours}h* per night",
+  "@waAvgSleep": {
+    "placeholders": {
+      "hours": {
+        "type": "String"
+      }
+    }
+  },
+  "waDeficitNights": "- Deficit nights (<6h): *{count}* of {total} nights",
+  "@waDeficitNights": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "waAvgRemAlert": "- Avg REM sleep: *{hours}h* (deficit alert)",
+  "@waAvgRemAlert": {
+    "placeholders": {
+      "hours": {
+        "type": "String"
+      }
+    }
+  },
+  "waAvgRemOk": "- Avg REM sleep: *{hours}h* (adequate)",
+  "@waAvgRemOk": {
+    "placeholders": {
+      "hours": {
+        "type": "String"
+      }
+    }
+  },
+  "waSectionRecovery": "*OBJECTIVE SIGNALS (Recovery):*",
+  "waHrvAvg": "- Avg HRV: *{value} ms*",
+  "@waHrvAvg": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "waRestingHrAvg": "- Avg resting HR: *{value} bpm*",
+  "@waRestingHrAvg": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "waStepsAvg": "- Avg steps/day: *{value}*",
+  "@waStepsAvg": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "waExerciseAvg": "- Avg exercise: *{value} min/day*",
+  "@waExerciseAvg": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "waDaylightAvg": "- Avg daylight: *{value} min/day*",
+  "@waDaylightAvg": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "waNoiseAvg": "- Avg ambient noise: *{value} dB*",
+  "@waNoiseAvg": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "waSomFromAppleHealth": "- State of Mind: *{count}* day(s) imported from Apple Health",
+  "@waSomFromAppleHealth": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "waSectionExecutive": "*EXECUTIVE FUNCTIONING & MOOD:*",
+  "waParalysisCount": "- Paralysis/Stuck: *{count} reports*",
+  "@waParalysisCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "waScatteredCount": "- Scatter/Restlessness: *{count} reports*",
+  "@waScatteredCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "waFocusedCount": "- Fluid Focus: *{count} reports*",
+  "@waFocusedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "waHyperfocusCount": "- Intense Hyperfocus: *{count} reports*",
+  "@waHyperfocusCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "waSensoryCount": "- Sensory Overload: *{count} times*",
+  "@waSensoryCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "waMedTaken": "- Medication Taken: *{taken} of {total} entries*",
+  "@waMedTaken": {
+    "placeholders": {
+      "taken": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "waTopWordsHeader": "- Most frequent words:",
+  "waWordCountLine": "  · {label} ({count}x)",
+  "@waWordCountLine": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "waSectionPatterns": "*PATTERNS OBSERVED FOR SESSION:*",
+  "waInsightLine": "- *{title}*: {description}",
+  "@waInsightLine": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "description": {
+        "type": "String"
+      }
+    }
+  },
+  "waSectionHighlights": "*WEEKLY HIGHLIGHTS & TRIGGERS:*",
+  "waNoteLine": "- \"{note}\" ({date} - {focus})",
+  "@waNoteLine": {
+    "placeholders": {
+      "note": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      },
+      "focus": {
+        "type": "String"
+      }
+    }
+  },
+  "waFooter": "_Sent for discussion in the therapy session._",
+  "somKindTitle": "Entry type",
+  "somKindMomentary": "How I feel now",
+  "somKindDaily": "Overall mood of the day",
+  "somFeelingLabel": "How you feel: {caption}",
+  "@somFeelingLabel": {
+    "placeholders": {
+      "caption": {
+        "type": "String"
+      }
+    }
+  },
+  "somValenceVeryUnpleasant": "Very unpleasant",
+  "somValenceUnpleasant": "Unpleasant",
+  "somValenceNeutral": "Neutral",
+  "somValencePleasant": "Pleasant",
+  "somValenceVeryPleasant": "Very pleasant",
+  "somWordsPrompt": "Words that describe how you feel",
+  "somAssociationsPrompt": "What affects you most right now",
+  "showAllLabels": "Show all",
+  "showFewerLabels": "Show less",
+  "medNameRequiredError": "Enter the medication name",
+  "phoneInvalidError": "Enter a valid phone number (min. 10 digits)",
+  "habitEmptyError": "Enter a micro-step before adding",
+  "habitDuplicateError": "That micro-step is already on the list",
+  "deleteMedConfirmTitle": "Remove medication?",
+  "deleteMedConfirmBody": "This removes {name} from your list. This cannot be undone.",
+  "@deleteMedConfirmBody": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteMedConfirmButton": "Remove"
+}

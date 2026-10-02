@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_stack" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{width:100vw;margin:0;padding:0;background-color:#fcf8ff;}body{overscroll-behavior:none;-webkit-tap-highlight-color:transparent;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "surface-tint": "#006c53", "surface-bright": "#fcf8ff", "surface-container-high": "#ebe5f8", "tertiary-container": "#ec7c4f", "on-tertiary-fixed-variant": "#7f2b02", "error-container": "#ffdad6", "primary-fixed": "#7bf9cf", "tertiary-fixed-dim": "#ffb59a", "primary-fixed-dim": "#5cdcb4", "on-background": "#1c1a27", "tertiary": "#9f4119", "on-primary-fixed": "#002117", "on-primary-fixed-variant": "#00513e", "on-tertiary": "#ffffff", "surface": "#fcf8ff", "primary-container": "#1faf8a", "on-secondary": "#ffffff", "surface-container-highest": "#e5e0f3", "on-secondary-container": "#4d3d86", "surface-container-lowest": "#ffffff", "inverse-primary": "#5cdcb4", "on-surface": "#1c1a27", "error": "#ba1a1a", "background": "#fcf8ff", "outline": "#6d7a74", "secondary-fixed-dim": "#ccbeff", "inverse-surface": "#312f3d", "secondary-fixed": "#e7deff", "on-surface-variant": "#3d4a44", "surface-container": "#f0ebfe", "on-error-container": "#93000a", "inverse-on-surface": "#f3eeff", "surface-container-low": "#f6f1ff", "secondary-container": "#bfadff", "primary": "#006c53", "on-secondary-fixed": "#1e0856", "on-error": "#ffffff", "on-primary-container": "#003b2c", "outline-variant": "bccac2", "on-secondary-fixed-variant": "#4a3b83", "surface-dim": "#dcd7ea", "on-tertiary-container": "#5f1d00", "on-tertiary-fixed": "#380d00", "tertiary-fixed": "#ffdbce", "surface-variant": "#e5e0f3", "on-primary": "#ffffff", "secondary": "#63539d" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "margin": "1.5rem", "space-xl": "2rem", "gutter-mobile": "0.75rem", "space-lg": "1.5rem", "gutter": "1rem", "margin-mobile": "1.25rem", "space-md": "1rem", "space-sm": "0.5rem", "space-xs": "0.25rem" }, "fontFamily": { "body-md": ["Inter"], "label-sm": ["Inter"], "headline-sm": ["Inter"], "headline-lg": ["Inter"], "headline-md": ["Inter"], "display-lg": ["Inter"], "label-md": ["Inter"], "body-lg": ["Inter"], "body-sm": ["Inter"], "label-lg": ["Inter"], "headline-lg-mobile": ["Inter"] }, "fontSize": { "body-md": ["15px", { "lineHeight": "22px", "letterSpacing": "0.005em", "fontWeight": "400" }], "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.02em", "fontWeight": "500" }], "headline-sm": ["18px", { "lineHeight": "24px", "letterSpacing": "-0.005em", "fontWeight": "600" }], "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.015em", "fontWeight": "600" }], "headline-md": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "display-lg": ["34px", { "lineHeight": "42px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500" }], "body-lg": ["17px", { "lineHeight": "26px", "letterSpacing": "0em", "fontWeight": "400" }], "body-sm": ["13px", { "lineHeight": "18px", "letterSpacing": "0.01em", "fontWeight": "400" }], "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }], "headline-lg-mobile": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }] } } } };</script><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface font-body-md text-on-surface flex flex-col min-h-screen selection:bg-primary-fixed selection:text-on-primary-fixed"><header class="fixed top-0 w-full z-50 pt-safe bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-margin-mobile flex items-center justify-between"><div class="flex items-center gap-space-sm"><button aria-label="Voltar" class="min-w-[44px] min-h-[44px] -ml-2 flex items-center justify-center rounded-full text-on-surface hover:bg-surface-container active:scale-95 transition-transform" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">arrow_back_ios_new</span></button><h1 class="font-headline-sm text-headline-sm text-on-surface tracking-tight">Sessão Descongelar</h1></div><div class="flex items-center min-w-[44px] min-h-[44px] justify-center"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida/AEtjO1VFh_UIF0777aNKR7Y4IzRdMqf7CdEwD-IjuPoWj-DsAuEiE794T3ResLae1WCuqY2HQ5-f5KXogreltYWPpH2P4P1s3koI0g9u2b1WFdhdIGv5mLDAU7SlZhULBU6rZ5dD6bLumdxDCEDa6ETq6hHc9qPZ6p5aLn50QtIhKaFgdNSQ51zO4ZA5fsVQ5NYQsR0piqY08v9FdoHNPTnlmcWTYXnJv0hS-3Yd5BuQ5AZ-mJTNtA06fChzKyU"/></div></div></header><main class="flex flex-col relative w-full pt-16 pb-safe px-margin-mobile bg-surface flex-grow"><div class="flex flex-col w-full pb-10">
+<div class="relative w-full overflow-hidden rounded-3xl bg-inverse-surface text-inverse-on-surface shadow-2xl p-6 md:p-8 transition-all duration-500">
+<div class="absolute -top-24 -left-20 w-72 h-72 rounded-full bg-tertiary-container/20 blur-3xl pointer-events-none"></div>
+<div class="absolute top-1/3 -right-24 w-80 h-80 rounded-full bg-secondary-container/20 blur-3xl pointer-events-none"></div>
+<div class="absolute -bottom-20 left-1/4 w-72 h-72 rounded-full bg-primary-fixed-dim/15 blur-3xl pointer-events-none"></div>
+<div class="relative z-10 flex items-center justify-between mb-6">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container-highest/20 backdrop-blur-md">
+<span class="w-2 h-2 rounded-full bg-primary-fixed-dim animate-pulse"></span>
+<span class="font-label-sm text-label-sm text-surface-container-high tracking-wider uppercase">Espaço Seguro</span>
+</div>
+<button class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container-highest/20 hover:bg-surface-container-highest/30 active:scale-95 transition-all text-surface-container-high font-label-md text-label-md" onclick="history.back()">
+<span class="material-symbols-outlined text-[16px]">close</span>
+<span>Sair</span>
+</button>
+</div>
+<div class="relative z-10 space-y-2 mb-8">
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-surface-container-lowest font-bold tracking-tight">
+        Respire. Você está seguro.
+      </h2>
+<p class="font-body-md text-body-md text-surface-dim leading-relaxed max-w-md">
+        A paralisia do TDAH não é preguiça. Vamos dar um micro-passo juntos de cada vez, sem cobrança e no seu tempo.
+      </p>
+</div>
+<div class="relative z-10 flex items-center justify-between gap-2 p-1.5 rounded-2xl bg-surface-container-highest/15 backdrop-blur-md mb-8">
+<div class="flex-1 py-1.5 px-2 rounded-xl text-center font-label-sm text-label-sm transition-all duration-300 bg-tertiary-container text-on-tertiary font-semibold shadow-sm" id="step-pill-1">
+        1. Corpo
+      </div>
+<div class="flex-1 py-1.5 px-2 rounded-xl text-center font-label-sm text-label-sm transition-all duration-300 text-surface-dim" id="step-pill-2">
+        2. Palavra
+      </div>
+<div class="flex-1 py-1.5 px-2 rounded-xl text-center font-label-sm text-label-sm transition-all duration-300 text-surface-dim" id="step-pill-3">
+        3. 60s
+      </div>
+</div>
+<div class="relative z-10 space-y-6">
+<div class="relative rounded-2xl p-5 bg-surface-container-highest/20 backdrop-blur-xl shadow-lg transition-all duration-500" id="step-card-1">
+<div class="flex items-start gap-3.5 mb-4">
+<div class="w-10 h-10 rounded-2xl bg-tertiary-container/25 flex items-center justify-center text-tertiary-fixed shrink-0">
+<span class="material-symbols-outlined text-[22px]">water_drop</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-tertiary-fixed uppercase tracking-wider font-semibold">Micro-ação física</span>
+<p class="font-headline-sm text-headline-sm text-surface-container-lowest mt-0.5">
+              1. Beba um gole de água ou lave o rosto.
+            </p>
+<p class="font-body-sm text-body-sm text-surface-dim mt-1">
+              Isso envia um sinal gentil de reinicialização para o sistema nervoso.
+            </p>
+</div>
+</div>
+<button class="w-full py-3.5 px-5 rounded-xl bg-tertiary-container hover:bg-tertiary-container/90 active:scale-[0.98] transition-all duration-200 text-on-tertiary font-label-lg text-label-lg flex items-center justify-center gap-2 shadow-lg shadow-tertiary-container/20" id="step-1-btn" onclick="completeStep(1)">
+<span class="material-symbols-outlined text-[20px]">check</span>
+<span>Feito, estou pronto</span>
+</button>
+</div>
+<div class="relative rounded-2xl p-5 bg-surface-container-highest/10 backdrop-blur-xl shadow-lg transition-all duration-500 opacity-60" id="step-card-2">
+<div class="flex items-start gap-3.5 mb-4">
+<div class="w-10 h-10 rounded-2xl bg-secondary-container/20 flex items-center justify-center text-secondary-fixed shrink-0">
+<span class="material-symbols-outlined text-[22px]">edit_note</span>
+</div>
+<div class="flex-1">
+<span class="font-label-sm text-label-sm text-secondary-fixed uppercase tracking-wider font-semibold">Definição mínima</span>
+<p class="font-headline-sm text-headline-sm text-surface-container-lowest mt-0.5">
+              2. Qual tarefa está travando você?
+            </p>
+<p class="font-body-sm text-body-sm text-surface-dim mt-1">
+              Escreva apenas uma única palavra. Nada mais.
+            </p>
+</div>
+</div>
+<div class="flex gap-2">
+<input class="flex-1 px-4 py-3 rounded-xl bg-surface-container-highest/20 text-surface-container-lowest placeholder-surface-dim font-body-md text-body-md focus:outline-none focus:bg-surface-container-highest/30 transition-all" id="task-input" maxlength="20" placeholder="Ex: E-mail, Louça, Planilha" type="text"/>
+<button class="px-5 py-3 rounded-xl bg-secondary hover:bg-secondary/90 active:scale-[0.98] transition-all duration-200 text-on-secondary font-label-lg text-label-lg flex items-center gap-1 shrink-0 shadow-md" id="step-2-btn" onclick="completeStep(2)">
+<span>Pronto</span>
+<span class="material-symbols-outlined text-[18px]">done</span>
+</button>
+</div>
+</div>
+<div class="relative rounded-2xl p-5 bg-surface-container-highest/10 backdrop-blur-xl shadow-lg transition-all duration-500 opacity-60" id="step-card-3">
+<div class="flex items-start gap-3.5 mb-4">
+<div class="w-10 h-10 rounded-2xl bg-primary-container/20 flex items-center justify-center text-primary-fixed shrink-0">
+<span class="material-symbols-outlined text-[22px]">hourglass_top</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-primary-fixed uppercase tracking-wider font-semibold">Sem compromisso</span>
+<p class="font-headline-sm text-headline-sm text-surface-container-lowest mt-0.5">
+              3. Apenas 60 segundos de ação suave
+            </p>
+</div>
+</div>
+<div class="flex flex-col items-center justify-center my-6">
+<div class="relative w-44 h-44 flex items-center justify-center">
+<div class="absolute inset-0 rounded-full bg-gradient-to-tr from-primary-container via-secondary to-tertiary-container opacity-40 blur-xl transition-all duration-1000 scale-95" id="glow-orb"></div>
+<svg class="w-full h-full transform -rotate-90" viewbox="0 0 160 160">
+<circle class="text-surface-container-highest/20" cx="80" cy="80" fill="none" r="70" stroke="currentColor" stroke-width="8"></circle>
+<circle class="transition-all duration-1000" cx="80" cy="80" fill="none" id="timer-ring" r="70" stroke="url(#timerGrad)" stroke-dasharray="440" stroke-dashoffset="0" stroke-linecap="round" stroke-width="8"></circle>
+<defs>
+<lineargradient id="timerGrad" x1="0%" x2="100%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#1faf8a"></stop>
+<stop offset="50%" stop-color="#bfadff"></stop>
+<stop offset="100%" stop-color="#ec7c4f"></stop>
+</lineargradient>
+</defs>
+</svg>
+<div class="absolute flex flex-col items-center justify-center text-center">
+<span class="font-label-sm text-label-sm text-primary-fixed-dim uppercase tracking-wider max-w-[110px] truncate" id="target-task-label">
+                Inércia zero
+              </span>
+<span class="font-display-lg text-display-lg font-bold text-surface-container-lowest tracking-tight" id="timer-display">
+                01:00
+              </span>
+<span class="font-label-sm text-label-sm text-surface-dim" id="timer-status">
+                pausado
+              </span>
+</div>
+</div>
+<p class="font-body-sm text-body-sm text-surface-dim text-center mt-4 max-w-xs leading-relaxed">
+            Se depois desse minuto você quiser parar, está tudo bem. O objetivo é apenas quebrar a inércia estática.
+          </p>
+</div>
+<button class="w-full py-4 px-6 rounded-2xl bg-primary-container hover:bg-primary-container/90 active:scale-[0.98] transition-all duration-300 text-on-primary font-label-lg text-label-lg font-bold flex items-center justify-center gap-2 shadow-xl shadow-primary-container/25" id="timer-start-btn" onclick="toggleTimer()">
+<span class="material-symbols-outlined text-[22px]" id="timer-icon">play_arrow</span>
+<span id="timer-btn-text">Iniciar 60s Sem Compromisso</span>
+</button>
+</div>
+</div>
+<div class="relative z-10 mt-8 pt-6 flex items-center gap-3 bg-surface-container-highest/10 rounded-2xl p-4 backdrop-blur-md">
+<div class="w-8 h-8 rounded-full bg-primary-fixed-dim/20 flex items-center justify-center text-primary-fixed shrink-0">
+<span class="material-symbols-outlined text-[18px]">favorite</span>
+</div>
+<p class="font-body-sm text-body-sm text-surface-container-high leading-snug">
+        Lembre-se: seu valor não é medido pela sua produtividade hoje.
+      </p>
+</div>
+</div>
+<div class="mt-4 px-2 flex items-center justify-center gap-2 text-on-surface-variant font-label-sm text-label-sm text-center">
+<span class="material-symbols-outlined text-[16px] text-primary">spa</span>
+<span>Zero culpa • ritmo neurológico seguro • acolhimento contínuo</span>
+</div>
+</div>
+<script>
+  let currentStep = 1;
+  let timerInterval = null;
+  let timeLeft = 60;
+  let isTimerRunning = false;
+  let chosenWord = "";
+
+  function completeStep(stepNumber) {
+    if (stepNumber === 1) {
+      currentStep = 2;
+      const card1 = document.getElementById('step-card-1');
+      const card2 = document.getElementById('step-card-2');
+      const pill1 = document.getElementById('step-pill-1');
+      const pill2 = document.getElementById('step-pill-2');
+      const btn1 = document.getElementById('step-1-btn');
+
+      card1.classList.add('opacity-70');
+      btn1.innerHTML = '<span class="material-symbols-outlined text-[20px]">task_alt</span> Concluído';
+      btn1.classList.remove('bg-tertiary-container');
+      btn1.classList.add('bg-surface-container-highest/30', 'text-surface-container-high');
+
+      card2.classList.remove('opacity-60');
+      card2.classList.add('opacity-100', 'bg-surface-container-highest/20');
+
+      pill1.classList.remove('bg-tertiary-container', 'text-on-tertiary', 'font-semibold');
+      pill1.classList.add('text-surface-dim');
+
+      pill2.classList.add('bg-secondary', 'text-on-secondary', 'font-semibold');
+      pill2.classList.remove('text-surface-dim');
+
+      const input = document.getElementById('task-input');
+      input.focus();
+    } else if (stepNumber === 2) {
+      const input = document.getElementById('task-input');
+      chosenWord = input.value.trim() || 'Minha tarefa';
+      currentStep = 3;
+
+      const card2 = document.getElementById('step-card-2');
+      const card3 = document.getElementById('step-card-3');
+      const pill2 = document.getElementById('step-pill-2');
+      const pill3 = document.getElementById('step-pill-3');
+      const btn2 = document.getElementById('step-2-btn');
+      const label = document.getElementById('target-task-label');
+
+      label.textContent = chosenWord;
+
+      card2.classList.add('opacity-70');
+      btn2.innerHTML = '<span class="material-symbols-outlined text-[18px]">task_alt</span>';
+      btn2.classList.remove('bg-secondary');
+      btn2.classList.add('bg-surface-container-highest/30', 'text-surface-container-high');
+      input.disabled = true;
+
+      card3.classList.remove('opacity-60');
+      card3.classList.add('opacity-100', 'bg-surface-container-highest/20');
+
+      pill2.classList.remove('bg-secondary', 'text-on-secondary', 'font-semibold');
+      pill2.classList.add('text-surface-dim');
+
+      pill3.classList.add('bg-primary-container', 'text-on-primary', 'font-semibold');
+      pill3.classList.remove('text-surface-dim');
+    }
+  }
+
+  function toggleTimer() {
+    const btn = document.getElementById('timer-start-btn');
+    const btnText = document.getElementById('timer-btn-text');
+    const icon = document.getElementById('timer-icon');
+    const orb = document.getElementById('glow-orb');
+    const status = document.getElementById('timer-status');
+    const ring = document.getElementById('timer-ring');
+    const display = document.getElementById('timer-display');
+
+    if (isTimerRunning) {
+      clearInterval(timerInterval);
+      isTimerRunning = false;
+      btnText.textContent = 'Retomar 60s';
+      icon.textContent = 'play_arrow';
+      status.textContent = 'pausado';
+      orb.classList.remove('scale-110', 'opacity-70');
+      orb.classList.add('scale-95', 'opacity-40');
+      return;
+    }
+
+    isTimerRunning = true;
+    btnText.textContent = 'Pausar (sem pressão)';
+    icon.textContent = 'pause';
+    status.textContent = 'em foco leve';
+    orb.classList.remove('scale-95', 'opacity-40');
+    orb.classList.add('scale-110', 'opacity-70');
+
+    timerInterval = setInterval(() => {
+      if (timeLeft <= 0) {
+        clearInterval(timerInterval);
+        isTimerRunning = false;
+        display.textContent = '00:00';
+        status.textContent = 'você venceu a inércia!';
+        btnText.textContent = 'Celebrar micro-conquista ✨';
+        icon.textContent = 'sentiment_very_satisfied';
+        btn.classList.remove('bg-primary-container');
+        btn.classList.add('bg-primary-fixed', 'text-on-primary-fixed');
+        ring.style.strokeDashoffset = '440';
+        orb.classList.add('opacity-90', 'scale-125');
+        return;
+      }
+      timeLeft--;
+      const seconds = timeLeft < 10 ? '0' + timeLeft : timeLeft;
+      display.textContent = '00:' + seconds;
+
+      const progress = (60 - timeLeft) / 60;
+      const offset = 440 - (progress * 440);
+      ring.style.strokeDashoffset = offset.toString();
+    }, 1000);
+  }
+</script></main></body></html>

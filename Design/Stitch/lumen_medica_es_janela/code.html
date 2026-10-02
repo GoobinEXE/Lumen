@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_tab" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{width:100vw;margin:0;padding:0;background-color:#fcf8ff;}body{overscroll-behavior:none;-webkit-tap-highlight-color:transparent;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "surface-tint": "#006c53", "surface-bright": "#fcf8ff", "surface-container-high": "#ebe5f8", "tertiary-container": "#ec7c4f", "on-tertiary-fixed-variant": "#7f2b02", "error-container": "#ffdad6", "primary-fixed": "#7bf9cf", "tertiary-fixed-dim": "#ffb59a", "primary-fixed-dim": "#5cdcb4", "on-background": "#1c1a27", "tertiary": "#9f4119", "on-primary-fixed": "#002117", "on-primary-fixed-variant": "#00513e", "on-tertiary": "#ffffff", "surface": "#fcf8ff", "primary-container": "#1faf8a", "on-secondary": "#ffffff", "surface-container-highest": "#e5e0f3", "on-secondary-container": "#4d3d86", "surface-container-lowest": "#ffffff", "inverse-primary": "#5cdcb4", "on-surface": "#1c1a27", "error": "#ba1a1a", "background": "#fcf8ff", "outline": "#6d7a74", "secondary-fixed-dim": "#ccbeff", "inverse-surface": "#312f3d", "secondary-fixed": "#e7deff", "on-surface-variant": "#3d4a44", "surface-container": "#f0ebfe", "on-error-container": "#93000a", "inverse-on-surface": "#f3eeff", "surface-container-low": "#f6f1ff", "secondary-container": "#bfadff", "primary": "#006c53", "on-secondary-fixed": "#1e0856", "on-error": "#ffffff", "on-primary-container": "#003b2c", "outline-variant": "bccac2", "on-secondary-fixed-variant": "#4a3b83", "surface-dim": "#dcd7ea", "on-tertiary-container": "#5f1d00", "on-tertiary-fixed": "#380d00", "tertiary-fixed": "#ffdbce", "surface-variant": "#e5e0f3", "on-primary": "#ffffff", "secondary": "#63539d" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "margin": "1.5rem", "space-xl": "2rem", "gutter-mobile": "0.75rem", "space-lg": "1.5rem", "gutter": "1rem", "margin-mobile": "1.25rem", "space-md": "1rem", "space-sm": "0.5rem", "space-xs": "0.25rem" }, "fontFamily": { "body-md": ["Inter"], "label-sm": ["Inter"], "headline-sm": ["Inter"], "headline-lg": ["Inter"], "headline-md": ["Inter"], "display-lg": ["Inter"], "label-md": ["Inter"], "body-lg": ["Inter"], "body-sm": ["Inter"], "label-lg": ["Inter"], "headline-lg-mobile": ["Inter"] }, "fontSize": { "body-md": ["15px", { "lineHeight": "22px", "letterSpacing": "0.005em", "fontWeight": "400" }], "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.02em", "fontWeight": "500" }], "headline-sm": ["18px", { "lineHeight": "24px", "letterSpacing": "-0.005em", "fontWeight": "600" }], "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.015em", "fontWeight": "600" }], "headline-md": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "display-lg": ["34px", { "lineHeight": "42px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500" }], "body-lg": ["17px", { "lineHeight": "26px", "letterSpacing": "0em", "fontWeight": "400" }], "body-sm": ["13px", { "lineHeight": "18px", "letterSpacing": "0.01em", "fontWeight": "400" }], "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }], "headline-lg-mobile": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }] } } } };</script><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface font-body-md text-on-surface flex flex-col min-h-screen selection:bg-primary-fixed selection:text-on-primary-fixed"><header class="fixed top-0 w-full z-50 pt-safe bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-margin-mobile flex items-center justify-between"><div class="flex items-center gap-space-sm"><div class="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center text-primary"><span class="material-symbols-outlined text-[22px]">spa</span></div><div class="flex flex-col"><span class="font-headline-sm text-headline-sm text-on-surface tracking-tight leading-none">Lumen</span><span class="font-label-sm text-label-sm text-on-surface-variant font-normal leading-none mt-1">Remédios</span></div></div><div class="relative flex items-center justify-center min-w-[44px] min-h-[44px]"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida/AEtjO1VFh_UIF0777aNKR7Y4IzRdMqf7CdEwD-IjuPoWj-DsAuEiE794T3ResLae1WCuqY2HQ5-f5KXogreltYWPpH2P4P1s3koI0g9u2b1WFdhdIGv5mLDAU7SlZhULBU6rZ5dD6bLumdxDCEDa6ETq6hHc9qPZ6p5aLn50QtIhKaFgdNSQ51zO4ZA5fsVQ5NYQsR0piqY08v9FdoHNPTnlmcWTYXnJv0hS-3Yd5BuQ5AZ-mJTNtA06fChzKyU"/><span class="absolute bottom-2 right-1.5 w-2.5 h-2.5 rounded-full bg-primary ring-2 ring-surface"></span></div></div></header><main class="flex flex-col relative w-full pt-16 pb-28 px-margin-mobile bg-surface flex-grow"><div class="flex flex-col w-full">
+<div class="flex flex-col gap-space-md mb-space-lg">
+<div class="flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface tracking-tight">Medicações &amp; Janela de Eficácia</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Seu ritmo neuroquímico acolhido com serenidade</span>
+</div>
+<div class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 text-primary shadow-sm backdrop-blur-md">
+<span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span>
+<span class="font-label-md text-label-md font-semibold">2 de 3 doses tomadas</span>
+</div>
+</div>
+<!-- Main Pharmacokinetic Soft Liquid Glass Card -->
+<div class="relative overflow-hidden rounded-2xl bg-surface-container/70 backdrop-blur-xl p-5 shadow-[0_10px_30px_-10px_rgba(110,107,123,0.08),0_2px_8px_-2px_rgba(110,107,123,0.04)]">
+<!-- Ambient aura glow -->
+<div class="absolute -right-8 -top-8 w-44 h-44 rounded-full bg-primary-fixed/30 blur-3xl pointer-events-none"></div>
+<div class="absolute -left-8 -bottom-8 w-40 h-40 rounded-full bg-tertiary-fixed/30 blur-2xl pointer-events-none"></div>
+<div class="relative z-10 flex flex-col gap-3">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-2.5">
+<div class="w-10 h-10 rounded-xl bg-surface-container-lowest flex items-center justify-center text-primary shadow-sm">
+<span class="material-symbols-outlined text-[24px]">vital_signs</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface">Lisdexanfetamina 30mg</span>
+<span class="font-label-md text-label-md text-on-surface-variant">Estimativa de curva plasmática &amp; foco</span>
+</div>
+</div>
+<span class="px-2.5 py-1 rounded-full bg-primary/15 text-primary font-label-sm text-label-sm">Fase Ativa</span>
+</div>
+<!-- SVG Curve Display -->
+<div class="w-full mt-2 relative">
+<svg class="w-full h-32 overflow-visible" fill="none" viewbox="0 0 340 130" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<lineargradient id="curveGradient" x1="0%" x2="100%" y1="0%" y2="0%">
+<stop offset="0%" stop-color="#1FAF8A" stop-opacity="0.3"></stop>
+<stop offset="25%" stop-color="#1FAF8A" stop-opacity="0.9"></stop>
+<stop offset="65%" stop-color="#1FAF8A" stop-opacity="0.9"></stop>
+<stop offset="85%" stop-color="#EC7C4F" stop-opacity="0.8"></stop>
+<stop offset="100%" stop-color="#EC7C4F" stop-opacity="0.2"></stop>
+</lineargradient>
+<lineargradient id="areaGradient" x1="0%" x2="0%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#1FAF8A" stop-opacity="0.22"></stop>
+<stop offset="100%" stop-color="#1FAF8A" stop-opacity="0"></stop>
+</lineargradient>
+</defs>
+<!-- Guide axes & dashed baseline -->
+<line stroke="#6D7A74" stroke-dasharray="3 3" stroke-opacity="0.18" stroke-width="1.5" x1="20" x2="330" y1="105" y2="105"></line>
+<!-- Plateau highlight shading (10:30 to 14:00) -->
+<rect fill="#1FAF8A" fill-opacity="0.08" height="89" rx="10" width="115" x="100" y="16"></rect>
+<!-- Area under curve -->
+<path d="M 20 105 C 40 105, 55 90, 75 58 C 95 28, 125 24, 155 24 C 185 24, 215 32, 240 68 C 265 95, 290 102, 330 105 L 330 105 L 20 105 Z" fill="url(#areaGradient)"></path>
+<!-- Main dynamic trajectory line -->
+<path d="M 20 105 C 40 105, 55 90, 75 58 C 95 28, 125 24, 155 24 C 185 24, 215 32, 240 68 C 265 95, 290 102, 330 105" stroke="url(#curveGradient)" stroke-linecap="round" stroke-width="3.5"></path>
+<!-- Node 1: Dose start -->
+<circle cx="28" cy="103" fill="#FFFFFF" r="5"></circle>
+<circle cx="28" cy="103" fill="#006C53" r="3.5"></circle>
+<!-- Node 2: Real-time active focus bubble (12:15 - Current position) -->
+<circle cx="165" cy="24" fill="#1FAF8A" fill-opacity="0.25" r="14">
+<animate attributename="r" dur="2.4s" repeatcount="indefinite" values="12;18;12"></animate>
+</circle>
+<circle cx="165" cy="24" fill="#FFFFFF" r="6"></circle>
+<circle cx="165" cy="24" fill="#1FAF8A" r="4"></circle>
+<!-- Node 3: Metabolic drop transition -->
+<circle cx="270" cy="92" fill="#FFFFFF" r="4"></circle>
+<circle cx="270" cy="92" fill="#EC7C4F" r="2.5"></circle>
+<!-- Timeline Hour Markers -->
+<text fill="#3D4A44" font-size="10" font-weight="500" x="24" y="122">08:00</text>
+<text fill="#006C53" font-size="10" font-weight="600" x="96" y="122">10:30</text>
+<text fill="#006C53" font-size="10" font-weight="600" x="195" y="122">14:00</text>
+<text fill="#9F4119" font-size="10" font-weight="500" x="260" y="122">15:30</text>
+</svg>
+</div>
+<!-- Realtime Peak Indicator Badge -->
+<div class="flex items-center gap-3 p-3 rounded-xl bg-surface-container-lowest/90 shadow-sm">
+<div class="w-8 h-8 rounded-lg bg-primary-fixed/40 flex items-center justify-center text-on-primary-container shrink-0">
+<span class="material-symbols-outlined text-[20px]">bolt</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg text-on-surface">Pico Terapêutico &amp; Platô Ótimo</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Você está no pico agora — <span class="font-medium text-primary">restam ~1h45</span> de clareza dopaminérgica estável.</span>
+</div>
+</div>
+<!-- Crash Prevention Reassurance Pill -->
+<div class="flex items-center gap-3 p-3 rounded-xl bg-surface-container-low shadow-sm">
+<div class="w-8 h-8 rounded-lg bg-tertiary-fixed flex items-center justify-center text-on-tertiary-fixed shrink-0">
+<span class="material-symbols-outlined text-[20px]">cookie</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-snug">
+<span class="font-semibold text-tertiary">Prevenção do rebote:</span> Lanche com proteína leve e água fresca às 15:00 mantém seu conforto fisiológico sem quedas bruscas.
+          </p>
+</div>
+</div>
+</div>
+</div>
+<!-- Timeline Section -->
+<div class="flex flex-col gap-space-sm mb-space-lg">
+<div class="flex items-center justify-between px-1">
+<span class="font-headline-sm text-headline-sm text-on-surface">Doses de Hoje</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Foco &amp; Repouso</span>
+</div>
+<!-- Dose 1: Taken -->
+<div class="flex items-center justify-between p-4 rounded-xl bg-surface-container-lowest shadow-sm">
+<div class="flex items-center gap-3.5">
+<div class="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined text-[24px]">medication</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-2">
+<span class="font-label-lg text-label-lg text-on-surface truncate">Lisdexanfetamina 30mg</span>
+<span class="px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm">Cápsula</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">08:00 • Início do dia planejado</span>
+</div>
+</div>
+<div class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 text-primary shrink-0">
+<span class="material-symbols-outlined text-[16px]">check_circle</span>
+<span class="font-label-sm text-label-sm font-semibold">Tomado 08:05</span>
+</div>
+</div>
+<!-- Dose 2: Taken -->
+<div class="flex items-center justify-between p-4 rounded-xl bg-surface-container-lowest shadow-sm">
+<div class="flex items-center gap-3.5">
+<div class="w-11 h-11 rounded-xl bg-secondary-container/40 flex items-center justify-center text-secondary shrink-0">
+<span class="material-symbols-outlined text-[24px]">nutrition</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-2">
+<span class="font-label-lg text-label-lg text-on-surface truncate">Ômega 3 + Magnésio Quelato</span>
+<span class="px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm">2 cápsulas</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">13:00 • Pós-almoço</span>
+</div>
+</div>
+<div class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 text-primary shrink-0">
+<span class="material-symbols-outlined text-[16px]">check_circle</span>
+<span class="font-label-sm text-label-sm font-semibold">Tomado 13:10</span>
+</div>
+</div>
+<!-- Dose 3: Pending / Active Scheduled with Zero-Guilt Actions -->
+<div class="flex flex-col gap-3.5 p-4 rounded-2xl bg-surface-container-low shadow-sm transition-all duration-300" id="dose-card-3">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-3.5">
+<div class="w-11 h-11 rounded-xl bg-secondary-fixed flex items-center justify-center text-on-secondary-fixed shrink-0">
+<span class="material-symbols-outlined text-[24px]">nights_stay</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="font-label-lg text-label-lg text-on-surface">Melatonina 0.5mg</span>
+<span class="px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm">Gotas</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Previsto para 19:30 • Transição noturna</span>
+</div>
+</div>
+<span class="px-2.5 py-1 rounded-full bg-surface-container-highest text-on-surface-variant font-label-sm text-label-sm" id="dose-status-tag">Pendente</span>
+</div>
+<!-- Action Cluster -->
+<div class="flex flex-col gap-2 pt-1" id="dose-action-buttons">
+<div class="flex items-center gap-2">
+<!-- Primary Momentum Button -->
+<button class="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-primary-container text-on-primary font-label-lg text-label-lg shadow-sm hover:opacity-95 active:scale-[0.98] transition-all" id="btn-take-dose" type="button">
+<span class="material-symbols-outlined text-[20px]">check</span>
+<span>Tomar agora</span>
+</button>
+<!-- Postpone Gentle Action -->
+<button class="flex items-center justify-center gap-1.5 py-3 px-4 rounded-xl bg-surface-container text-on-surface font-label-lg text-label-lg shadow-sm active:scale-[0.98] transition-all" id="btn-delay-dose" type="button">
+<span class="material-symbols-outlined text-[18px]">snooze</span>
+<span>+15m</span>
+</button>
+</div>
+<!-- Zero-Guilt Skip Trigger -->
+<button class="w-full text-center py-1 text-on-surface-variant hover:text-on-surface font-label-sm text-label-sm transition-colors" id="btn-skip-trigger" type="button">
+          Pular dose hoje (com tranquilidade e sem culpa)
+        </button>
+</div>
+<!-- Zero-Guilt Options Drawer (Hidden by default) -->
+<div class="hidden flex-col gap-2 pt-2" id="skip-options-drawer">
+<span class="font-label-md text-label-md text-on-surface-variant">Tudo bem! O que melhor descreve seu momento?</span>
+<div class="flex flex-wrap gap-2">
+<button class="reason-pill px-3 py-1.5 rounded-full bg-surface-container-lowest text-on-surface-variant font-label-sm text-label-sm shadow-sm hover:bg-primary/10 hover:text-primary transition-all" type="button">
+            Não achei necessário hoje
+          </button>
+<button class="reason-pill px-3 py-1.5 rounded-full bg-surface-container-lowest text-on-surface-variant font-label-sm text-label-sm shadow-sm hover:bg-primary/10 hover:text-primary transition-all" type="button">
+            Passou da hora ideal
+          </button>
+<button class="reason-pill px-3 py-1.5 rounded-full bg-surface-container-lowest text-on-surface-variant font-label-sm text-label-sm shadow-sm hover:bg-primary/10 hover:text-primary transition-all" type="button">
+            Prefiro pular e dormir cedo
+          </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Warm Refill Reminder (Non-punitive, caring) -->
+<div class="flex flex-col gap-3 p-4 rounded-2xl bg-surface-container-low shadow-sm">
+<div class="flex items-start gap-3">
+<div class="w-10 h-10 rounded-xl bg-tertiary-fixed flex items-center justify-center text-on-tertiary-fixed shrink-0">
+<span class="material-symbols-outlined text-[22px]">inventory_2</span>
+</div>
+<div class="flex flex-col gap-1">
+<span class="font-label-lg text-label-lg text-on-surface">Estoque de Lisdexanfetamina</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+          Restam 4 doses no seu frasco. Para você não precisar correr depois, que tal enviarmos um lembrete sereno para a clínica renovar sua receita?
+        </p>
+</div>
+</div>
+<div class="flex items-center gap-2 pt-1">
+<button class="flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-tertiary-container text-on-tertiary font-label-lg text-label-lg shadow-sm hover:opacity-95 active:scale-[0.98] transition-all" id="btn-request-refill" type="button">
+<span class="material-symbols-outlined text-[18px]">outgoing_mail</span>
+<span>Solicitar receita ao médico</span>
+</button>
+<button class="px-3 py-2.5 rounded-xl bg-surface-container text-on-surface-variant font-label-md text-label-md transition-all" id="btn-dismiss-refill" type="button">
+        Lembrar amanhã
+      </button>
+</div>
+</div>
+</div>
+<script>
+  (function initMedicationDelight() {
+    const takeBtn = document.getElementById('btn-take-dose');
+    const delayBtn = document.getElementById('btn-delay-dose');
+    const skipTrigger = document.getElementById('btn-skip-trigger');
+    const skipDrawer = document.getElementById('skip-options-drawer');
+    const doseCard = document.getElementById('dose-card-3');
+    const statusTag = document.getElementById('dose-status-tag');
+    const actionCluster = document.getElementById('dose-action-buttons');
+    const refillBtn = document.getElementById('btn-request-refill');
+
+    if (takeBtn) {
+      takeBtn.addEventListener('click', () => {
+        statusTag.className = 'px-2.5 py-1 rounded-full bg-primary/10 text-primary font-label-sm text-label-sm font-semibold';
+        statusTag.textContent = 'Tomado agora ✓';
+        actionCluster.innerHTML = `
+          <div class="flex items-center gap-2 text-primary font-label-sm text-label-sm pt-1">
+            <span class="material-symbols-outlined text-[18px]">verified</span>
+            <span>Perfeito! Dose acolhida sem esforço.</span>
+          </div>
+        `;
+        doseCard.classList.remove('bg-surface-container-low');
+        doseCard.classList.add('bg-surface-container-lowest');
+      });
+    }
+
+    if (delayBtn) {
+      delayBtn.addEventListener('click', () => {
+        statusTag.className = 'px-2.5 py-1 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm';
+        statusTag.textContent = 'Adiado para 19:45';
+        delayBtn.textContent = '+15m marcado';
+        delayBtn.disabled = true;
+      });
+    }
+
+    if (skipTrigger && skipDrawer) {
+      skipTrigger.addEventListener('click', () => {
+        skipDrawer.classList.toggle('hidden');
+        skipDrawer.classList.toggle('flex');
+      });
+
+      const pills = skipDrawer.querySelectorAll('.reason-pill');
+      pills.forEach((pill) => {
+        pill.addEventListener('click', () => {
+          actionCluster.innerHTML = `
+            <div class="p-3 rounded-xl bg-surface-container text-on-surface-variant font-body-sm text-body-sm">
+              ✨ <span class="font-medium">Tudo sob controle.</span> Sua rotina se molda ao seu bem-estar diário, sem culpas.
+            </div>
+          `;
+          statusTag.textContent = 'Pulado conscientemente';
+          statusTag.className = 'px-2.5 py-1 rounded-full bg-surface-container-highest text-on-surface-variant font-label-sm text-label-sm';
+          skipDrawer.classList.add('hidden');
+          skipDrawer.classList.remove('flex');
+        });
+      });
+    }
+
+    if (refillBtn) {
+      refillBtn.addEventListener('click', () => {
+        refillBtn.innerHTML = `
+          <span class="material-symbols-outlined text-[18px]">mark_email_read</span>
+          <span>Mensagem enviada com sucesso!</span>
+        `;
+        refillBtn.classList.remove('bg-tertiary-container');
+        refillBtn.classList.add('bg-primary-container');
+      });
+    }
+  })();
+</script></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-surface/85 backdrop-blur-xl shadow-[0_-4px_24px_rgba(110,107,123,0.06)]" data-active-classes="text-primary font-label-lg"><div class="flex justify-between items-center h-20 px-gutter-mobile max-w-[420px] mx-auto"><a class="flex flex-col items-center justify-center min-w-[44px] min-h-[44px] flex-1 text-on-surface-variant hover:text-on-surface transition-colors" data-path="inicio" href="#"><span class="material-symbols-outlined text-[24px]">nest_clock_farsight_analog</span><span class="font-label-sm text-label-sm mt-1">Início</span></a><a class="flex flex-col items-center justify-center min-w-[44px] min-h-[44px] flex-1 text-on-surface-variant hover:text-on-surface transition-colors" data-path="rotina" href="#"><span class="material-symbols-outlined text-[24px]">wb_sunny</span><span class="font-label-sm text-label-sm mt-1">Rotina</span></a><div class="flex items-center justify-center flex-1"><a class="flex flex-col items-center justify-center -translate-y-3 min-w-[52px] min-h-[52px] w-[52px] h-[52px] rounded-full bg-primary-container text-on-primary shadow-[0_8px_20px_rgba(31,175,138,0.35)] active:scale-95 transition-transform" data-path="check-in" href="#"><span class="material-symbols-outlined text-[28px]">favorite</span></a></div><a class="flex flex-col items-center justify-center min-w-[44px] min-h-[44px] flex-1 text-on-surface-variant hover:text-on-surface transition-colors" data-path="remedios" href="#"><span class="material-symbols-outlined text-[24px]">pill</span><span class="font-label-sm text-label-sm mt-1">Remédios</span></a><a class="flex flex-col items-center justify-center min-w-[44px] min-h-[44px] flex-1 text-on-surface-variant hover:text-on-surface transition-colors" data-path="clinico" href="#"><span class="material-symbols-outlined text-[24px]">monitoring</span><span class="font-label-sm text-label-sm mt-1">Clínico</span></a></div></nav></body></html>

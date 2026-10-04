@@ -99,5 +99,63 @@ void main() {
         ReminderLaunchIntent.ignore,
       );
     });
+
+    test('ação desconhecida não grava a dose', () {
+      expect(
+        reminderLaunchIntent(
+          dismissed: false,
+          selectedAction: true,
+          actionId: 'later',
+          payload: payload,
+        ),
+        ReminderLaunchIntent.ignore,
+      );
+    });
+  });
+
+  test('no minuto exato o alarme vai para a semana seguinte', () {
+    final fridayOnTheDot = DateTime(2026, 9, 25, 8);
+    expect(fridayOnTheDot.weekday, DateTime.friday);
+
+    final slots = upcomingDoseOccurrences(
+      now: fridayOnTheDot,
+      scheduledTimes: const ['08:00'],
+      daysOfWeek: const [DateTime.friday],
+    );
+
+    expect(slots.single.at, DateTime(2026, 10, 2, 8));
+  });
+
+  test('horário sem zero à esquerda vira 08:05', () {
+    final slots = upcomingDoseOccurrences(
+      now: DateTime(2026, 9, 25, 7),
+      scheduledTimes: const ['8:5'],
+      daysOfWeek: const [DateTime.friday],
+    );
+
+    expect(slots.single.time, '08:05');
+    expect(slots.single.at, DateTime(2026, 9, 25, 8, 5));
+    expect(
+      doseNotificationId(
+        medicationId: 'med-1',
+        time: slots.single.time,
+        weekday: DateTime.friday,
+      ),
+      doseNotificationId(
+        medicationId: 'med-1',
+        time: '08:05',
+        weekday: DateTime.friday,
+      ),
+    );
+    expect(
+      snoozeNotificationId('log-1'),
+      isNot(
+        doseNotificationId(
+          medicationId: 'med-1',
+          time: '08:05',
+          weekday: DateTime.friday,
+        ),
+      ),
+    );
   });
 }

@@ -140,8 +140,8 @@ final class HealthKitBridge: NSObject {
       return
     }
     guard let args,
-          let valence = args["valence"] as? Double,
-          let timestampMs = args["timestampMs"] as? Int
+          let valence = Self.channelDouble(args["valence"]),
+          let timestampMs = Self.channelDouble(args["timestampMs"])
     else {
       result(false)
       return
@@ -149,9 +149,9 @@ final class HealthKitBridge: NSObject {
 
     let kindStr = args["kind"] as? String ?? "dailyMood"
     let kind: HKStateOfMind.Kind = kindStr == "momentary" ? .momentaryEmotion : .dailyMood
-    let labels = Self.mapLabels(args["labels"] as? [String] ?? [])
-    let associations = Self.mapAssociations(args["associations"] as? [String] ?? [])
-    let date = Date(timeIntervalSince1970: Double(timestampMs) / 1000.0)
+    let labels = Self.mapLabels(Self.channelStrings(args["labels"]))
+    let associations = Self.mapAssociations(Self.channelStrings(args["associations"]))
+    let date = Date(timeIntervalSince1970: timestampMs / 1000.0)
 
     let sample = HKStateOfMind(
       date: date,
@@ -175,15 +175,15 @@ final class HealthKitBridge: NSObject {
       return
     }
     guard let args,
-          let startMs = args["startMs"] as? Int,
-          let endMs = args["endMs"] as? Int
+          let startMs = Self.channelDouble(args["startMs"]),
+          let endMs = Self.channelDouble(args["endMs"])
     else {
       result([])
       return
     }
 
-    let start = Date(timeIntervalSince1970: Double(startMs) / 1000.0)
-    let end = Date(timeIntervalSince1970: Double(endMs) / 1000.0)
+    let start = Date(timeIntervalSince1970: startMs / 1000.0)
+    let end = Date(timeIntervalSince1970: endMs / 1000.0)
     let type = HKObjectType.stateOfMindType()
     let predicate = HKQuery.predicateForSamples(withStart: start, end: end, options: .strictStartDate)
     let sort = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)
@@ -224,15 +224,15 @@ final class HealthKitBridge: NSObject {
   ) {
     guard let quantityType = HKQuantityType.quantityType(forIdentifier: identifier),
           let args,
-          let startMs = args["startMs"] as? Int,
-          let endMs = args["endMs"] as? Int
+          let startMs = Self.channelDouble(args["startMs"]),
+          let endMs = Self.channelDouble(args["endMs"])
     else {
       result([:])
       return
     }
 
-    let start = Date(timeIntervalSince1970: Double(startMs) / 1000.0)
-    let end = Date(timeIntervalSince1970: Double(endMs) / 1000.0)
+    let start = Date(timeIntervalSince1970: startMs / 1000.0)
+    let end = Date(timeIntervalSince1970: endMs / 1000.0)
     var interval = DateComponents()
     interval.day = 1
 
@@ -273,6 +273,31 @@ final class HealthKitBridge: NSObject {
       result(out)
     }
     store.execute(query)
+  }
+
+  // MARK: - Method channel
+
+  /// O codec padrão entrega número como NSNumber. `as? Int` e `as? Double` não cruzam esse valor.
+  private static func channelDouble(_ value: Any?) -> Double? {
+    if let number = value as? NSNumber {
+      return number.doubleValue
+    }
+    if let number = value as? Double {
+      return number
+    }
+    if let number = value as? Int {
+      return Double(number)
+    }
+    return nil
+  }
+
+  /// Lista do canal chega como NSArray. O cast direto para `[String]` descarta os rótulos.
+  private static func channelStrings(_ value: Any?) -> [String] {
+    if let list = value as? [String] {
+      return list
+    }
+    guard let list = value as? NSArray else { return [] }
+    return list.compactMap { $0 as? String }
   }
 
   // MARK: - Mapping helpers

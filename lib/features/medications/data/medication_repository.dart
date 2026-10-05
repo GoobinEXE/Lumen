@@ -242,10 +242,16 @@ class MedicationRepository {
     if (index >= 0) {
       final log = allLogs[index];
       if (log.isTaken) return;
-      allLogs[index] = log.copyWith(
+      // copyWith não zera snoozedUntil.
+      allLogs[index] = MedicationLog(
+        id: log.id,
+        medicationId: log.medicationId,
+        medicationName: log.medicationName,
+        scheduledTime: log.scheduledTime,
         takenAt: takenAt,
         skipped: false,
-        snoozedUntil: null,
+        skipReason: log.skipReason,
+        source: log.source,
       );
       await _saveLogs(allLogs);
 

@@ -116,8 +116,17 @@ class MedicationRepository {
                 !matched.any((log) => _sameMinute(log.scheduledTime, slot)),
           )
           .toList();
+      // Dose já tomada ou pulada fica no horário em que aconteceu.
+      // Só a pendente acompanha um horário novo da agenda.
       final movable =
-          loose.where((log) => log.source == MedicationLogSource.lumen).toList()
+          loose
+              .where(
+                (log) =>
+                    log.source == MedicationLogSource.lumen &&
+                    !log.isTaken &&
+                    !log.skipped,
+              )
+              .toList()
             ..sort((a, b) => a.scheduledTime.compareTo(b.scheduledTime));
 
       final relocated = <MedicationLog>[];
@@ -149,14 +158,15 @@ class MedicationRepository {
       result.addAll(covered);
       used.addAll(own.map((log) => log.id));
 
-      for (final log in movable.skip(pairCount)) {
-        if (log.isTaken || log.skipped) {
-          result.add(
-            log.medicationName == display
-                ? log
-                : log.copyWith(medicationName: display),
-          );
-        }
+      for (final log in loose) {
+        if (log.source != MedicationLogSource.lumen) continue;
+        if (!log.isTaken && !log.skipped) continue;
+        if (result.any((kept) => kept.id == log.id)) continue;
+        result.add(
+          log.medicationName == display
+              ? log
+              : log.copyWith(medicationName: display),
+        );
       }
       for (final log in loose) {
         if (log.source == MedicationLogSource.appleHealth &&

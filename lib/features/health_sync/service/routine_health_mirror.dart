@@ -48,10 +48,9 @@ class RoutineHealthMirror {
     required HealthService healthService,
     required DailyRoutineState current,
   }) async {
-    final delta = current.waterGlasses;
-    if (delta <= 0) return;
-
     final alreadySynced = getSyncedWaterGlasses(prefs, current.date);
+    final delta = current.waterGlasses - alreadySynced;
+    if (delta <= 0) return;
     final now = DateTime.now();
     var written = 0;
     for (var i = 0; i < delta; i++) {

@@ -64,6 +64,7 @@ bool isBreathingMindfulnessHabit(String habit) {
       lower.contains('estir') ||
       lower.contains('mindful') ||
       lower.contains('atenção plena') ||
+      lower.contains('atención plena') ||
       lower.contains('atencion plena') ||
       habit.contains('深呼吸') ||
       habit.contains('ストレッチ');

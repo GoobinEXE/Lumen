@@ -102,4 +102,24 @@ class SleepNight {
     records.sort((a, b) => b.date.compareTo(a.date));
     return records;
   }
+
+  /// Tira a noite atribuída a um dia que ainda não chegou.
+  ///
+  /// Amostra que termina às 18h ou depois entra no dia seguinte para
+  /// juntar com o que atravessa a meia-noite. Um cochilo às 19h, ou o
+  /// primeiro trecho de hoje à noite, vira esse dia seguinte na hora.
+  /// Enquanto esse dia não chega, ele não pode ocupar o lugar da noite
+  /// que já terminou.
+  static List<SleepRecord> recordedBy(List<SleepRecord> records, DateTime now) {
+    final today = DateTime(now.year, now.month, now.day);
+    return [
+      for (final record in records)
+        if (!DateTime(
+          record.date.year,
+          record.date.month,
+          record.date.day,
+        ).isAfter(today))
+          record,
+    ];
+  }
 }

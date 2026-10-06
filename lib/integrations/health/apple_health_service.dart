@@ -217,7 +217,7 @@ class AppleHealthService implements HealthService {
       }
 
       final nights = SleepNight.aggregate(intervals);
-      return [
+      final records = [
         for (final night in nights)
           SleepRecord(
             date: night.date,
@@ -236,6 +236,7 @@ class AppleHealthService implements HealthService {
             )?.round(),
           ),
       ];
+      return SleepNight.recordedBy(records, now);
     } catch (e) {
       debugPrint('[HealthService] Erro ao consultar dados de sono: $e');
       return [];

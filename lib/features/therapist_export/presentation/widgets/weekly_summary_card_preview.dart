@@ -7,6 +7,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../routine_mood/domain/mood_entry.dart';
 import '../../../routine_mood/domain/routine_export.dart';
+import '../../domain/export_period.dart';
 import '../../../sleep_analytics/domain/correlation_engine.dart';
 import '../../../../integrations/health/models/sleep_record.dart';
 
@@ -37,22 +38,43 @@ class WeeklySummaryCardPreview extends StatelessWidget {
         : AppColors.cardBorderLight;
     final card = isDark ? AppColors.cardDark : AppColors.cardLight;
 
-    final totalHoursList = sleepRecords.map((s) => s.totalHours).toList();
+    final now = DateTime.now();
+    final weekSleep = [
+      for (final record in sleepRecords)
+        if (isWithinExportPeriod(instant: record.date, now: now, periodDays: 7))
+          record,
+    ];
+    final weekMood = [
+      for (final entry in moodEntries)
+        if (isWithinExportPeriod(
+          instant: entry.timestamp,
+          now: now,
+          periodDays: 7,
+        ))
+          entry,
+    ];
+    final weekRoutine = [
+      for (final line in routineLines)
+        if (isWithinExportPeriod(instant: line.savedAt, now: now, periodDays: 7))
+          line,
+    ];
+
+    final totalHoursList = weekSleep.map((s) => s.totalHours).toList();
     final avgSleep = totalHoursList.isNotEmpty
         ? totalHoursList.reduce((a, b) => a + b) / totalHoursList.length
         : 0.0;
-    final deficitNights = sleepRecords.where((s) => s.hasSleepDeficit).length;
+    final deficitNights = weekSleep.where((s) => s.hasSleepDeficit).length;
 
-    final paralyzedCount = moodEntries
+    final paralyzedCount = weekMood
         .where((m) => m.focus == FocusState.paralyzed)
         .length;
-    final focusedCount = moodEntries
+    final focusedCount = weekMood
         .where((m) => m.focus == FocusState.focused)
         .length;
 
     final insights = CorrelationEngine.analyze(
-      sleepRecords: sleepRecords,
-      moodEntries: moodEntries,
+      sleepRecords: weekSleep,
+      moodEntries: weekMood,
       copy: L10nCorrelationCopy(l10n),
     );
     final topInsight = insights.isNotEmpty ? insights.first : null;
@@ -252,7 +274,7 @@ class WeeklySummaryCardPreview extends StatelessWidget {
                 ),
               ),
             ],
-            if (routineLines.isNotEmpty) ...[
+            if (weekRoutine.isNotEmpty) ...[
               const SizedBox(height: 16),
               Text(
                 l10n.exportRoutineHeading,
@@ -264,11 +286,11 @@ class WeeklySummaryCardPreview extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                l10n.exportRoutineCount(routineLines.length),
+                l10n.exportRoutineCount(weekRoutine.length),
                 style: TextStyle(color: muted, fontSize: 12),
               ),
               const SizedBox(height: 6),
-              for (final line in routineLines.take(4))
+              for (final line in weekRoutine.take(4))
                 Padding(
                   padding: const EdgeInsets.only(bottom: 4),
                   child: Text(

@@ -10,6 +10,7 @@ import 'package:noa/features/state_of_mind/domain/state_of_mind_entry.dart';
 import 'package:noa/features/state_of_mind/domain/state_of_mind_labels.dart';
 import 'package:noa/integrations/health/models/daily_recovery_snapshot.dart';
 import 'package:noa/integrations/health/models/sleep_record.dart';
+import 'package:noa/features/therapist_export/domain/export_period.dart';
 import 'package:noa/features/therapist_export/service/routine_export_copy.dart';
 import 'package:noa/l10n/app_localizations.dart';
 import 'package:pdf/pdf.dart';
@@ -34,32 +35,60 @@ class TherapistPdfGenerator {
     } catch (_) {}
     final dateFormat = _dateFormat('dd/MM/yyyy', locale);
     final timeFormat = _dateFormat('HH:mm', locale);
+    final now = DateTime.now();
+    final sleepInPeriod = [
+      for (final record in sleepRecords)
+        if (isWithinExportPeriod(
+          instant: record.date,
+          now: now,
+          periodDays: periodDays,
+        ))
+          record,
+    ];
+    final moodInPeriod = [
+      for (final entry in moodEntries)
+        if (isWithinExportPeriod(
+          instant: entry.timestamp,
+          now: now,
+          periodDays: periodDays,
+        ))
+          entry,
+    ];
+    final recoveryInPeriod = [
+      for (final snapshot in recoverySnapshots)
+        if (isWithinExportPeriod(
+          instant: snapshot.date,
+          now: now,
+          periodDays: periodDays,
+        ))
+          snapshot,
+    ];
 
-    final totalSleepHoursList = sleepRecords.map((s) => s.totalHours).toList();
+    final totalSleepHoursList = sleepInPeriod.map((s) => s.totalHours).toList();
     final avgSleepHours = totalSleepHoursList.isNotEmpty
         ? totalSleepHoursList.reduce((a, b) => a + b) / totalSleepHoursList.length
         : 0.0;
 
-    final remHoursList = sleepRecords.map((s) => s.remHours).toList();
+    final remHoursList = sleepInPeriod.map((s) => s.remHours).toList();
     final avgRemHours = remHoursList.isNotEmpty
         ? remHoursList.reduce((a, b) => a + b) / remHoursList.length
         : 0.0;
 
-    final deficitNightsCount = sleepRecords.where((s) => s.hasSleepDeficit).length;
+    final deficitNightsCount = sleepInPeriod.where((s) => s.hasSleepDeficit).length;
 
     final paralyzedCount =
-        moodEntries.where((m) => m.focus == FocusState.paralyzed).length;
+        moodInPeriod.where((m) => m.focus == FocusState.paralyzed).length;
     final hyperfocusCount =
-        moodEntries.where((m) => m.focus == FocusState.hyperfocus).length;
+        moodInPeriod.where((m) => m.focus == FocusState.hyperfocus).length;
     final scatteredCount =
-        moodEntries.where((m) => m.focus == FocusState.scattered).length;
+        moodInPeriod.where((m) => m.focus == FocusState.scattered).length;
     final focusedCount =
-        moodEntries.where((m) => m.focus == FocusState.focused).length;
-    final sensoryCount = moodEntries.where((m) => m.sensoryOverload).length;
-    final medCount = moodEntries.where((m) => m.tookMedication).length;
+        moodInPeriod.where((m) => m.focus == FocusState.focused).length;
+    final sensoryCount = moodInPeriod.where((m) => m.sensoryOverload).length;
+    final medCount = moodInPeriod.where((m) => m.tookMedication).length;
 
     final labelCounts = <String, int>{};
-    for (final m in moodEntries) {
+    for (final m in moodInPeriod) {
       for (final id in m.emotionLabels) {
         labelCounts[id] = (labelCounts[id] ?? 0) + 1;
       }
@@ -67,29 +96,29 @@ class TherapistPdfGenerator {
     final topLabels = labelCounts.entries.toList()
       ..sort((a, b) => b.value.compareTo(a.value));
 
-    final avgHrv = _avg(recoverySnapshots.map((r) => r.hrvMs));
-    final avgResting = _avg(recoverySnapshots.map((r) => r.restingHeartRate));
-    final avgSteps = _avg(recoverySnapshots.map((r) => r.steps?.toDouble()));
-    final avgExercise = _avg(recoverySnapshots.map((r) => r.exerciseMinutes));
+    final avgHrv = _avg(recoveryInPeriod.map((r) => r.hrvMs));
+    final avgResting = _avg(recoveryInPeriod.map((r) => r.restingHeartRate));
+    final avgSteps = _avg(recoveryInPeriod.map((r) => r.steps?.toDouble()));
+    final avgExercise = _avg(recoveryInPeriod.map((r) => r.exerciseMinutes));
     final avgDaylight =
-        _avg(recoverySnapshots.map((r) => r.timeInDaylightMinutes));
+        _avg(recoveryInPeriod.map((r) => r.timeInDaylightMinutes));
     final avgNoise =
-        _avg(recoverySnapshots.map((r) => r.avgEnvironmentalDb));
+        _avg(recoveryInPeriod.map((r) => r.avgEnvironmentalDb));
     final somFromApple = appleHealthSomCount +
-        moodEntries
+        moodInPeriod
             .where((m) =>
                 m.emotionSource == StateOfMindSource.appleHealth &&
                 m.emotionLabels.isNotEmpty)
             .length;
 
     final insights = CorrelationEngine.analyze(
-      sleepRecords: sleepRecords,
-      moodEntries: moodEntries,
-      recoverySnapshots: recoverySnapshots,
+      sleepRecords: sleepInPeriod,
+      moodEntries: moodInPeriod,
+      recoverySnapshots: recoveryInPeriod,
       copy: L10nCorrelationCopy(l10n),
     );
 
-    final List<List<dynamic>> tableData = sleepRecords.take(7).map((s) {
+    final List<List<dynamic>> tableData = sleepInPeriod.map((s) {
       return <dynamic>[
         dateFormat.format(s.date),
         timeFormat.format(s.bedtime),
@@ -178,7 +207,10 @@ class TherapistPdfGenerator {
                 _buildMetricCard(
                   title: l10n.pdfAvgSleepTitle,
                   value: l10n.pdfAvgSleepValue(avgSleepHours.toStringAsFixed(1)),
-                  subtitle: l10n.pdfDeficitNights(deficitNightsCount, sleepRecords.length),
+                  subtitle: l10n.pdfDeficitNights(
+                    deficitNightsCount,
+                    sleepInPeriod.length,
+                  ),
                   color: avgSleepHours < 6.5 ? PdfColors.red100 : PdfColors.teal50,
                   textColor:
                       avgSleepHours < 6.5 ? PdfColors.red900 : PdfColors.teal900,
@@ -210,7 +242,7 @@ class TherapistPdfGenerator {
                 ],
                 data: tableData,
               ),
-            if (recoverySnapshots.isNotEmpty) ...[
+            if (recoveryInPeriod.isNotEmpty) ...[
               pw.SizedBox(height: 18),
               pw.Text(
                 l10n.pdfSection1bRecovery,
@@ -360,7 +392,7 @@ class TherapistPdfGenerator {
               ],
               pw.SizedBox(height: 4),
               pw.Text(
-                l10n.pdfMedicationTaken(medCount, moodEntries.length),
+                l10n.pdfMedicationTaken(medCount, moodInPeriod.length),
                 style: const pw.TextStyle(fontSize: 9, color: PdfColors.grey800),
               ),
             ],
@@ -422,7 +454,7 @@ class TherapistPdfGenerator {
               ),
             ),
             pw.SizedBox(height: 6),
-            ...moodEntries
+            ...moodInPeriod
                 .where((m) => m.note != null && m.note!.isNotEmpty)
                 .take(5)
                 .map((entry) {

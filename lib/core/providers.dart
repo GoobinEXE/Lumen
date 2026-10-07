@@ -30,12 +30,27 @@ final sleepHistoryProvider = FutureProvider<List<SleepRecord>>((ref) async {
   return healthService.getSleepHistory(days: 14);
 });
 
+/// Sono dos últimos 30 dias, para o resumo clínico cobrir a janela maior.
+final clinicalSleepHistoryProvider = FutureProvider<List<SleepRecord>>((ref) async {
+  final healthService = ref.watch(healthServiceProvider);
+  await healthService.initialize();
+  return healthService.getSleepHistory(days: 30);
+});
+
 /// Histórico de recuperação (HRV, FC repouso, passos, exercício)
 final recoveryHistoryProvider =
     FutureProvider<List<DailyRecoverySnapshot>>((ref) async {
   final healthService = ref.watch(healthServiceProvider);
   await healthService.initialize();
   return healthService.getRecoveryHistory(days: 14);
+});
+
+/// Recuperação dos últimos 30 dias para o resumo clínico.
+final clinicalRecoveryHistoryProvider =
+    FutureProvider<List<DailyRecoverySnapshot>>((ref) async {
+  final healthService = ref.watch(healthServiceProvider);
+  await healthService.initialize();
+  return healthService.getRecoveryHistory(days: 30);
 });
 
 /// Histórico de ambiente (luz + áudio ambiental/fones) — iOS bridge.

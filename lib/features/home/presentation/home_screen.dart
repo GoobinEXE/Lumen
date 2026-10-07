@@ -64,7 +64,9 @@ class HomeScreen extends ConsumerWidget {
         child: RefreshIndicator(
           onRefresh: () async {
             ref.invalidate(sleepHistoryProvider);
+            ref.invalidate(clinicalSleepHistoryProvider);
             ref.invalidate(recoveryHistoryProvider);
+            ref.invalidate(clinicalRecoveryHistoryProvider);
             ref.invalidate(todaySnapshotsProvider);
             await ref.read(moodEntriesProvider.notifier).loadEntries();
           },

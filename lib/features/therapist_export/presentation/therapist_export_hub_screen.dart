@@ -10,6 +10,7 @@ import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/async_placeholders.dart';
 import '../../routine_mood/domain/mood_entry.dart';
 import '../../routine_mood/domain/routine_export.dart';
+import '../domain/export_period.dart';
 import '../../routine_mood/presentation/daily_routine_screen.dart';
 import '../data/therapist_contact_repository.dart';
 import '../service/share_card_exporter.dart';
@@ -109,13 +110,16 @@ class _TherapistExportHubScreenState
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final l10n = ref.watch(appLocalizationsProvider);
-    final sleepAsync = ref.watch(sleepHistoryProvider);
+    final sleepAsync = ref.watch(clinicalSleepHistoryProvider);
     final moodAsync = ref.watch(moodEntriesProvider);
-    final recoveryAsync = ref.watch(recoveryHistoryProvider);
+    final recoveryAsync = ref.watch(clinicalRecoveryHistoryProvider);
     final routineAsync = ref.watch(recentRoutineSnapshotsProvider);
-    final appleSomCount =
-        ref.watch(appleHealthStateOfMindCountProvider).value ?? 0;
     final routineSnapshots = routineAsync.value ?? const [];
+    final appleSomCount = appleHealthSomDaysInPeriod(
+      snapshots: routineSnapshots,
+      now: DateTime.now(),
+      periodDays: _periodDays,
+    );
 
     final isLoading =
         sleepAsync.isLoading || moodAsync.isLoading || routineAsync.isLoading;

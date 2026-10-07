@@ -8,6 +8,7 @@ import 'package:noa/features/state_of_mind/domain/state_of_mind_labels.dart';
 import 'package:noa/features/routine_mood/domain/routine_export.dart';
 import 'package:noa/integrations/health/models/daily_recovery_snapshot.dart';
 import 'package:noa/integrations/health/models/sleep_record.dart';
+import 'package:noa/features/therapist_export/domain/export_period.dart';
 import 'package:noa/features/therapist_export/service/routine_export_copy.dart';
 import 'package:noa/l10n/app_localizations.dart';
 
@@ -26,37 +27,64 @@ class WhatsappTextFormatter {
     final locale = l10n.localeName;
     final languageCode = locale.split('_').first;
     final dateFormat = _dateFormat('dd/MM', locale);
-    final startDate = DateTime.now().subtract(Duration(days: periodDays));
     final endDate = DateTime.now();
+    final startDate = endDate.subtract(Duration(days: periodDays));
+    final sleepInPeriod = [
+      for (final record in sleepRecords)
+        if (isWithinExportPeriod(
+          instant: record.date,
+          now: endDate,
+          periodDays: periodDays,
+        ))
+          record,
+    ];
+    final moodInPeriod = [
+      for (final entry in moodEntries)
+        if (isWithinExportPeriod(
+          instant: entry.timestamp,
+          now: endDate,
+          periodDays: periodDays,
+        ))
+          entry,
+    ];
+    final recoveryInPeriod = [
+      for (final snapshot in recoverySnapshots)
+        if (isWithinExportPeriod(
+          instant: snapshot.date,
+          now: endDate,
+          periodDays: periodDays,
+        ))
+          snapshot,
+    ];
 
-    final totalSleepHours = sleepRecords.map((s) => s.totalHours).toList();
+    final totalSleepHours = sleepInPeriod.map((s) => s.totalHours).toList();
     final avgSleep = totalSleepHours.isNotEmpty
         ? totalSleepHours.reduce((a, b) => a + b) / totalSleepHours.length
         : 0.0;
 
-    final remHours = sleepRecords.map((s) => s.remHours).toList();
+    final remHours = sleepInPeriod.map((s) => s.remHours).toList();
     final avgRem = remHours.isNotEmpty
         ? remHours.reduce((a, b) => a + b) / remHours.length
         : 0.0;
 
-    final deficitNights = sleepRecords.where((s) => s.hasSleepDeficit).length;
+    final deficitNights = sleepInPeriod.where((s) => s.hasSleepDeficit).length;
 
-    final paralyzedCount = moodEntries.where((m) => m.focus == FocusState.paralyzed).length;
-    final hyperfocusCount = moodEntries.where((m) => m.focus == FocusState.hyperfocus).length;
-    final scatteredCount = moodEntries.where((m) => m.focus == FocusState.scattered).length;
-    final focusedCount = moodEntries.where((m) => m.focus == FocusState.focused).length;
-    final sensoryCount = moodEntries.where((m) => m.sensoryOverload).length;
-    final medCount = moodEntries.where((m) => m.tookMedication).length;
+    final paralyzedCount = moodInPeriod.where((m) => m.focus == FocusState.paralyzed).length;
+    final hyperfocusCount = moodInPeriod.where((m) => m.focus == FocusState.hyperfocus).length;
+    final scatteredCount = moodInPeriod.where((m) => m.focus == FocusState.scattered).length;
+    final focusedCount = moodInPeriod.where((m) => m.focus == FocusState.focused).length;
+    final sensoryCount = moodInPeriod.where((m) => m.sensoryOverload).length;
+    final medCount = moodInPeriod.where((m) => m.tookMedication).length;
 
     final insights = CorrelationEngine.analyze(
-      sleepRecords: sleepRecords,
-      moodEntries: moodEntries,
-      recoverySnapshots: recoverySnapshots,
+      sleepRecords: sleepInPeriod,
+      moodEntries: moodInPeriod,
+      recoverySnapshots: recoveryInPeriod,
       copy: L10nCorrelationCopy(l10n),
     );
 
     final labelCounts = <String, int>{};
-    for (final m in moodEntries) {
+    for (final m in moodInPeriod) {
       for (final id in m.emotionLabels) {
         labelCounts[id] = (labelCounts[id] ?? 0) + 1;
       }
@@ -64,18 +92,18 @@ class WhatsappTextFormatter {
     final topLabels = labelCounts.entries.toList()
       ..sort((a, b) => b.value.compareTo(a.value));
 
-    final avgHrv = _avgNullable(recoverySnapshots.map((r) => r.hrvMs));
+    final avgHrv = _avgNullable(recoveryInPeriod.map((r) => r.hrvMs));
     final avgResting =
-        _avgNullable(recoverySnapshots.map((r) => r.restingHeartRate));
-    final avgSteps = _avgNullable(recoverySnapshots.map((r) => r.steps?.toDouble()));
+        _avgNullable(recoveryInPeriod.map((r) => r.restingHeartRate));
+    final avgSteps = _avgNullable(recoveryInPeriod.map((r) => r.steps?.toDouble()));
     final avgExercise =
-        _avgNullable(recoverySnapshots.map((r) => r.exerciseMinutes?.toDouble()));
+        _avgNullable(recoveryInPeriod.map((r) => r.exerciseMinutes?.toDouble()));
     final avgDaylight =
-        _avgNullable(recoverySnapshots.map((r) => r.timeInDaylightMinutes));
+        _avgNullable(recoveryInPeriod.map((r) => r.timeInDaylightMinutes));
     final avgNoise =
-        _avgNullable(recoverySnapshots.map((r) => r.avgEnvironmentalDb));
+        _avgNullable(recoveryInPeriod.map((r) => r.avgEnvironmentalDb));
     final somFromApple = appleHealthSomCount +
-        moodEntries
+        moodInPeriod
             .where((m) =>
                 m.emotionSource.name == 'appleHealth' &&
                 m.emotionLabels.isNotEmpty)
@@ -92,7 +120,7 @@ class WhatsappTextFormatter {
 
     buffer.writeln(l10n.waSectionSleep);
     buffer.writeln(l10n.waAvgSleep(avgSleep.toStringAsFixed(1)));
-    buffer.writeln(l10n.waDeficitNights(deficitNights, sleepRecords.length));
+    buffer.writeln(l10n.waDeficitNights(deficitNights, sleepInPeriod.length));
     buffer.writeln(
       avgRem < 1.25
           ? l10n.waAvgRemAlert(avgRem.toStringAsFixed(1))
@@ -100,7 +128,7 @@ class WhatsappTextFormatter {
     );
     buffer.writeln();
 
-    if (recoverySnapshots.isNotEmpty) {
+    if (recoveryInPeriod.isNotEmpty) {
       buffer.writeln(l10n.waSectionRecovery);
       if (avgHrv != null) {
         buffer.writeln(l10n.waHrvAvg(avgHrv.toStringAsFixed(0)));
@@ -131,7 +159,7 @@ class WhatsappTextFormatter {
     if (sensoryCount > 0) {
       buffer.writeln(l10n.waSensoryCount(sensoryCount));
     }
-    buffer.writeln(l10n.waMedTaken(medCount, moodEntries.length));
+    buffer.writeln(l10n.waMedTaken(medCount, moodInPeriod.length));
     if (topLabels.isNotEmpty) {
       buffer.writeln(l10n.waTopWordsHeader);
       for (final e in topLabels.take(5)) {
@@ -156,7 +184,7 @@ class WhatsappTextFormatter {
       buffer.writeln();
     }
 
-    final notes = moodEntries.where((m) => m.note != null && m.note!.isNotEmpty).take(3).toList();
+    final notes = moodInPeriod.where((m) => m.note != null && m.note!.isNotEmpty).take(3).toList();
     if (notes.isNotEmpty) {
       buffer.writeln(l10n.waSectionHighlights);
       for (final n in notes) {

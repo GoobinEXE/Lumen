@@ -307,7 +307,7 @@ Legenda de status: ✅ feito · 🟡 parcial ou nesta fase · ❌ ausente · �
 | T05 | Relatório PDF (preview + print/share) | ✅ | `TherapistPdfGenerator` |
 | T06 | Incluir sono, mood, recovery, insights | ✅ | PDF, WhatsApp e card. Rotina e logs de dose ainda ficam de fora; entram no primeiro teste |
 | T07 | Nome do paciente configurável | 🟡 | hardcoded “Marcelo P.” |
-| T08 | Período custom (7/14/30) | 🟡 | PDF usa `periodDays`; UI limitada |
+| T08 | Período custom (7/14/30) | ✅ | contagens, médias e tabela de sono seguem a janela; o card semanal continua em 7 dias |
 
 ### 6.9 Des-Trava (Unstuck)
 
@@ -835,8 +835,8 @@ Use esta lista como board. IDs batem com features da §6.
 - [x] E2 Share card PNG
 - [x] E3 PDF generator rico
 - [ ] E4 Perfil paciente (nome, idade, diagnóstico opcional)
-- [ ] E5 Seletor de período 7/14/30 na UI
-- [ ] E6 Export mais completo no primeiro teste: PDF, WhatsApp e card já levam os salvamentos da rotina (hora, âncora, água, hábitos, medicação, reflexão e notas; o toggle esconde reflexão e pauta). Ainda falta a adesão real de dose (tomou / pulou) e a tabela de sono no período inteiro, sem cortar em 7 noites.
+- [x] E5 Seletor de período 7/14/30 na UI
+- [ ] E6 Export mais completo no primeiro teste: PDF, WhatsApp e card já levam os salvamentos da rotina (hora, âncora, água, hábitos, medicação, reflexão e notas; o toggle esconde reflexão e pauta). Ainda falta a adesão real de dose (tomou / pulou). A tabela de sono lista as noites da janela escolhida.
 - [ ] E7 Export CSV / JSON para o próprio usuário
 - [ ] E8 Toggle para ocultar notas íntimas na exportação (PRD §4.6)
 - [ ] E9 Data da próxima consulta no perfil do profissional
@@ -904,7 +904,7 @@ O primeiro uso prático é um TestFlight. O build sobe depois do check-in espelh
 | Upload do TestFlight | P0 | G6 |
 | Notificações recorrentes de dose | P0 | C5–C6 |
 
-O export cobre sono, humor, recuperação, insights e os salvamentos da rotina (hora, âncora, água, hábitos, medicação do toggle, reflexão e notas). Com "Ocultar notas íntimas", reflexão e pauta ficam de fora. A medicação de dose (tomou ou pulou) ainda entra só como a contagem do check-in, e a tabela de sono continua cortando em 7 noites.
+O export cobre sono, humor, recuperação, insights e os salvamentos da rotina (hora, âncora, água, hábitos, medicação do toggle, reflexão e notas). Com "Ocultar notas íntimas", reflexão e pauta ficam de fora. A medicação de dose (tomou ou pulou) ainda entra só como a contagem do check-in. Sono, humor e recuperação entram só na janela de 7, 14 ou 30 dias escolhida no hub.
 
 C7 e C8 entram nesse build porque a ponte e os campos já existem. Subir o teste com a dose pela metade é o tipo de furo que aparece no primeiro uso. O lembrete também entra: um aviso por horário, Tomar e Adiar, inclusive com o app fechado, e o toque no corpo abre Remédios.
 

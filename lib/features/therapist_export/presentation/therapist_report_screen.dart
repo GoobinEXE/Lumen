@@ -6,6 +6,7 @@ import '../../../core/providers.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/async_placeholders.dart';
 import '../../routine_mood/domain/routine_export.dart';
+import '../domain/export_period.dart';
 import '../../routine_mood/presentation/daily_routine_screen.dart';
 import '../service/therapist_pdf_generator.dart';
 
@@ -22,16 +23,20 @@ class TherapistReportScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = ref.watch(appLocalizationsProvider);
-    final sleepAsync = ref.watch(sleepHistoryProvider);
+    final sleepAsync = ref.watch(clinicalSleepHistoryProvider);
     final moodAsync = ref.watch(moodEntriesProvider);
-    final recoveryAsync = ref.watch(recoveryHistoryProvider);
+    final recoveryAsync = ref.watch(clinicalRecoveryHistoryProvider);
     final routineAsync = ref.watch(recentRoutineSnapshotsProvider);
-    final appleSomCount =
-        ref.watch(appleHealthStateOfMindCountProvider).value ?? 0;
     final routineSnapshots = routineAsync.value ?? const [];
+    final now = DateTime.now();
+    final appleSomCount = appleHealthSomDaysInPeriod(
+      snapshots: routineSnapshots,
+      now: now,
+      periodDays: periodDays,
+    );
     final routineLines = routineExportLines(
       snapshots: routineSnapshots,
-      now: DateTime.now(),
+      now: now,
       periodDays: periodDays,
       hideIntimateNotes: hideIntimateNotes,
     );

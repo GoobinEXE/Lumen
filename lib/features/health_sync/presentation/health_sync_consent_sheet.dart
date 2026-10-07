@@ -56,7 +56,9 @@ class _HealthSyncConsentSheetState
     if (granted) {
       await ref.read(healthSyncEnabledProvider.notifier).setEnabled(true);
       ref.invalidate(sleepHistoryProvider);
+      ref.invalidate(clinicalSleepHistoryProvider);
       ref.invalidate(recoveryHistoryProvider);
+      ref.invalidate(clinicalRecoveryHistoryProvider);
     }
 
     if (!mounted) return;

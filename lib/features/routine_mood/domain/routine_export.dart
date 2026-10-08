@@ -1,3 +1,4 @@
+import 'mood_entry.dart';
 import 'routine_snapshot.dart';
 
 /// Linha que PDF, WhatsApp e card descrevem do mesmo jeito.
@@ -49,6 +50,14 @@ List<RoutineExportLine> routineExportLines({
             : _textOrNull(snapshot.therapistNotes),
       ),
   ];
+}
+
+List<MoodEntry> redactIntimateMoodNotes(
+  List<MoodEntry> entries, {
+  required bool hideIntimateNotes,
+}) {
+  if (!hideIntimateNotes) return entries;
+  return [for (final entry in entries) entry.withoutPrivateNote()];
 }
 
 String? _textOrNull(String? value) {

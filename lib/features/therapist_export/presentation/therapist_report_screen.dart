@@ -129,6 +129,7 @@ class TherapistReportScreen extends ConsumerWidget {
                   appleHealthSomCount: appleSomCount,
                   routineLines: routineLines,
                   periodDays: periodDays,
+                  hideIntimateNotes: hideIntimateNotes,
                   l10n: l10n,
                 ),
                 loadingWidget: Center(

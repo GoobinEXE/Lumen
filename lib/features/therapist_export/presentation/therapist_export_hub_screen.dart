@@ -8,7 +8,6 @@ import '../../../core/providers.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/async_placeholders.dart';
-import '../../routine_mood/domain/mood_entry.dart';
 import '../../routine_mood/domain/routine_export.dart';
 import '../../routine_mood/presentation/daily_routine_screen.dart';
 import '../data/therapist_contact_repository.dart';
@@ -154,23 +153,10 @@ class _TherapistExportHubScreenState
                   key: const ValueKey('export-data'),
                   builder: (context) {
                     final sleepRecords = sleepAsync.value ?? [];
-                    final moodEntries = (moodAsync.value ?? [])
-                        .map(
-                          (entry) => _hideIntimateNotes
-                              ? MoodEntry(
-                                  id: entry.id,
-                                  timestamp: entry.timestamp,
-                                  valence: entry.valence,
-                                  energy: entry.energy,
-                                  focus: entry.focus,
-                                  tookMedication: entry.tookMedication,
-                                  sensoryOverload: entry.sensoryOverload,
-                                  emotionLabels: entry.emotionLabels,
-                                  emotionSource: entry.emotionSource,
-                                )
-                              : entry,
-                        )
-                        .toList();
+                    final moodEntries = redactIntimateMoodNotes(
+                      moodAsync.value ?? const [],
+                      hideIntimateNotes: _hideIntimateNotes,
+                    );
                     final recoverySnapshots = recoveryAsync.asData?.value ?? [];
                     final routineLines = routineExportLines(
                       snapshots: routineSnapshots,

@@ -49,6 +49,22 @@ class MoodEntry {
     };
   }
 
+  /// A nota livre sai do export quando a pessoa pede para ocultar o texto íntimo.
+  MoodEntry withoutPrivateNote() {
+    if (note == null) return this;
+    return MoodEntry(
+      id: id,
+      timestamp: timestamp,
+      valence: valence,
+      energy: energy,
+      focus: focus,
+      tookMedication: tookMedication,
+      sensoryOverload: sensoryOverload,
+      emotionLabels: emotionLabels,
+      emotionSource: emotionSource,
+    );
+  }
+
   factory MoodEntry.fromMap(Map<String, dynamic> map) {
     return MoodEntry(
       id: map['id'] as String,

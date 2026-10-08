@@ -24,8 +24,13 @@ class TherapistPdfGenerator {
     List<DailyRecoverySnapshot> recoverySnapshots = const [],
     int periodDays = 7,
     int appleHealthSomCount = 0,
+    bool hideIntimateNotes = false,
     List<RoutineExportLine> routineLines = const [],
   }) async {
+    final reportedMoods = redactIntimateMoodNotes(
+      moodEntries,
+      hideIntimateNotes: hideIntimateNotes,
+    );
     final pdf = pw.Document();
     final locale = l10n.localeName;
     final languageCode = locale.split('_').first;
@@ -48,18 +53,18 @@ class TherapistPdfGenerator {
     final deficitNightsCount = sleepRecords.where((s) => s.hasSleepDeficit).length;
 
     final paralyzedCount =
-        moodEntries.where((m) => m.focus == FocusState.paralyzed).length;
+        reportedMoods.where((m) => m.focus == FocusState.paralyzed).length;
     final hyperfocusCount =
-        moodEntries.where((m) => m.focus == FocusState.hyperfocus).length;
+        reportedMoods.where((m) => m.focus == FocusState.hyperfocus).length;
     final scatteredCount =
-        moodEntries.where((m) => m.focus == FocusState.scattered).length;
+        reportedMoods.where((m) => m.focus == FocusState.scattered).length;
     final focusedCount =
-        moodEntries.where((m) => m.focus == FocusState.focused).length;
-    final sensoryCount = moodEntries.where((m) => m.sensoryOverload).length;
-    final medCount = moodEntries.where((m) => m.tookMedication).length;
+        reportedMoods.where((m) => m.focus == FocusState.focused).length;
+    final sensoryCount = reportedMoods.where((m) => m.sensoryOverload).length;
+    final medCount = reportedMoods.where((m) => m.tookMedication).length;
 
     final labelCounts = <String, int>{};
-    for (final m in moodEntries) {
+    for (final m in reportedMoods) {
       for (final id in m.emotionLabels) {
         labelCounts[id] = (labelCounts[id] ?? 0) + 1;
       }
@@ -76,7 +81,7 @@ class TherapistPdfGenerator {
     final avgNoise =
         _avg(recoverySnapshots.map((r) => r.avgEnvironmentalDb));
     final somFromApple = appleHealthSomCount +
-        moodEntries
+        reportedMoods
             .where((m) =>
                 m.emotionSource == StateOfMindSource.appleHealth &&
                 m.emotionLabels.isNotEmpty)
@@ -84,7 +89,7 @@ class TherapistPdfGenerator {
 
     final insights = CorrelationEngine.analyze(
       sleepRecords: sleepRecords,
-      moodEntries: moodEntries,
+      moodEntries: reportedMoods,
       recoverySnapshots: recoverySnapshots,
       copy: L10nCorrelationCopy(l10n),
     );
@@ -100,6 +105,11 @@ class TherapistPdfGenerator {
         '${s.qualityScore}/100',
       ];
     }).toList();
+
+    final notedMoods = reportedMoods
+        .where((m) => m.note != null && m.note!.isNotEmpty)
+        .take(5)
+        .toList();
 
     pdf.addPage(
       pw.MultiPage(
@@ -360,7 +370,7 @@ class TherapistPdfGenerator {
               ],
               pw.SizedBox(height: 4),
               pw.Text(
-                l10n.pdfMedicationTaken(medCount, moodEntries.length),
+                l10n.pdfMedicationTaken(medCount, reportedMoods.length),
                 style: const pw.TextStyle(fontSize: 9, color: PdfColors.grey800),
               ),
             ],
@@ -412,20 +422,19 @@ class TherapistPdfGenerator {
                 ),
               );
             }),
-            pw.SizedBox(height: 14),
-            pw.Text(
-              l10n.pdfSection4Triggers,
-              style: pw.TextStyle(
-                fontSize: 13,
-                fontWeight: pw.FontWeight.bold,
-                color: PdfColors.teal900,
+            if (notedMoods.isNotEmpty) ...[
+              pw.SizedBox(height: 14),
+              pw.Text(
+                l10n.pdfSection4Triggers,
+                style: pw.TextStyle(
+                  fontSize: 13,
+                  fontWeight: pw.FontWeight.bold,
+                  color: PdfColors.teal900,
+                ),
               ),
-            ),
-            pw.SizedBox(height: 6),
-            ...moodEntries
-                .where((m) => m.note != null && m.note!.isNotEmpty)
-                .take(5)
-                .map((entry) {
+              pw.SizedBox(height: 6),
+            ],
+            ...notedMoods.map((entry) {
               final labels = entry.emotionLabels
                   .map((id) => StateOfMindLabels.label(id, languageCode))
                   .join(', ');

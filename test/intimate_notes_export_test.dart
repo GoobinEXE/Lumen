@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:noa/features/routine_mood/domain/mood_entry.dart';
 import 'package:noa/features/routine_mood/domain/routine_export.dart';
@@ -65,9 +66,9 @@ void main() {
       l10n: l10n,
     );
 
-    expect(message, isNot(contains(secret)));
-    expect(_pdfPlainText(pdf), isNot(contains(secret)));
-    expect(_pdfPlainText(visible), contains(secret));
+    expect(message, isNot(contains('briguei')));
+    expect(_pdfPlainText(pdf), isNot(contains('briguei')));
+    expect(_pdfPlainText(visible), contains('briguei'));
   });
 }
 

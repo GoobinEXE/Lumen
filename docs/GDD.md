@@ -2,7 +2,7 @@
 
 > Documento vivo de produto e desenvolvimento.  
 > **App:** Lumen (package `noa`)  
-> **Versão do doc:** 1.11 · **Data:** 2026-10-08  
+> **Versão do doc:** 1.12 · **Data:** 2026-10-09  
 > **Stack:** Flutter · Riverpod · SharedPreferences · Apple Health / Samsung Health / Health Connect  
 > **Plataformas-alvo:** iOS (primário), Android, Web (parcial)  
 > **Referências:** [PRD](PRD.md) (requisitos do protótipo) · telas em `Design/`
@@ -351,7 +351,7 @@ O caminho rápido grava em dois lugares, com o mesmo timestamp: o histórico (`M
 | M05 | Alerta de refil | ✅ | threshold |
 | M06 | Importar meds do Apple Health | ✅ | bridge `readMedications` |
 | M07 | Sync dose events Apple ↔ Lumen | 🟡 | read + write na bridge; UX parcial |
-| M08 | Notificações locais | ✅ | um aviso por horário na semana; Tomar e Adiar, inclusive com o app fechado; o toque abre Remédios |
+| M08 | Notificações locais | ✅ | um aviso por horário na semana; Tomar e Adiar, inclusive com o app fechado, gravam no horário da notificação (com dois ou mais horários no dia a ação não reusa o log de outro horário); o toque abre Remédios |
 | M09 | Vincular med local ↔ concept Apple | 🟡 | campos `appleConceptId` / `rxNormCode` |
 
 ### 6.5 Sono & analytics

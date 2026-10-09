@@ -215,6 +215,23 @@ class MedicationRepository {
   static bool _staticHasStatus(MedicationLog log) =>
       log.isTaken || log.skipped || log.snoozedUntil != null;
 
+  /// Horários distintos no cadastro. Sem o remédio, trata como um slot
+  /// para não duplicar a dose única quando a lista não lê.
+  static int _distinctScheduledSlots(
+    List<Medication> meds,
+    String medicationId,
+  ) {
+    for (final med in meds) {
+      if (med.id != medicationId) continue;
+      final anchor = DateTime(2000, 1, 1);
+      return {
+        for (final timeStr in med.scheduledTimes)
+          _minuteKey(_timeOnDay(anchor, timeStr)),
+      }.length;
+    }
+    return 1;
+  }
+
   static String _minuteKey(DateTime t) =>
       '${t.year}-${t.month}-${t.day} ${t.hour}:${t.minute}';
 
@@ -269,9 +286,14 @@ class MedicationRepository {
                 isSameCivilDay(log.scheduledTime, scheduled),
           )
           .toList();
-      final statusful = sameDay.where(_hasStatus).toList();
-      if (statusful.length == 1) return statusful.first;
-      if (sameDay.length == 1) return sameDay.first;
+      // Um horário só: a notificação pode cair num log do dia cujo minuto
+      // não bate (horário editado). Dois ou mais horários são doses
+      // separadas — reusar o log da manhã engole a confirmação da noite.
+      if (_distinctScheduledSlots(await _readMeds(), medicationId) <= 1) {
+        final statusful = sameDay.where(_hasStatus).toList();
+        if (statusful.length == 1) return statusful.first;
+        if (sameDay.length == 1) return sameDay.first;
+      }
 
       final created = MedicationLog(
         id: const Uuid().v4(),

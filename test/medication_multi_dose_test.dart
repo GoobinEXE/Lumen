@@ -116,5 +116,79 @@ void main() {
         expect(resumedAfternoon.skipped, isTrue);
       },
     );
+
+    test(
+      'notificação da segunda dose não grava em cima da primeira já tomada',
+      () async {
+        final morning = DateTime(2026, 10, 1, 8);
+        final evening = DateTime(2026, 10, 1, 20);
+        await repo.saveMedication(
+          const Medication(
+            id: 'a',
+            name: 'Venvanse',
+            dosage: '30mg',
+            scheduledTimes: ['08:00', '20:00'],
+            remainingStock: 30,
+          ),
+        );
+
+        // Caminho da notificação: a tela ainda não materializou os slots.
+        final first = await repo.ensureDoseLog(
+          medicationId: 'a',
+          medicationName: 'Venvanse 30mg',
+          scheduled: morning,
+        );
+        final morningTakenAt = DateTime(2026, 10, 1, 8, 2);
+        await repo.markAsTaken(first.id, morningTakenAt);
+
+        final second = await repo.ensureDoseLog(
+          medicationId: 'a',
+          medicationName: 'Venvanse 30mg',
+          scheduled: evening,
+        );
+        expect(second.id, isNot(first.id));
+        expect(second.scheduledTime.hour, 20);
+        expect(second.isTaken, isFalse);
+
+        final eveningTakenAt = DateTime(2026, 10, 1, 20, 1);
+        await repo.markAsTaken(second.id, eveningTakenAt);
+
+        final morningLog = await repo.logById(first.id);
+        final eveningLog = await repo.logById(second.id);
+        expect(morningLog!.isTaken, isTrue);
+        expect(morningLog.takenAt, morningTakenAt);
+        expect(morningLog.scheduledTime.hour, 8);
+        expect(eveningLog!.isTaken, isTrue);
+        expect(eveningLog.takenAt, eveningTakenAt);
+        expect(eveningLog.scheduledTime.hour, 20);
+
+        final meds = await repo.getMedications();
+        expect(meds.single.remainingStock, 28);
+      },
+    );
+
+    test('remédio de um horário ainda reusa o único log do dia', () async {
+      await repo.saveMedication(
+        const Medication(
+          id: 'a',
+          name: 'Venvanse',
+          dosage: '30mg',
+          scheduledTimes: ['08:00'],
+        ),
+      );
+      final created = await repo.ensureDoseLog(
+        medicationId: 'a',
+        medicationName: 'Venvanse 30mg',
+        scheduled: DateTime(2026, 10, 1, 8),
+      );
+      final again = await repo.ensureDoseLog(
+        medicationId: 'a',
+        medicationName: 'Venvanse 30mg',
+        scheduled: DateTime(2026, 10, 1, 9, 30),
+      );
+
+      expect(again.id, created.id);
+      expect(again.scheduledTime.hour, 8);
+    });
   });
 }

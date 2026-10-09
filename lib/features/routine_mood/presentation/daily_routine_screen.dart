@@ -6,19 +6,28 @@ import 'package:noa/l10n/app_localizations.dart';
 import 'package:uuid/uuid.dart';
 import '../../../core/icons/app_icons.dart';
 import '../../../core/localization/locale_provider.dart';
+import '../../../core/providers.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/glass_surface.dart';
+import '../../../core/theme/lumen_glass_style.dart';
 import '../../../core/theme/responsive.dart';
 import '../../../core/widgets/async_placeholders.dart';
-import '../../calendar/presentation/routine_calendar_screen.dart';
-import '../../state_of_mind/presentation/state_of_mind_editor.dart';
+import '../../../core/widgets/lumen_shell.dart';
+import '../../tasks/domain/task_item.dart';
+import '../../tasks/domain/task_period.dart';
+import '../../tasks/presentation/task_providers.dart';
+import '../../unstuck_assistant/presentation/unstuck_sheet.dart';
 import '../domain/daily_routine_state.dart';
 import '../domain/routine_snapshot.dart';
+import 'check_in_form.dart';
 import 'routine_providers.dart';
 import 'routine_snapshot_card.dart';
 
 export 'routine_providers.dart';
+import '../../../core/widgets/glass_icon_button.dart';
+import '../../../core/widgets/glass_nav_bar.dart';
+import '../../../core/widgets/glass_toast.dart';
 
 class DailyRoutineScreen extends ConsumerStatefulWidget {
   const DailyRoutineScreen({super.key});
@@ -29,20 +38,17 @@ class DailyRoutineScreen extends ConsumerStatefulWidget {
 
 class _DailyRoutineScreenState extends ConsumerState<DailyRoutineScreen> {
   DailyRoutineState? _state;
-  final TextEditingController _anchorController = TextEditingController();
   final TextEditingController _eveningController = TextEditingController();
   final TextEditingController _therapistNotesController =
       TextEditingController();
-  final TextEditingController _newHabitController = TextEditingController();
+  final GlobalKey<CheckInFormState> _checkInKey = GlobalKey<CheckInFormState>();
+  String? _anchorTaskId;
   bool _initialized = false;
   bool _isSaving = false;
-  bool _addingHabit = false;
-  int _draftEpoch = 0;
 
   void _initFromState(DailyRoutineState state) {
     if (_initialized) return;
     _state = state;
-    _anchorController.text = state.mainFocusAnchor;
     _eveningController.text = state.eveningReflection;
     _therapistNotesController.text = state.therapistNotes ?? '';
     _initialized = true;
@@ -50,11 +56,17 @@ class _DailyRoutineScreenState extends ConsumerState<DailyRoutineScreen> {
 
   @override
   void dispose() {
-    _anchorController.dispose();
     _eveningController.dispose();
     _therapistNotesController.dispose();
-    _newHabitController.dispose();
     super.dispose();
+  }
+
+  String _anchorTitleFromTasks(List<TaskItem> tasks) {
+    if (_anchorTaskId == null) return '';
+    for (final task in tasks) {
+      if (task.id == _anchorTaskId) return task.title.trim();
+    }
+    return '';
   }
 
   Future<void> _saveRoutine(
@@ -63,71 +75,61 @@ class _DailyRoutineScreenState extends ConsumerState<DailyRoutineScreen> {
   ) async {
     setState(() => _isSaving = true);
     HapticFeedback.lightImpact();
+    final tasks = ref.read(tasksListProvider).value ?? const [];
+    final taskRepo = ref.read(taskRepositoryProvider);
+    final savedAt = DateTime.now();
+    final checkIn = _checkInKey.currentState?.draft() ?? const CheckInDraft();
+    final som = checkIn.toStateOfMind(timestamp: savedAt);
     final draft = (_state ?? current).copyWith(
-      mainFocusAnchor: _anchorController.text.trim(),
+      mainFocusAnchor: _anchorTitleFromTasks(tasks),
       therapistNotes: _therapistNotesController.text.trim(),
       eveningReflection: _eveningController.text.trim(),
+      microHabits: taskRepo.titles(tasks),
+      completedHabits: taskRepo.completedTitles(tasks, savedAt),
+      stateOfMind: som,
+      tookPrescribedMedication:
+          (_state ?? current).tookPrescribedMedication ||
+          checkIn.tookMedication,
     );
-    final savedAt = DateTime.now();
     final snapshot = RoutineSnapshot.capture(
       id: const Uuid().v4(),
       savedAt: savedAt,
       draft: draft,
     );
+
+    await ref
+        .read(moodEntriesProvider.notifier)
+        .addEntry(
+          valence: checkIn.valence,
+          energy: checkIn.energy,
+          focus: checkIn.focus,
+          tookMedication: checkIn.tookMedication,
+          sensoryOverload: checkIn.sensoryOverload,
+          note: checkIn.note.isEmpty ? null : checkIn.note,
+          emotionLabels: checkIn.emotionLabels,
+          timestamp: savedAt,
+        );
+    // SoM do snapshot usa o mesmo timestamp do MoodEntry → ledger evita espelho duplo.
     await ref.read(routineHealthMirrorProvider.notifier).saveSnapshot(snapshot);
 
     final cleared = DailyRoutineState(
       date: DateTime(savedAt.year, savedAt.month, savedAt.day),
       microHabits: List<String>.from(draft.microHabits),
+      // Água é acumulada do dia civil; save não pode zerar o contador.
+      waterGlasses: draft.waterGlasses,
     );
 
     if (mounted) {
-      _anchorController.clear();
       _eveningController.clear();
       _therapistNotesController.clear();
+      _checkInKey.currentState?.reset();
       setState(() {
         _state = cleared;
-        _draftEpoch++;
+        _anchorTaskId = null;
         _isSaving = false;
       });
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(l10n.routineSavedSuccess)));
+      showGlassToast(context, l10n.routineSavedSuccess);
     }
-  }
-
-  void _removeHabit(String habit, DailyRoutineState current) {
-    final habits = List<String>.from(current.microHabits)..remove(habit);
-    final completed = Set<String>.from(current.completedHabits)..remove(habit);
-    setState(
-      () => _state = _state?.copyWith(
-        microHabits: habits,
-        completedHabits: completed,
-      ),
-    );
-  }
-
-  void _addHabit(DailyRoutineState current) {
-    final l10n = ref.read(appLocalizationsProvider);
-    final text = _newHabitController.text.trim();
-    if (text.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(l10n.habitEmptyError)));
-      return;
-    }
-    if (current.microHabits.contains(text)) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(l10n.habitDuplicateError)));
-      return;
-    }
-    final habits = List<String>.from(current.microHabits)..add(text);
-    setState(() {
-      _state = _state?.copyWith(microHabits: habits);
-      _addingHabit = false;
-      _newHabitController.clear();
-    });
   }
 
   @override
@@ -135,30 +137,18 @@ class _DailyRoutineScreenState extends ConsumerState<DailyRoutineScreen> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final l10n = ref.watch(appLocalizationsProvider);
-    final languageCode = ref.watch(activeLocaleProvider).languageCode;
     final routineAsync = ref.watch(todayRoutineDraftProvider);
     final snapshots = ref.watch(todaySnapshotsProvider).value ?? const [];
+    final tasksAsync = ref.watch(tasksListProvider);
 
     return PopScope(
       canPop: true,
       child: Scaffold(
-        appBar: AppBar(
-          title: Text(l10n.routineAppBarTitle),
-          actions: [
-            IconButton(
-              tooltip: l10n.routineCalendarTitle,
-              icon: const Icon(AppIcons.calendar),
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute<void>(
-                    builder: (_) => const RoutineCalendarScreen(),
-                  ),
-                );
-              },
-            ),
-          ],
-        ),
-        body: routineAsync.when(
+        extendBody: true,
+        resizeToAvoidBottomInset: false,
+        body: SafeArea(
+          bottom: false,
+          child: routineAsync.when(
           loading: () => const FormSkeleton(),
           error: (err, stack) =>
               Center(child: Text(l10n.errorWithDetails('$err'))),
@@ -171,9 +161,11 @@ class _DailyRoutineScreenState extends ConsumerState<DailyRoutineScreen> {
             ).format(DateTime.now());
 
             return SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.screenH,
-                vertical: AppSpacing.screenV,
+              padding: EdgeInsets.fromLTRB(
+                AppSpacing.screenH,
+                12,
+                AppSpacing.screenH,
+                GlassNavBar.reservedBottom(context),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -189,11 +181,24 @@ class _DailyRoutineScreenState extends ConsumerState<DailyRoutineScreen> {
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Text(
-                    l10n.routineCompassTitle,
-                    style: theme.textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          l10n.routineCompassTitle,
+                          style: theme.textTheme.headlineMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      GlassIconButton(
+                        tooltip: l10n.homeMyDaysTitle,
+                        icon: AppIcons.calendar,
+                        onPressed: () => openRoutineCalendarScreen(context),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 6),
                   Text(
@@ -206,48 +211,51 @@ class _DailyRoutineScreenState extends ConsumerState<DailyRoutineScreen> {
                           : AppColors.textMuted,
                     ),
                   ),
-                  const SizedBox(height: 24),
-                  _buildSectionCard(
-                    context: context,
-                    icon: AppIcons.anchor,
-                    title: l10n.routineAnchorLabel,
-                    subtitle: l10n.routineAnchorSubtitle,
-                    child: TextField(
-                      controller: _anchorController,
-                      onChanged: (val) =>
-                          _state = _state?.copyWith(mainFocusAnchor: val),
-                      decoration: InputDecoration(
-                        hintText: l10n.routineAnchorHint,
-                        hintStyle: TextStyle(
-                          fontSize: 13,
-                          color: isDark ? Colors.white38 : Colors.black38,
+                  const SizedBox(height: 16),
+                  GlassSurface(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.card,
+                      vertical: 10,
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          AppIcons.unstuck,
+                          size: 20,
+                          color: AppColors.unstuck,
                         ),
-                        filled: true,
-                        fillColor: isDark
-                            ? Colors.white.withValues(alpha: 0.05)
-                            : Colors.black.withValues(alpha: 0.03),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(AppRadii.input),
-                          borderSide: BorderSide.none,
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            l10n.diaUnstuckPrompt,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: isDark
+                                  ? AppColors.textMutedDark
+                                  : AppColors.textMuted,
+                            ),
+                          ),
                         ),
-                      ),
+                        TextButton(
+                          onPressed: () => UnstuckSheet.show(context),
+                          child: Text(l10n.diaUnstuckOpen),
+                        ),
+                      ],
                     ),
                   ),
                   const SizedBox(height: 18),
                   _buildSectionCard(
                     context: context,
-                    icon: AppIcons.sunrise,
-                    title: l10n.routineEmotionalStateTitle,
-                    subtitle: l10n.routineEmotionalStateSubtitle,
-                    child: StateOfMindEditor(
-                      key: ValueKey(_draftEpoch),
-                      initial: current.stateOfMind,
-                      languageCode: languageCode,
-                      onChanged: (entry) {
-                        setState(
-                          () => _state = _state?.copyWith(stateOfMind: entry),
-                        );
-                      },
+                    icon: AppIcons.checkin,
+                    title: l10n.checkinSectionTitle,
+                    subtitle: l10n.checkinSectionSubtitle,
+                    child: RepaintBoundary(
+                      child: CheckInForm(
+                        key: _checkInKey,
+                        // epoch força formulário limpo após salvar
+                        // Android: halo animado + dezenas de GlassChip = jank no scroll.
+                        showHalo: !lumenGlassAndroidLite(),
+                        showFeelingHeader: false,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 18),
@@ -255,126 +263,163 @@ class _DailyRoutineScreenState extends ConsumerState<DailyRoutineScreen> {
                     context: context,
                     icon: AppIcons.tasks,
                     title: l10n.microHabitsTitle,
-                    subtitle: l10n.routineMicroHabitsSubtitle,
+                    subtitle: l10n.dayChecklistSubtitle,
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: current.microHabits.length,
-                          itemBuilder: (context, index) {
-                            final habit = current.microHabits[index];
-                            final isDone = current.completedHabits.contains(
-                              habit,
-                            );
-                            return Row(
-                              children: [
-                                Expanded(
-                                  child: CheckboxListTile(
-                                    value: isDone,
-                                    title: Text(
-                                      habit,
+                        tasksAsync.when(
+                      loading: () => const FormSkeleton(),
+                      error: (err, stack) =>
+                          Text(l10n.errorWithDetails('$err')),
+                      data: (tasks) {
+                        final now = DateTime.now();
+                        final todayTasks = tasks
+                            .where((t) => TaskPeriod.appliesOn(t, now))
+                            .toList();
+                        if (todayTasks.isEmpty) {
+                          return Text(
+                            l10n.tasksHubEmptyToday,
+                            style: theme.textTheme.bodyMedium,
+                          );
+                        }
+                        return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(bottom: 8),
+                                    child: Text(
+                                      l10n.dayFocusSubtitle,
                                       style: TextStyle(
-                                        fontSize: 14,
-                                        decoration: isDone
-                                            ? TextDecoration.lineThrough
-                                            : null,
+                                        fontSize: 11,
+                                        color: isDark
+                                            ? AppColors.textMutedDark
+                                            : AppColors.textMuted,
                                       ),
                                     ),
-                                    activeColor: AppColors.primary,
-                                    contentPadding: EdgeInsets.zero,
-                                    controlAffinity:
-                                        ListTileControlAffinity.leading,
-                                    onChanged: (val) {
-                                      final updated = Set<String>.from(
-                                        current.completedHabits,
-                                      );
-                                      if (val == true) {
-                                        updated.add(habit);
-                                      } else {
-                                        updated.remove(habit);
-                                      }
-                                      setState(
-                                        () => _state = _state?.copyWith(
-                                          completedHabits: updated,
-                                        ),
+                                  ),
+                                  ListView.builder(
+                                    shrinkWrap: true,
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    itemCount: todayTasks.length,
+                                    itemBuilder: (context, index) {
+                                      final task = todayTasks[index];
+                                      final isDone =
+                                          TaskPeriod.isCompletedInCurrentPeriod(
+                                            task,
+                                            now,
+                                          );
+                                      final isAnchor = _anchorTaskId == task.id;
+                                      return Row(
+                                        children: [
+                                          Expanded(
+                                            child: Semantics(
+                                              checked: isDone,
+                                              label: task.title,
+                                              child: CheckboxListTile(
+                                                value: isDone,
+                                                title: Text(
+                                                  task.title,
+                                                  style: TextStyle(
+                                                    fontSize: 14,
+                                                    fontWeight: isAnchor
+                                                        ? FontWeight.w700
+                                                        : FontWeight.w400,
+                                                    decoration: isDone
+                                                        ? TextDecoration
+                                                              .lineThrough
+                                                        : null,
+                                                  ),
+                                                ),
+                                                subtitle: task.timeOfDay == null
+                                                    ? (isAnchor
+                                                          ? Text(
+                                                              l10n.taskDayAnchorBadge,
+                                                              style: TextStyle(
+                                                                fontSize: 12,
+                                                                color: AppColors
+                                                                    .primary,
+                                                              ),
+                                                            )
+                                                          : null)
+                                                    : Text(
+                                                        isAnchor
+                                                            ? '${l10n.taskReminderChip(task.timeOfDay!)} · ${l10n.taskDayAnchorBadge}'
+                                                            : l10n.taskReminderChip(
+                                                                task.timeOfDay!,
+                                                              ),
+                                                        style: TextStyle(
+                                                          fontSize: 12,
+                                                          color: isDark
+                                                              ? AppColors
+                                                                    .textMutedDark
+                                                              : AppColors
+                                                                    .textMuted,
+                                                        ),
+                                                      ),
+                                                activeColor: AppColors.primary,
+                                                contentPadding: EdgeInsets.zero,
+                                                controlAffinity:
+                                                    ListTileControlAffinity
+                                                        .leading,
+                                                onChanged: (_) async {
+                                                  HapticFeedback.selectionClick();
+                                                  await ref
+                                                      .read(
+                                                        tasksListProvider
+                                                            .notifier,
+                                                      )
+                                                      .toggleComplete(task);
+                                                },
+                                              ),
+                                            ),
+                                          ),
+                                          IconButton(
+                                            tooltip: l10n.taskDayAnchorTooltip,
+                                            constraints: const BoxConstraints(
+                                              minWidth: kMinTapTarget,
+                                              minHeight: kMinTapTarget,
+                                            ),
+                                            onPressed: () {
+                                              HapticFeedback.selectionClick();
+                                              setState(() {
+                                                _anchorTaskId = isAnchor
+                                                    ? null
+                                                    : task.id;
+                                              });
+                                            },
+                                            icon: Icon(
+                                              isAnchor
+                                                  ? AppIcons.anchor
+                                                  : Icons.anchor_outlined,
+                                              size: 20,
+                                              color: isAnchor
+                                                  ? AppColors.primary
+                                                  : (isDark
+                                                        ? AppColors
+                                                              .textMutedDark
+                                                        : AppColors.textMuted),
+                                            ),
+                                          ),
+                                        ],
                                       );
                                     },
                                   ),
-                                ),
-                                IconButton(
-                                  tooltip: l10n.removeTooltip,
-                                  icon: Icon(
-                                    Icons.remove_circle_outline,
-                                    size: 20,
-                                    color: isDark
-                                        ? AppColors.textMutedDark
-                                        : AppColors.textMuted,
-                                  ),
-                                  onPressed: () => _removeHabit(habit, current),
-                                ),
-                              ],
-                            );
-                          },
+                                ],
+                              );
+                      },
                         ),
-                        if (_addingHabit) ...[
-                          const SizedBox(height: 8),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: TextField(
-                                  controller: _newHabitController,
-                                  autofocus: true,
-                                  onSubmitted: (_) => _addHabit(current),
-                                  decoration: InputDecoration(
-                                    hintText: l10n.microHabitHint,
-                                    hintStyle: TextStyle(
-                                      fontSize: 13,
-                                      color: isDark
-                                          ? Colors.white38
-                                          : Colors.black38,
-                                    ),
-                                    filled: true,
-                                    fillColor: isDark
-                                        ? Colors.white.withValues(alpha: 0.05)
-                                        : Colors.black.withValues(alpha: 0.03),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        AppRadii.input,
-                                      ),
-                                      borderSide: BorderSide.none,
-                                    ),
-                                    isDense: true,
-                                  ),
-                                ),
-                              ),
-                              IconButton(
-                                icon: const Icon(Icons.check_circle_outline),
-                                color: AppColors.primary,
-                                onPressed: () => _addHabit(current),
-                              ),
-                              IconButton(
-                                icon: const Icon(Icons.close),
-                                onPressed: () => setState(() {
-                                  _addingHabit = false;
-                                  _newHabitController.clear();
-                                }),
-                              ),
-                            ],
-                          ),
-                        ] else
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: TextButton.icon(
-                              style: TextButton.styleFrom(
-                                minimumSize: const Size(0, kMinTapTarget),
-                              ),
-                              onPressed: () =>
-                                  setState(() => _addingHabit = true),
-                              icon: const Icon(Icons.add, size: 18),
-                              label: Text(l10n.addMicroHabitButton),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: TextButton.icon(
+                            style: TextButton.styleFrom(
+                              minimumSize: const Size(0, kMinTapTarget),
                             ),
+                            onPressed: () => openTasksHub(context),
+                            icon: const Icon(AppIcons.tasks, size: 18),
+                            label: Text(l10n.tasksHubOpenFromDay),
                           ),
+                        ),
                       ],
                     ),
                   ),
@@ -624,6 +669,7 @@ class _DailyRoutineScreenState extends ConsumerState<DailyRoutineScreen> {
               ),
             );
           },
+          ),
         ),
       ),
     );

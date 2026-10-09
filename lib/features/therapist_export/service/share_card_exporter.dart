@@ -25,18 +25,23 @@ class ShareCardExporter {
 
       final tempDir = await getTemporaryDirectory();
       final file = File('${tempDir.path}/resumo_clinico_lumen.png');
-      await file.writeAsBytes(pngBytes);
+      try {
+        await file.writeAsBytes(pngBytes);
 
-      final xFile = XFile(file.path, mimeType: 'image/png');
-      await SharePlus.instance.share(
-        ShareParams(
-          files: [xFile],
-          text: shareTitle,
-          subject: shareSubject,
-        ),
-      );
-
-      return true;
+        final xFile = XFile(file.path, mimeType: 'image/png');
+        await SharePlus.instance.share(
+          ShareParams(
+            files: [xFile],
+            text: shareTitle,
+            subject: shareSubject,
+          ),
+        );
+        return true;
+      } finally {
+        try {
+          await file.delete();
+        } catch (_) {}
+      }
     } catch (e) {
       debugPrint('[ShareCardExporter] Erro ao exportar imagem do card: $e');
       return false;

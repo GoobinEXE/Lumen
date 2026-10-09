@@ -1,10 +1,12 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
+import '../features/health_sync/data/health_sync_prefs.dart';
+import '../features/health_sync/service/routine_health_mirror.dart';
 import '../features/routine_mood/data/mood_repository.dart';
 import '../features/routine_mood/domain/mood_entry.dart';
 import '../features/sleep_analytics/domain/correlation_engine.dart';
-import '../integrations/health/apple_health_service.dart';
+import '../integrations/health/facade_health_service.dart';
 import '../integrations/health/health_service.dart';
 import '../integrations/health/models/daily_environment_snapshot.dart';
 import '../integrations/health/models/daily_recovery_snapshot.dart';
@@ -18,9 +20,9 @@ final sharedPreferencesProvider = Provider<SharedPreferences>((ref) {
   throw UnimplementedError('SharedPreferences precisa ser inicializado no main');
 });
 
-/// Serviço de Saúde (Apple HealthKit / Health Connect)
+/// Serviço de Saúde (HealthKit / Samsung Health / Health Connect)
 final healthServiceProvider = Provider<HealthService>((ref) {
-  return AppleHealthService();
+  return FacadeHealthService();
 });
 
 /// Histórico de Sono dos últimos 14 dias
@@ -82,17 +84,23 @@ final moodRepositoryProvider = Provider<MoodRepository>((ref) {
 
 /// Notifier para gerenciar a lista de registros de humor
 class MoodEntriesNotifier extends StateNotifier<AsyncValue<List<MoodEntry>>> {
-  final MoodRepository _repository;
-
-  MoodEntriesNotifier(this._repository) : super(const AsyncValue.loading()) {
+  /// Começa com lista vazia (não `loading`) para a UI não ficar presa no
+  /// skeleton enquanto o JSON local carrega — o reload preenche em seguida.
+  MoodEntriesNotifier(this._ref) : super(const AsyncValue.data([])) {
     loadEntries();
   }
+
+  final Ref _ref;
+
+  MoodRepository get _repository => _ref.read(moodRepositoryProvider);
 
   Future<void> loadEntries() async {
     try {
       final entries = await _repository.getAllEntries();
+      if (!mounted) return;
       state = AsyncValue.data(entries);
     } catch (e, st) {
+      if (!mounted) return;
       state = AsyncValue.error(e, st);
     }
   }
@@ -105,10 +113,12 @@ class MoodEntriesNotifier extends StateNotifier<AsyncValue<List<MoodEntry>>> {
     required bool sensoryOverload,
     String? note,
     Set<String> emotionLabels = const {},
+    DateTime? timestamp,
   }) async {
+    final when = timestamp ?? DateTime.now();
     final newEntry = MoodEntry(
       id: const Uuid().v4(),
-      timestamp: DateTime.now(),
+      timestamp: when,
       valence: valence,
       energy: energy,
       focus: focus,
@@ -119,15 +129,24 @@ class MoodEntriesNotifier extends StateNotifier<AsyncValue<List<MoodEntry>>> {
     );
 
     await _repository.addEntry(newEntry);
+    await RoutineHealthMirror.mirrorCheckInIfEnabled(
+      prefs: _ref.read(sharedPreferencesProvider),
+      healthService: _ref.read(healthServiceProvider),
+      syncEnabled: _ref.read(healthSyncEnabledProvider),
+      valence: valence,
+      emotionLabels: emotionLabels,
+      timestamp: newEntry.timestamp,
+    );
     await loadEntries();
   }
 }
 
 final moodEntriesProvider =
-    StateNotifierProvider<MoodEntriesNotifier, AsyncValue<List<MoodEntry>>>((ref) {
-  final repository = ref.watch(moodRepositoryProvider);
-  return MoodEntriesNotifier(repository);
-});
+    StateNotifierProvider<MoodEntriesNotifier, AsyncValue<List<MoodEntry>>>((
+      ref,
+    ) {
+      return MoodEntriesNotifier(ref);
+    });
 
 /// Provedor de Insights de Correlação entre Sono, Recuperação e Sintomas de TDAH
 final correlationInsightsProvider = Provider<List<CorrelationInsight>>((ref) {

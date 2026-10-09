@@ -30,7 +30,7 @@ A mudança fecha com `flutter analyze` sem issues e `flutter test` passando.
 - Persistência: `shared_preferences ^2.5.5`, `path_provider ^2.1.6`, `uuid ^4.6.0`
 - Saúde: `health ^13.3.2` e `ios/Runner/HealthKitBridge.swift` (channel `dev.prism.lumen/healthkit_bridge`)
 - Sistema: `flutter_local_notifications ^22.3.1`, `share_plus ^13.3.0`, `printing ^5.14.3`, `pdf ^3.12.0`, `url_launcher ^6.3.2`
-- UI: `fl_chart ^1.2.0`, `intl 0.20.2`, `cupertino_icons ^1.0.9`
+- UI: `fl_chart ^1.2.0`, `intl 0.20.2`, `cupertino_icons ^1.0.9`, `liquid_glass_renderer` (Impeller)
 - Dev: `flutter_test` (SDK), `flutter_lints ^6.0.0`
 - iOS é a plataforma primária. Android usa o mesmo domínio.
 
@@ -41,7 +41,8 @@ Dado persistido passa por Riverpod. `setState` fica no formulário da própria t
 ```
 lib/features/<feature>/{domain,data,service,presentation}
 lib/core/                         tema, i18n, widgets
-lib/integrations/health/          HealthService
+lib/integrations/health/          HealthService facade + HealthAppConnector
+lib/integrations/samsung_health_bridge/
 lib/integrations/healthkit_bridge/
 ios/Runner/HealthKitBridge.swift
 lib/l10n/app_pt.arb
@@ -64,15 +65,15 @@ Domínio não importa Flutter. Modelo imutável, um tipo por conceito do GDD, co
 Cada gesto, texto, tema e aviso reusa a API do aparelho. A tela lê `MediaQuery` e o tema. Não desenhe de novo o que o Flutter já entrega.
 
 - Voltar: gesto do iOS e predictive back do Android (`PopScope`). A home não consome o back.
-- Check-in, Des-Trava e consentimento: `showModalBottomSheet` com `useSafeArea: true`. Rotina, medicações e hub: `MaterialPageRoute` a partir de `LumenShell`.
-- Teclado, notch e Dynamic Island: `SafeArea`, `viewPaddingOf`, `viewInsetsOf`. Sem altura fixa no lugar do teclado.
+- Check-in, forms e gavetas com teclado: **`showLumenSheet`** (+ `GlassSheet` ou `LumenKeyboardInset`, **`useRootNavigator: true`**). Sem root navigator a gaveta abre atrás da `GlassNavBar` e cobre o CTA. **Nunca** `useSafeArea: true` + `Padding(viewInsets)` + `GlassSheet` no mesmo fluxo. Sem `expandChild: true` em form longo. Rotina, medicações e hub: `MaterialPageRoute` a partir de `LumenShell`.
+- Teclado, notch e Dynamic Island: `SafeArea` nas telas; sheets usam `LumenKeyboardInset` / `GlassSheet` (`lumenSheetBottomInset`). Sem altura fixa no lugar do teclado. **`LumenShell` e scaffolds de aba / `GlassScaffold`: `resizeToAvoidBottomInset: false`** — tab bar e abas não sobem com o teclado; só a gaveta redimensiona. `GlassScaffold` empura o body abaixo de `reservedTop` (texto/gráfico nunca sob a app bar).
 - Hora da dose: `showTimePicker`. Data: `showDatePicker`. Formato: `intl` com o locale ativo.
 - Atualizar sono: `RefreshIndicator`. Toque de confirmar: `HapticFeedback`. Tema: `ThemeMode.system`.
 - Texto grande, negrito, contraste e reduzir movimento: ler o `MediaQuery` e manter o `textScaler`. Com reduzir movimento, a orb do Des-Trava fica estática.
 - Leitor de tela: `Semantics` no check-in, na dose e no Des-Trava.
 - Lista que cresce: `ListView.builder`. Gráfico: `RepaintBoundary`. Health no provider, no pull-to-refresh ou na sync incremental (`HKAnchoredObjectQuery` / `getChanges`, agregação no sistema). O `build` não lê HealthKit.
 - Dose: canal `medication_reminders`, ações e fuso do aparelho, em `medication_reminder_service.dart`. Compartilhar: `share_plus` e `printing`. WhatsApp: `url_launcher` + `canLaunchUrl`.
-- Saúde: a função existe nas duas plataformas (`docs/GDD.md` §9.0). Ponte mútua, leitura e escrita, só quando HealthKit e Health Connect têm o mesmo tipo, com o consentimento já pedido. Tipo só de um SDK continua no app na outra plataforma; a diferença é a ausência de espelho no app de saúde daquele aparelho. Lista vazia só quando não há registro local e o SDK não entregou o dado. State of Mind, agenda de medicação, luz e áudio: espelho só no HealthKit; no Android ficam no domínio local, luz e áudio por registro da pessoa. HRV é SDNN no iOS e RMSSD no Android, com a unidade no domínio, sem métrica combinada.
+- Saúde: a função existe nas duas plataformas (`docs/GDD.md` §9.0). Android escolhe `SamsungHealthConnector` quando o Samsung Health está instalado (Data SDK se o AAR estiver em `android/app/libs/`), senão `HealthConnectConnector`; gaps caem no HC. Apps OEM (Mi/Huawei/Garmin) → UX instrui sync com Health Connect. Ponte mútua só quando o connector e o par iOS têm o mesmo tipo. State of Mind, agenda de medicação, luz e áudio: espelho só no HealthKit; no Android ficam no domínio local. HRV é SDNN no iOS e RMSSD no Android.
 
 Widget, App Intent, relógio e Focus entram só quando o GDD promove o `FUT-*`. Até lá, a fluidez mora nas APIs desta seção.
 
@@ -99,23 +100,17 @@ class MoodEntry {
 ```
 
 ```dart
-Future<void> openCheckIn(BuildContext context) {
-  return showModalBottomSheet<void>(
+Future<void> openFormSheet(BuildContext context) {
+  return showLumenSheet<void>(
     context: context,
-    useSafeArea: true,
-    isScrollControlled: true,
-    builder: (context) {
-      final bottom = MediaQuery.viewInsetsOf(context).bottom;
-      return Padding(
-        padding: EdgeInsets.only(bottom: bottom),
-        child: const QuickCheckinModal(),
-      );
-    },
+    builder: (context) => const GlassSheet(
+      child: /* form — scroll do GlassSheet; sem NestedScroll / expandChild */,
+    ),
   );
 }
 ```
 
-Código que não entra no app: frase de culpa na tela, cópia robótica/engessada de IA e lembrete de dose com `Timer`. O countdown de 60 segundos do Des-Trava permanece na sheet.
+Código que não entra no app: frase de culpa na tela, cópia robótica/engessada de IA, lembrete de dose com `Timer`, e sheet com teclado via `showModalBottomSheet`+`useSafeArea: true`+`Padding(viewInsets)` (use `showLumenSheet`). O countdown de 60 segundos do Des-Trava permanece na sheet.
 
 ```dart
 Text('Você falhou o hábito de hoje');

@@ -4,6 +4,10 @@
 <dict>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
+	<key>FLTEnableFlutterGPU</key>
+	<true/>
+	<key>FLTEnableImpeller</key>
+	<true/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
@@ -35,7 +39,7 @@
 	<key>NSCalendarsUsageDescription</key>
 	<string>O Lumen grava no Calendário a hora em que você salva a rotina, com a âncora e o que você anotou.</string>
 	<key>NSHealthShareUsageDescription</key>
-	<string>O Lumen lê sono, batimentos, HRV, FC em repouso, passos, exercício, estado emocional, tempo sob luz do dia, exposição sonora ambiental/fones e medicamentos/doses do Apple Health para correlacionar recuperação, humor e sobrecarga.</string>
+	<string>O Lumen lê sono, batimentos, HRV, FC em repouso, passos, exercício, estado emocional, tempo sob luz do dia, exposição sonora ambiental/fones, medicamentos/doses, altura, peso, sexo biológico e data de nascimento do Apple Health para correlacionar recuperação, humor e sobrecarga e preencher seu perfil sem redigitar.</string>
 	<key>NSHealthUpdateUsageDescription</key>
 	<string>O Lumen escreve no Apple Health água, atenção plena e estados emocionais registrados no app, para manter a sincronização mútua. Lembretes e estoque de medicação ficam só no Lumen.</string>
 	<key>UIApplicationSceneManifest</key>

@@ -2,8 +2,8 @@
 
 > Documento vivo de produto e desenvolvimento.  
 > **App:** Lumen (package `noa`)  
-> **Versão do doc:** 1.5 · **Data:** 2026-10-01  
-> **Stack:** Flutter · Riverpod · SharedPreferences · Apple Health / Health Connect  
+> **Versão do doc:** 1.11 · **Data:** 2026-10-08  
+> **Stack:** Flutter · Riverpod · SharedPreferences · Apple Health / Samsung Health / Health Connect  
 > **Plataformas-alvo:** iOS (primário), Android, Web (parcial)  
 > **Referências:** [PRD](PRD.md) (requisitos do protótipo) · telas em `Design/`
 
@@ -17,6 +17,7 @@
 4. [Princípios de design (UX TDAH)](#4-princípios-de-design-ux-tdah)
 5. [Arquitetura técnica](#5-arquitetura-técnica)
 6. [Mapa de features atuais](#6-mapa-de-features-atuais)
+    - [Como ler os IDs e as siglas](#como-ler-os-ids-e-as-siglas)
 7. [Modelos de dados](#7-modelos-de-dados)
 8. [Fluxos de usuário](#8-fluxos-de-usuário)
 9. [Integrações](#9-integrações)
@@ -58,8 +59,8 @@ Dois pilares complementares no mesmo app:
 | | **Ferramentas Visuais de Ritmo** | Curva contínua de energia/foco do dia (`fl_chart`) e checklist tátil de saída ("Cadê minhas coisas?"). Entram na fase atual |
 | | **Central de Tarefas & Lembretes** | To-do com alarme persistente (5 min) e modo foco. Entra na fase atual |
 | | **Des-Trava Anti-Paralisia** | Assistente de 3 micro-passos + timer 60s com haptic |
-| **Acompanhamento Clínico** | **Check-in micro** | Humor + foco + energia em ~10s |
-| | **Rotina do dia** | Âncora, tarefas, água, State of Mind |
+| **Acompanhamento Clínico** | **Check-in** | Humor + foco + energia (UI única; atalho Home a abolir) |
+| | **Dia** | Check-in embutido, Foco do dia (tarefa fixada), água, pauta/fechamento |
 | | **Medicação & Janela** | Agenda, estoque, tomada/snooze/pular, curva de eficácia |
 | | **Sono & recuperação** | Histórico Apple Health + correlações acionáveis |
 | | **Hub clínico** | PDF, WhatsApp, card visual semanal e anatomia de dias atípicos |
@@ -80,11 +81,11 @@ Dois pilares complementares no mesmo app:
 | Nome de produto | **Lumen** |
 | Package / código | `noa` |
 | Tom de voz | 100% humanizado, empático, sem clichês de IA (perfis selecionáveis) |
-| Metáfora visual | Soft Liquid Glass — superfícies leves, CTAs vivos, fundo creme/preto suave |
+| Metáfora visual | Apple Liquid Glass (`liquid_glass_renderer` + Impeller/Flutter GPU) — refração no chrome iOS; Android chrome/sheet com FakeGlass + blur moderado (poucas camadas); chips densos e surfaces Android em paint lite sem BackdropFilter; zero visual Material 3 / You / Google |
 | Cores-chave | Teal `#1FAF8A` (primária), lavanda `#8B7BC8` (acento), coral `#FF8A5C` (Des-Trava) |
 | Ícone | Arte em `lumen.ai`. iOS é o `ios/Runner/Lumen.icon` do Icon Composer, com vidro e luz, sem raster chapado por cima. Android usa essa arte no adaptive icon: fundo `#F6F1DE` no claro e `#16161A` no escuro; o L fica `#3A3A40` no claro e `#F4F1EC` no escuro |
 | Locales | `pt` (fonte), `en`, `es`, `ja` |
-| Versão do app | [SemVer](https://semver.org/lang/pt-BR/) em `pubspec.yaml`: `MAJOR.MINOR.PATCH`. Atual: `0.1.0` (série 0, antes do lançamento). `1.0.0` é o primeiro lançamento público. O `+N` do Flutter é só o build da loja e sobe a cada envio |
+| Versão do app | [SemVer](https://semver.org/lang/pt-BR/) em `pubspec.yaml`: `MAJOR.MINOR.PATCH`. Atual: `0.2.2` (série 0, antes do lançamento). `1.0.0` é o primeiro lançamento público. O `+N` do Flutter é só o build da loja e sobe a cada envio |
 
 ### Perfis de tom de voz (humanizados, zero dialeto de IA)
 
@@ -113,7 +114,7 @@ O Lumen elimina qualquer tom robótico, jargões terapêuticos engessados ou pos
 
 ### Persona A — Marcelo (usuário primário)
 
-Persona de produto do PRD, também usada como nome fixo na UI hoje (`H14`):
+Persona de produto do PRD (nome dinâmico na UI via perfil local, `H14`):
 
 - 31 anos, designer de produto, TDAH combinado em acompanhamento.
 - iPhone + Apple Watch. Exemplo de estimulante: lisdexanfetamina 30 mg, janela longa (~10 h).
@@ -129,7 +130,7 @@ Persona de produto do PRD, também usada como nome fixo na UI hoje (`H14`):
 
 ### Persona C — Usuário Android (secundário)
 
-- Mesma UX local; Health Connect parcial; bridge State of Mind / ambiente = no-op ou vazio.
+- Mesma UX local; saúde via `HealthAppConnector` (Samsung Health quando instalado, senão Health Connect). Apps OEM (Mi/Huawei/Garmin) → instrução para ligar no Health Connect. SoM / ambiente / meds no app de saúde = no-op ou vazio.
 
 ---
 
@@ -153,7 +154,7 @@ lib/
 ├── main.dart                 # bootstrap + LumenApp
 ├── core/                     # tema, i18n providers, widgets, ícones
 ├── features/
-│   ├── home/                 # HomeScreen (hub)
+│   ├── home/                 # HomeFichaScreen (Início / ficha viva)
 │   ├── routine_mood/         # check-in, rotina diária, mood repo
 │   ├── medications/          # meds + logs + lembretes + efficacy
 │   ├── sleep_analytics/      # cards + CorrelationEngine
@@ -175,38 +176,142 @@ lib/
 | Persistência | SharedPreferences (JSON maps) |
 | Domínio | classes imutáveis + `toMap` / `fromMap` |
 | Health | interface `HealthService` → `AppleHealthService` |
-| UI | Material 3 + glass surfaces; navegação `MaterialPageRoute` |
+| UI | `CupertinoApp` + tema Material **invisível** no `builder` (só engine: forms/a11y/rotas); Apple Liquid Glass (`GlassSurface` / `GlassSheet` / `GlassNavBar` / `GlassAppBar` / `GlassChip` / `LumenFab` via `liquid_glass_renderer`); 4 abas irmãs no `PageView` + `Navigator` aninhado (`LumenShell`); Impeller + Flutter GPU. Sem `go_router` (FUT-52). Política: **zero visual** Material 3 / You / Google |
 
 ### Dependências relevantes
 
-`flutter_riverpod`, `health`, `fl_chart`, `pdf` + `printing`, `share_plus`, `shared_preferences`, `uuid`, `url_launcher`, `flutter_local_notifications`, `intl` / `flutter_localizations`.
+`flutter_riverpod`, `health`, `fl_chart`, `pdf` + `printing`, `share_plus`, `shared_preferences`, `uuid`, `url_launcher`, `flutter_local_notifications`, `intl` / `flutter_localizations`, `liquid_glass_renderer` (Impeller; `FakeGlass` no fallback).
 
 ---
 
 ## 6. Mapa de features atuais
 
-Legenda de status: ✅ feito · 🟡 parcial ou nesta fase · ❌ ausente · 🔮 futuro (ver §13) · 🔎 pesquisar mais
+### Como ler os IDs e as siglas
 
-### 6.1 Home (hub)
+Cada linha das tabelas abaixo tem um **ID de feature**: uma ou mais letras (a área do app) + número com zero à esquerda (o item). Exemplo: **H03** = Home, item 03 → idioma pelo sistema.
+
+Isso **não** é a mesma coisa que:
+
+| Parece com… | Mas é… | Onde vive |
+|-------------|--------|-----------|
+| **H03** | Feature da Home (idioma do SO) | §6.1 |
+| **H3** (sem zero) | Task do Epic H (timeline 24h) | §11 |
+| **P01** | Feature de plataforma (i18n) | §6.10 |
+| **P0** / **P1** / **P2** | Prioridade (ouro / prata / bronze) | §9 e §12 |
+| **C01** | Feature do Check-in (valência) | §6.2 |
+| **C1** (sem zero) | Task do Epic C (modelo Medication) | §11 |
+| **FUT-21** | Ideia no backlog futuro | §13 |
+
+**Regra prática:** número com dois dígitos (`H03`, `M04`) = feature da §6. Número sem zero (`H3`, `B7`, `J1`) = task de epic na §11. `FUT-*` = ainda não é fase atual. `P0`/`P1`/`P2` = prioridade, não plataforma.
+
+#### Prefixos de feature (§6)
+
+| Prefixo | Significa | Seção |
+|---------|-----------|-------|
+| **H** | **H**ome (hub principal) | §6.1 |
+| **C** | **C**heck-in rápido (mood) | §6.2 |
+| **R** | **R**otina do dia | §6.3 |
+| **M** | **M**edicações | §6.4 |
+| **S** | **S**ono & analytics | §6.5 |
+| **SM** | **S**tate of **M**ind | §6.6 |
+| **HS** | **H**ealth **S**ync | §6.7 |
+| **T** | Hub **t**erapeuta / export | §6.8 |
+| **U** | Des-Trava (**U**nstuck) | §6.9 |
+| **P** | **P**lataforma / infra | §6.10 |
+| **CAL** | **Cal**endário & Raio-X do dia | §6.11 |
+| **EXP** | Gastos de hiperfoco (**exp**enses) | §6.12 |
+| **VIS** | Ferramentas **vis**uais de apoio executivo | §6.13 |
+| **TSK** | **T**a**sk**s / lembretes unificados | §6.14 |
+| **FUT-** | Backlog **fut**uro (ainda não shipped) | §13 |
+
+#### Prefixo de epic / task (§11)
+
+Na §11 o board usa outra numeração: letra do **epic** + número sequencial sem zero (`A1`, `B7`, `H3`, `J4`). Os epics atuais:
+
+| Epic | Tema |
+|------|------|
+| **A** | Fundação |
+| **B** | Humor & rotina |
+| **C** | Medicações |
+| **D** | Health & insights |
+| **E** | Export clínico |
+| **F** | Des-Trava |
+| **G** | Qualidade & release |
+| **H** | Calendário e Raio-X |
+| **I** | Prótese do dia |
+| **J** | Itens desta fase (ciclo, cafeína, picos de FC, bateria mental) |
+
+Cada task da §11 costuma apontar para uma feature da §6 (ex.: task `H3` → feature `CAL03`), mas o texto do ID é outro sistema.
+
+#### Status nas tabelas
+
+| Símbolo | Significado |
+|---------|-------------|
+| ✅ | Feito |
+| 🟡 | Parcial ou nesta fase |
+| ❌ | Ausente |
+| 🔮 | Futuro (ver §13) |
+| 🔎 | Pesquisar mais (método / limiar ainda em aberto) |
+
+#### Outras siglas que aparecem no GDD
+
+| Sigla | Significado |
+|-------|-------------|
+| **PRD** | Product Requirements Document — recorte do protótipo em `docs/PRD.md` |
+| **GDD** | Este documento (produto + implementação) |
+| **CTA** | Call to action — botão / atalho principal na tela |
+| **CRUD** | Create, Read, Update, Delete — cadastro completo |
+| **SoM** | State of Mind — modelo emocional estilo Apple Health |
+| **HK** | HealthKit (Apple); ex.: `HKStateOfMind` |
+| **i18n** | Internationalization — textos em vários idiomas |
+| **MVP** | Minimum Viable Product — recorte mínimo usável |
+| **E2E** | End-to-end — ponta a ponta (ex.: sync multi-device) |
+| **REM** | Rapid Eye Movement — estágio de sono ligado a humor/foco |
+| **HRV** | Heart Rate Variability — variabilidade da frequência cardíaca |
+| **SDNN** | Tipo de HRV no iOS (desvio padrão dos intervalos NN) |
+| **RMSSD** | Tipo de HRV no Android / Health Connect (outra fórmula; não misturar com SDNN) |
+| **RHR** | Resting Heart Rate — frequência cardíaca de repouso |
+| **dB** | Decibel — intensidade sonora no card de ambiente |
+| **PRN** | *Pro re nata* — medicação “quando necessário” |
+| **TCC** | Terapia Cognitivo-Comportamental |
+| **TEA** | Transtorno do Espectro Autista |
+| **TDPM** | Transtorno Disfórico Pré-Menstrual |
+| **ASRS** / **PHQ-9** | Escalas clínicas opcionais no backlog (não diagnóstico) |
+| **GDPR** | Regulamento europeu de privacidade / exclusão de dados |
+| **PDF** / **CSV** / **JSON** | Formatos de export |
+| **UI** / **UX** | Interface / experiência do usuário |
+| **FC** | Frequência cardíaca (ex.: picos depois da dose no Epic J) |
+
+Termos de produto (Check-in, Des-Trava, Mirror, Foco do dia…) estão no [§15 Glossário](#15-glossário).
+
+### 6.1 Início (ficha viva / hub)
+
+Shell: **Início · Dia · Remédios · Pasta clínica** (4 abas; sem quinta). O Início é a ficha pessoal (`HomeFichaScreen`). Tarefas e Meus dias abrem na pilha da aba Início (`openTasksHub` / `openRoutineCalendarScreen`). Pasta clínica é a 4ª aba (`openClinicalFolderScreen`). Troca de aba faz pop-to-root na origem e no destino. Protótipo: `Design/Stitch/new/in_cio_hub_pessoal_ficha_viva/`.
 
 | ID | Feature | Status | Arquivo-chave |
 |----|---------|--------|---------------|
-| H01 | Saudação + subtítulo “sem pressão” | ✅ | `home_screen.dart` |
-| H02 | Toggle tema claro/escuro/sistema | ✅ | `theme_mode_provider.dart` |
-| H03 | Seletor de idioma | ✅ | `language_selector_dialog.dart` |
-| H04 | CTA Check-in rápido | ✅ | → `QuickCheckinModal` |
-| H05 | CTA Des-Trava | ✅ | → `UnstuckSheet` |
-| H06 | Atalho Rotina do dia | ✅ | → `DailyRoutineScreen` |
-| H07 | Card Medicações (resumo do dia) | ✅ | logs pending/taken |
-| H08 | Card Sono | ✅ | `SleepDashboardCard` na home, com o botão de sincronizar |
-| H09 | Card Recuperação | ✅ | `RecoveryDashboardCard` na home; exercício e luz em minutos |
-| H10 | Hub terapeuta | ✅ | `TherapistExportHubScreen` |
-| H11 | Insights “padrões do cérebro” | ✅ | `correlationInsightsProvider` |
-| H12 | Lista entradas recentes (mood) | ✅ | últimos 4 |
-| H13 | Pull-to-refresh (sono + recuperação + mood) | ✅ | |
-| H14 | Perfil / nome dinâmico | 🟡 | nome fixo “Marcelo” |
+| H01 | Saudação + subtítulo “sem pressão” | ✅ | `home_ficha_screen.dart` |
+| H02 | Tema claro/escuro/sistema | ✅ | `SettingsScreen` (engrenagem no Início / Perfil) |
+| H03 | Idioma pelo sistema | ✅ | atalho em Configurações abre o idioma do SO / do app |
+| H04 | CTA Check-in | ✅ | única porta: `CheckInForm` embutido na aba **Dia** |
+| H05 | CTA Des-Trava | ✅ | só na aba **Dia** (linha “Travou…? Abrir Des-Trava” → `UnstuckSheet`) |
+| H06 | Atalho Rotina / Foco do dia | ✅ | card no Início → aba Dia |
+| H07 | Card Medicações (resumo do dia) | ✅ | card no Início → aba Remédios |
+| H08 | Card Sono | ✅ | `SleepDashboardCard` no Início |
+| H09 | Card Recuperação | ✅ | `RecoveryDashboardCard` no Início |
+| H10 | Pasta clínica (export) | ✅ | `ClinicalFolderScreen` — 4ª aba via `openClinicalFolderScreen`; período, notes, WhatsApp/card/PDF |
+| H11 | Insights “padrões do cérebro” | ✅ | no Início |
+| H12 | Lista entradas recentes (mood) | ✅ | no Início; tap abre DayDigest |
+| H13 | Pull-to-refresh | ✅ | Início (sono / recuperação / mood) |
+| H14 | Perfil / nome dinâmico | ✅ | bloco de identidade + ícone → `ProfileScreen` |
+| H15 | Hub de configurações | ✅ | engrenagem no Início e no `ProfileScreen` |
+| H16 | Contatos profissionais (múltiplos) | ✅ | `CareContact` / `noa_care_contacts_v1`; papéis terapeuta/psicólogo/psiquiatra/outro |
 
-### 6.2 Check-in rápido (mood)
+### 6.2 Check-in (mood)
+
+Nome único na UI: **Check-in**. Não existe "micro check-in" como produto. A única superfície é o `CheckInForm` embutido na aba **Dia** (sem sheet paralela nem atalho na Início).
+
+O caminho rápido grava em dois lugares, com o mesmo timestamp: o histórico (`MoodEntry`, `MoodRepository`) e o Estado Emocional do dia, via `RoutineRepository.mergeTodayStateOfMind` (acessado por `RoutineHealthMirrorNotifier`). O merge **atualiza o último snapshot do dia civil** (mesmo `id`) ou, se o dia não tem snapshot, cria **um** snapshot mínimo (sem dado de saúde inventado). Check-ins repetidos não multiplicam snapshots. O SoM do snapshot é a fonte canônica: `DayDigest.latestStateOfMind` e o feed do perfil leem só dos snapshots, nunca derivam SoM de `MoodEntry`. Health recusado não bloqueia o save local.
 
 | ID | Feature | Status | Notas |
 |----|---------|--------|-------|
@@ -218,16 +323,15 @@ Legenda de status: ✅ feito · 🟡 parcial ou nesta fase · ❌ ausente · �
 | C06 | Labels emocionais (State of Mind) | ✅ | busca + chips multilíngues |
 | C07 | Nota livre opcional | ✅ | |
 | C08 | Persistência local | ✅ | `MoodRepository` |
-| C09 | Espelho automático no Apple SoM | 🟡 | prioridade: o check-in grava o State of Mind sozinho; hoje só a rotina espelha |
-
+| C09 | Espelho automático no Apple SoM | ✅ | check-in e rotina espelham via `RoutineHealthMirror` (iOS 18+; Android só local); SoM canônico do dia = snapshot (ver nota acima) |
 ### 6.3 Rotina do dia
 
 | ID | Feature | Status | Notas |
 |----|---------|--------|-------|
-| R01 | Âncora / foco principal do dia | ✅ | texto livre |
-| R02 | Editor State of Mind | ✅ | valence + labels + associations |
-| R03 | Tarefas (lista única) | ✅ | a seção da rotina junta o do dia, o pontual e a to-do; o nome na tela é Tarefas |
-| R04 | Água (copos) | ✅ | |
+| R01 | **Foco do dia** (nome de UI; “âncora” = sinônimo técnico) | ✅ | título da tarefa **fixada** no Dia → `mainFocusAnchor` (campo de domínio inalterado; sem TextField livre). Copy: “Foco do dia” com F maiúsculo, subtítulo `dayFocusSubtitle` na aba Dia, “Sem Foco do dia” no export |
+| R02 | Check-in na aba Dia | ✅ | `CheckInForm` embutido (única porta na Dia); grava MoodEntry + SoM no snapshot; modal só fora da Dia (ver §6.2) |
+| R03 | Checklist do dia | ✅ | aba Dia mostra só tarefas do período vigente; CRUD na Central de Tarefas (Ficha) |
+| R04 | Água (copos) | ✅ | `waterGlasses` reidrata do máximo dos snapshots do dia civil e sobrevive ao salvar; zera só na virada do dia |
 | R05 | Toggle medicação prescrita | ✅ | flag diária (além do módulo meds) |
 | R06 | Notas para o terapeuta | ✅ | |
 | R07 | Reflexão noturna | ✅ | campo na rotina; grava junto com o dia |
@@ -241,7 +345,7 @@ Legenda de status: ✅ feito · 🟡 parcial ou nesta fase · ❌ ausente · �
 | ID | Feature | Status | Notas |
 |----|---------|--------|-------|
 | M01 | CRUD medicamento | ✅ | editar na lista; vários horários; dias seguem a semana toda |
-| M02 | Logs do dia (gerar a partir da agenda) | ✅ | cria a dose que falta e tira o log do remédio apagado |
+| M02 | Logs do dia (gerar a partir da agenda) | ✅ | cria a dose que falta e tira o log do remédio apagado; tomada, pulada e adiada continuam após `_alignDayLogs` e resume. Fase 0.6 (multi-dose por slot): editor de `scheduledTimes` (adicionar/remover/editar com seletor do sistema, ordem cronológica, horário repetido recusado com aviso); um card e um log por ocorrência do dia; copy de pular cita o horário (“Pular a dose das {time}”) e diz que só aquela dose fica pulada; curva de eficácia por dose tomada; adesão por slot independente (tomar/pular/adiar não mexe nas outras doses do mesmo remédio), coberta por `test/medication_multi_dose_test.dart` e `test/next_dose_occurrence_test.dart` |
 | M03 | Marcar tomado / pular / snooze | ✅ | |
 | M04 | Janela de eficácia (pico / crash) | ✅ | pico fica dentro da janela, inclusive em 4 h |
 | M05 | Alerta de refil | ✅ | threshold |
@@ -293,27 +397,32 @@ Legenda de status: ✅ feito · 🟡 parcial ou nesta fase · ❌ ausente · �
 | HS02 | Request permissions (plugin + bridge) | ✅ | |
 | HS03 | Flag sync enabled (prefs) | ✅ | |
 | HS04 | Mirror água / mindfulness / SoM | ✅ | |
-| HS05 | Health Connect Android completo | 🟡 | contrato existe; cobertura parcial |
-| HS06 | Onboarding sync no primeiro uso | 🟡 | sheet existe; trigger pontual |
+| HS05 | Health Connect Android completo | ✅ | connector genérico + exercício/mindfulness workout + rationale |
+| HS06 | Onboarding sync no primeiro uso | ✅ | intro 1ª abertura + consent Health |
+| HS07 | Samsung Health Data SDK + seletor | ✅ | bridge + fallback HC; AAR opcional em `android/app/libs/` |
 
-### 6.8 Hub terapeuta / export
+### 6.8 Pasta clínica (export)
+
+4ª aba do shell: **Pasta clínica** (`ClinicalFolderScreen`, via `openClinicalFolderScreen`) — só material exportável. O prontuário pessoal vive no **Início** (`HomeFichaScreen`). Perfil biométrico completo continua em `ProfileScreen` (ícone no Início). Atalho em Configurações troca para esta aba (pop-to-root na origem).
 
 | ID | Feature | Status | Notas |
 |----|---------|--------|-------|
-| T01 | Hub com preview card semanal | ✅ | |
-| T02 | Telefone do terapeuta (prefs) | ✅ | |
-| T03 | Enviar resumo WhatsApp | ✅ | fallback clipboard |
+| T01 | Hub com preview card semanal | ✅ | `ClinicalFolderScreen` |
+| T02 | Contatos profissionais (prefs) | ✅ | `CareContact` multi; migra `noa_therapist_phone_v1`; editáveis no Início |
+| T03 | Enviar resumo WhatsApp | ✅ | picker de contato + fallback clipboard |
 | T04 | Compartilhar card imagem | ✅ | `ShareCardExporter` |
-| T05 | Relatório PDF (preview + print/share) | ✅ | `TherapistPdfGenerator` |
-| T06 | Incluir sono, mood, recovery, insights | ✅ | PDF, WhatsApp e card. Rotina e logs de dose ainda ficam de fora; entram no primeiro teste |
-| T07 | Nome do paciente configurável | 🟡 | hardcoded “Marcelo P.” |
-| T08 | Período custom (7/14/30) | 🟡 | PDF usa `periodDays`; UI limitada |
+| T05 | Relatório PDF (preview + print/share) | ✅ | `TherapistPdfGenerator` — estilos Clínico/Lumen (`noa_pdf_style_v1`); share na Pasta clínica e no preview (`Printing.sharePdf`); Noto Sans embutida |
+| T06 | Incluir sono, mood, recovery, insights | ✅ | PDF, WhatsApp e card |
+| T07 | Nome do paciente configurável | ✅ | `UserProfile.name` |
+| T08 | Período custom (7/14/30) | ✅ | chips na Pasta clínica |
 
 ### 6.9 Des-Trava (Unstuck)
 
+Entrada só na aba Dia (linha discreta). Protótipo: `Design/Stitch/new/des_trava_resgate_anti_paralisia/`.
+
 | ID | Feature | Status | Notas |
 |----|---------|--------|-------|
-| U01 | Bottom sheet glass | ✅ | |
+| U01 | Bottom sheet glass | ✅ | badge “Modo resgate” |
 | U02 | 3 micro-passos sequenciais | ✅ | |
 | U03 | Timer 60s + orb animada | ✅ | concluir só quando a contagem chega a zero |
 | U04 | Haptic + snack de conclusão | ✅ | |
@@ -323,23 +432,25 @@ Legenda de status: ✅ feito · 🟡 parcial ou nesta fase · ❌ ausente · �
 
 | ID | Feature | Status | Notas |
 |----|---------|--------|-------|
-| P01 | i18n pt/en/es/ja + doloc | ✅ | ver `docs/i18n.md` |
+| P01 | i18n pt/en/es/ja + doloc | ✅ | locale 100% do sistema; ver `docs/i18n.md` |
 | P02 | Tema claro/escuro/sistema | ✅ | |
-| P03 | Design system (cores, spacing, glass) | ✅ | |
+| P03 | Design system (cores, spacing, glass) | ✅ | `CupertinoApp` + `liquid_glass_renderer`; FakeGlass+blur no chrome/sheet Android; chips densos + surfaces Android em `LumenGlassLite`; zero cara M3/You |
 | P04 | Skeletons / FadeSwap | ✅ | |
 | P05 | Widget tests básicos | 🟡 | `test/widget_test.dart` |
 | P06 | Auth / cloud backup | ❌ | |
 | P07 | Analytics de produto | ❌ | |
 | P08 | Perfis de tom de voz humanizados | 🔮 | sem fase nesta rodada; continua só no backlog |
-| P09 | Onboarding & Perfil Local (opcional) | 🟡 | entra agora: idade, peso, altura, importação do app de saúde; sem login |
+| P09 | Onboarding & Perfil Local (opcional) | ✅ | Wizard de 1ª abertura + `ProfileScreen` (ícone no Início); sem tipo sanguíneo e sem aba própria no shell |
+| P10 | Hub de Configurações | ✅ | engrenagem no Início / Perfil; `SystemSettings`; horário silencioso de tarefas; export `noa_*`; Sobre: “Mandar feedback” abre formulário externo (`FeedbackFormConfig`, só maintainers); sem analytics SDK |
+| P11 | Navegação Início=ficha + Pasta clínica | ✅ | 4 abas inalteradas (Início · Dia · Remédios · Pasta clínica). Início = `HomeFichaScreen`. Tarefas e Meus dias: portas canônicas `openTasksHub` / `openRoutineCalendarScreen` na pilha da aba Início. Pasta clínica: `openClinicalFolderScreen`. Troca de aba: pop-to-root na origem e no destino. Sem `go_router` (FUT-52). `HomeScreen` / `PatientChartScreen` fora da narrativa. Stitch em `Design/Stitch/new/` |
 
 ### 6.11 Calendário & Raio-X do Dia (Timeline Diária)
 
 | ID | Feature | Status | Notas |
 |----|---------|--------|-------|
-| CAL01 | Ponte com o calendário do celular | 🟡 | cada salvamento da rotina cria um evento (EventKit / CalendarContract). A agenda inteira do aparelho não entra no app |
-| CAL02 | Visão de Calendário (Mês / Semana) | 🟡 | mês no app marca o dia com rotina salva e abre os horários. Semana, remédio, humor, des-trava e gasto continuam de fora |
-| CAL03 | Timeline do Raio-X do Dia (24h) | 🟡 | linha do tempo de hoje com a hora de cada salvamento da rotina. Sono, doses, compromissos e gastos continuam de fora |
+| CAL01 | Ponte com o calendário do celular | 🟡 | cada salvamento da rotina cria um evento (EventKit / CalendarContract) com água/hábitos/medicação do dia — sem reflexão/pauta íntimas. A agenda inteira do aparelho não entra no app |
+| CAL02 | Visão de Calendário (Mês / Semana) | 🟡 | mês na Ficha e no Dia marca dias com rotina e/ou check-in; tap abre DayDigest. Semana e badges de gasto/Des-Trava ainda fora |
+| CAL03 | Timeline do Raio-X do Dia (24h) | 🟡 | DayDigest local (check-in, SoM, rotina, doses, tarefas do dia). Compromissos do aparelho e gastos ainda fora |
 | CAL04 | Inspeção de anatomia de dias atípicos no Hub Clínico | 🟡 | Narrativa cronológica no hub; planejado junto com a timeline |
 
 ### 6.12 Gestor de Gastos de Hiperfoco & Impulso
@@ -366,9 +477,9 @@ Legenda de status: ✅ feito · 🟡 parcial ou nesta fase · ❌ ausente · �
 
 | ID | Feature | Status | Notas |
 |----|---------|--------|-------|
-| TSK01 | Pacote único integrado de tarefas | ✅ | a lista única está na rotina, com o nome Tarefas. Sem tela separada |
-| TSK02 | Alarme Persistente (Nagging de 5 min) | 🟡 | Toca no horário; repete a cada 5 min até marcar concluído ou adiar |
-| TSK03 | Recorrência flexível | 🟡 | Diária, semanal, quinzenal ou data única |
+| TSK01 | Pacote único integrado de tarefas | ✅ | Central de Tarefas na Ficha via `openTasksHub` (pilha da aba Início: Hoje / Recorrentes / Pontuais); Dia só checklist do período vigente, com o mesmo helper. Avisos locais do app; sem ponte com o app Lembretes nativo (`EKReminder` fora) |
+| TSK02 | Alarme Persistente (Nagging) | ✅ | toca no horário; repete no intervalo escolhido (padrão 5 min) até concluir ou adiar. Estilos (`TaskAlertStyle`): notificação; `alarm` (rótulo de UI: **Em destaque** — Android: canal/volume de alarme, sem som próprio; iPhone: igual à notificação); insistente (Android: pode abrir em tela cheia; iOS: `.timeSensitive`, sem entitlement Time Sensitive nem alerta crítico). Horário silencioso (padrão 22:00–07:00) vale **só para tarefas** — remédios ficam no canal próprio. Permissão negada / exact alarm ausente: CTA via `SystemSettings` (notificações / ficha do app). App fechado: o SO entrega o aviso já agendado; Foco, DND e bateria podem segurar ou atrasar |
+| TSK03 | Recorrência flexível | ✅ | pontual, diária, semanal, quinzenal ou mensal — só a janela vigente, sem empilhar períodos |
 | TSK04 | Modo Foco ("Uma Coisa Só") | 🟡 | Isola a tarefa ativa na tela, ocultando a lista |
 | TSK05 | Fatiador de Tarefas em micro-passos | 🟡 | Quebra em até 3 ações de 2 minutos (extensão do Des-Trava) |
 | TSK06 | Gráfico visual de conclusão semanal | 🟡 | Linhas ou barras de tarefas concluídas no período |
@@ -397,7 +508,7 @@ Legenda de status: ✅ feito · 🟡 parcial ou nesta fase · ❌ ausente · �
 | Campo | Tipo | Descrição |
 |-------|------|-----------|
 | date | DateTime | dia civil |
-| mainFocusAnchor | String | âncora |
+| mainFocusAnchor | String | título da tarefa fixada como **Foco do dia** (evento/calendário/export); nome técnico do campo, sem migração |
 | stateOfMind | StateOfMindEntry? | |
 | eveningReflection | String | |
 | microHabits | List\<String\> | |
@@ -450,18 +561,24 @@ Ver `lib/integrations/health/models/`. Thresholds de insight:
 | status | ExpenseStatus | `cooldown`, `purchased`, `dismissedSaved` |
 | savedAmount | double | Valor contabilizado como poupado se descartado |
 
-### TaskItem (Central de Tarefas — Em Maturação)
+### TaskItem (Central de Tarefas)
+
+Persistido em `noa_tasks_v1`. Horário silencioso global em `noa_task_quiet_hours_v1` (padrão 22:00–07:00); vale **só para tarefas**. Remédios usam `medication_reminder_service` e não entram na janela.
 
 | Campo | Tipo | Descrição |
 |-------|------|-----------|
 | id | String (uuid) | |
 | title | String | Descrição da tarefa |
-| scheduledAt | DateTime? | Horário definido para alarme |
-| recurrence | TaskRecurrence | `none`, `daily`, `weekly`, `biweekly` |
-| naggingIntervalMinutes | int | Default 5 minutos para repetir até marcar feito |
-| completedAt | DateTime? | Data/hora de conclusão |
-| snoozedUntil | DateTime? | Adiamento temporário consciente |
-| subSteps | List\<String\> | Micro-passos de até 2 min |
+| timeOfDay | String? | HH:mm do aviso; sem horário = só checklist |
+| recurrence | TaskRecurrence | `once`, `daily`, `weekly`, `biweekly`, `monthly` |
+| naggingIntervalMinutes | int | Default 5; intervalo até marcar feito ou adiar |
+| alertStyle | TaskAlertStyle | `notification`, `alarm` (rótulo de UI: “Em destaque”; valor JSON inalterado), `insistent` |
+| weekdays | List\<int\> | Dias (1–7) para weekly/biweekly |
+| dayOfMonth | int | Dia do mês para monthly |
+| onceDate | DateTime? | Dia civil da tarefa pontual |
+| completedPeriodKey | String? | Chave da janela concluída (sem dívida do período anterior) |
+| snoozedUntil | DateTime? | Adiamento temporário |
+| active | bool | |
 
 ### DayTimelineEvent (Raio-X do Dia no Calendário)
 
@@ -494,9 +611,15 @@ Mapeamento de contexto pessoal para calibragem do app e contexto da futura LLM. 
 | importedFromHealth | bool | Flag indicando se dados foram importados do Health |
 | updatedAt | DateTime | Data da última alteração local |
 
+> **Sem aba própria no shell:** o perfil biométrico vive em `ProfileScreen` (ícone de pessoa na Home / CTA "Ver meu perfil" na Ficha), não numa 5ª aba. Tipo sanguíneo ficou de fora da implementação — decisão de produto, não lacuna técnica. **Sem conta, sem login, sem nuvem do Lumen:** tudo grava em `noa_user_profile_v1`, só no aparelho; o import de altura/peso/nascimento/sexo via `HealthService.readDemographics()` também é 100% on-device (ver §9.1).
+
 ### Persistência (chaves conceituais)
 
-Tudo via SharedPreferences + JSON (`noa_user_profile_v1`, `noa_hyperfocus_expenses_v1`, `noa_tasks_v1`, `noa_voice_tone_profile_v1`, etc.). Preferências extras: sync Health, sync Calendário nativo, telefone terapeuta, tema, locale, micro-hábitos. Armazenamento 100% local no aparelho, sem tráfego de dados para nuvem do Lumen.
+Tudo via SharedPreferences + JSON (`noa_user_profile_v1`, `noa_hyperfocus_expenses_v1`, `noa_tasks_v1`, `noa_voice_tone_profile_v1`, etc.). Preferências extras: sync Health, sync Calendário nativo, telefone terapeuta, tema, locale, micro-hábitos. Armazenamento 100% local no aparelho, sem tráfego de dados para nuvem do Lumen. Mutações de medicação, tarefas, humor, rotina, ledger e contatos passam por `PersistenceLocks` (fila process-wide) para UI e handlers de notificação não se sobrescreverem; JSON ilegível não é trocado por lista vazia.
+
+Uma atualização na loja mantém esse armazenamento: o identificador continua `dev.prism.lumen` e as chaves `noa_*` não são apagadas na abertura. Se um JSON antigo não puder ser lido, o app não grava uma lista vazia por cima. Sono e batimentos continuam no Apple Health ou no Health Connect, fora do arquivo do Lumen.
+
+A mesma atualização não espelha de novo o que já foi escrito. Água, atenção plena, State of Mind e o evento da rotina no calendário ficam marcados no aparelho; a dose vinda do Saúde entra uma vez por minuto do mesmo remédio. Um segundo passe, na abertura ou num novo build, não cria outra cópia nem substitui o registro local.
 
 ---
 
@@ -505,15 +628,15 @@ Tudo via SharedPreferences + JSON (`noa_user_profile_v1`, `noa_hyperfocus_expens
 ### F1 — Check-in matinal (caminho feliz)
 
 ```
-Home → Check-in → valência/foco/energia/[labels] → Salvar
-  → MoodRepository
-  → Home atualiza “entradas recentes” + insights (se dados suficientes)
+Aba Dia → CheckInForm → Salvar
+  → MoodEntry local + SoM no snapshot + espelho HealthKit se ligado
+  → Início atualiza “entradas recentes” + insights (se dados suficientes)
 ```
 
 ### F2 — Rotina com mirror Health
 
 ```
-Home → Rotina → editar âncora / SoM / hábitos / água → Salvar
+Aba Dia (ou Início → card Foco do dia) → editar Foco do dia / SoM / hábitos / água → Salvar
   → RoutineRepository
   → RoutineHealthMirror (se HS enabled)
       → writeWater / writeMindfulness / writeStateOfMind
@@ -522,7 +645,7 @@ Home → Rotina → editar âncora / SoM / hábitos / água → Salvar
 ### F3 — Tomar medicação
 
 ```
-Home → Medicações → card dose pendente → Tomar
+Aba Remédios (ou Início → card Remédios de hoje) → card dose pendente → Tomar
   → log.takenAt = now; estoque--; EfficacyWindowBar
   → (opcional) writeDoseEvent Apple
 ```
@@ -530,13 +653,14 @@ Home → Medicações → card dose pendente → Tomar
 ### F4 — Paralisia executiva
 
 ```
-Home → Des-Trava → passo 1 → timer 60s → passo 2 → passo 3 → snack
+Aba Dia → Des-Trava → passo 1 → timer 60s → passo 2 → passo 3 → snack
 ```
 
 ### F5 — Preparar sessão clínica
 
 ```
-Home → Hub terapeuta → (config telefone) → WhatsApp | Share card | PDF
+Aba Pasta clínica (`openClinicalFolderScreen`, também a partir de Configurações)
+  → período / ocultar notas → escolher contato → WhatsApp | Share card | PDF
 ```
 
 ### F6 — Conectar Apple Health
@@ -546,23 +670,49 @@ Consent sheet → permissions plugin + bridge → syncEnabled=true
   → invalidate sleep/recovery providers
 ```
 
-### F7 — Onboarding de Perfil Local & Importação Health (Opcional)
+### F6b — Onboarding na 1ª abertura
 
 ```
-Primeiro uso / Ajustes → Perfil Local (100% opcional, sem login)
-  → Perguntas pertinentes: nome/apelido, idade, peso, altura, estilo de rotina
-  → Botão [Importar do Apple Health / Google Health Connect] (preenche idade/peso/altura em 1 toque)
-  → Botão [Pular / Deixar pra depois] (livre, sem travar o app)
-  → Grava localmente em SharedPreferences (sem envio para nuvem)
+Primeira abertura, sem dado local ainda → FirstLaunchOnboarding
+  (tela cheia, 4 passos, cada um pulável sem travar o app)
+  1. Boas-vindas + nota de privacidade ("sem conta, sem login, sem nuvem do Lumen")
+  2. Saúde: HealthSyncConsentSheet → readDemographics() preenche nascimento/altura/
+     peso/sexo biológico quando o SDK já tem o dado (iOS: os 4; Android: altura/peso)
+  3. Acessos do sistema: notificações de dose + calendário do aparelho
+  4. Perfil: nome, data de nascimento, tom de voz + o que a Saúde não preencheu
+  → aplica o rascunho em UserProfile (importedFromHealth quando houve import)
+  → grava noa_user_profile_v1 e marca noa_onboarding_done_v1
+```
+
+### F7 — Editar o perfil depois da 1ª abertura
+
+```
+Início (ícone de pessoa / bloco identidade) → ProfileScreen
+  → editar → OnboardingProfileForm → noa_user_profile_v1
+```
+
+### F7b — Configurações
+
+```
+Início (engrenagem) ou ProfileScreen → SettingsScreen
+  → Tema · Idioma/SO · notificações · Saúde · calendário · horário silencioso (tarefas, não remédios) · export JSON · Pasta clínica (`openClinicalFolderScreen`)
+  → Sobre → Mandar feedback → formulário externo (URL só em `FeedbackFormConfig` / dart-define; sem dado de saúde)
+```
+
+### F7c — Contatos profissionais
+
+```
+Início → Meus profissionais → adicionar/editar CareContact (papel + nome + telefone)
+  → noa_care_contacts_v1 (migra telefone legado)
 ```
 
 ### F8 — Navegar pelo Raio-X do Dia no Calendário
 
 ```
-Home → Card Calendário → Selecionar data (passada ou presente)
-  → Timeline diária unificada de 24h
-  → Exibe: despertar, doses, compromissos nativos (EventKit), tarefas, des-trava e impulsos
-  → Terapeuta / usuário identificam padrões e gatilhos de sobrecarga com precisão
+Início (card Meus dias) ou Dia (ícone calendário) → openRoutineCalendarScreen (pilha da aba Início)
+  → Selecionar data
+  → DayDigest local: check-ins (palavras + nota), SoM, rotina (reflexão/pauta), doses, tarefas
+  → Ainda fora: compromissos nativos (EventKit), Des-Trava e impulsos numa linha 24h
 ```
 
 ---
@@ -583,14 +733,17 @@ A matriz abaixo é o catálogo dessa regra (ponte mútua, função local com syn
 
 ### 9.1 Integrações atuais do Lumen (iOS primário)
 
+Android: **Samsung Health** (Data SDK quando o AAR/partner estiver linkado) **ou** **Health Connect** (fallback / aparelhos sem Samsung). Outros apps OEM → UX instruindo sync com Health Connect. Contrato: `HealthAppConnector` + `FacadeHealthService`.
+
 | Dado | Direção | Via |
 |------|---------|-----|
-| Sono (estágios) | ← | plugin `health` |
-| HRV, RHR, passos, exercício | ← | plugin `health` |
+| Sono (estágios) | ← | plugin `health` / Samsung bridge |
+| HRV, RHR, passos, exercício | ← | plugin `health` (HC) / Samsung + gap HC |
+| Perfil (altura, peso, nascimento, sexo) | ← | plugin / Samsung profile (`readDemographics`; iOS os 4, Android HC altura/peso) |
 | Time in daylight, áudio | ← | `HealthKitBridge` |
 | State of Mind | ↔ | bridge |
 | Medicamentos / dose events | ↔ | bridge |
-| Água / mindfulness | → | plugin / serviço |
+| Água / mindfulness | → | plugin / Samsung (Android mindfulness = workout meditação) |
 
 ### 9.2 Matriz completa de paridade: Apple HealthKit ↔ Android Health Connect
 
@@ -736,7 +889,21 @@ Abaixo, os dados biométricos e contextuais são classificados por nível de imp
 
 ### 9.6 Notificações
 
-`flutter_local_notifications` — canal `medication_reminders`. Cada horário ativo vira um aviso semanal no fuso do aparelho. Tomar grava a dose, Adiar empurra 15 minutos, e o toque no corpo abre Remédios. As três saídas valem com o app fechado.
+`flutter_local_notifications` com init única (`LocalNotificationsHost`). Sem `Timer` periódico. Permissão negada não inventa aviso: a UI mostra o estado real e o CTA abre `SystemSettings` (sem WebView, sem `MethodChannel` na tela).
+
+**Remédios** — canal `medication_reminders`: cada horário ativo vira um aviso semanal no fuso do aparelho; Tomar grava a dose, Adiar empurra 15 minutos, toque no corpo abre Remédios. Fora do horário silencioso de tarefas.
+
+**Tarefas** — canais `task_reminders` / `task_reminders_alarm`: aviso no horário, nagging no intervalo escolhido, Concluir/Adiar, toque abre Rotina. Estilos (`TaskAlertStyle`; o enum/JSON não muda):
+
+- `notification` (UI: Notificação) — aviso comum do sistema. Foco ou Não Perturbe do aparelho mandam.
+- `alarm` (UI: **Em destaque**) — Android: canal de alarme, importância máxima, volume de alarme (sem asset de som próprio). iPhone: igual à notificação (`.active`).
+- `insistent` (UI: Bem chamativo) — Android: pode abrir em tela cheia com o aparelho bloqueado. iPhone: `.timeSensitive` (pede para passar pelo Foco; quem decide é o sistema). Sem entitlement Time Sensitive e sem alerta crítico.
+
+Horário silencioso (`noa_task_quiet_hours_v1`, padrão 22:00–07:00) empurra só o aviso de **tarefa** para depois da janela. Remédio continua no horário.
+
+Permissão de notificação desligada: CTA `SystemSettingsTarget.notifications`. Exact alarm ausente no Android: CTA `SystemSettingsTarget.app` (ficha do app; o bridge não tem destino dedicado à tela “Alarmes e lembretes”).
+
+Com o app fechado, o aviso já está agendado no SO (`AlarmManager` / `UNUserNotificationCenter`) e não depende do processo do Lumen. Isso **não** promete furar Foco, Não Perturbe, economia de bateria nem horário exato sem a permissão de alarmes do Android.
 
 ### 9.7 Tradução
 
@@ -750,17 +917,50 @@ doloc.io a partir de `app_pt.arb` → en/es/ja. Ver [i18n.md](./i18n.md).
 
 - Fonte: `lib/l10n/app_pt.arb`
 - Acesso: `AppLocalizations.of(context)` ou `appLocalizationsProvider`
+- Locale: preferência do **sistema** (sem seletor no app; atalho em Configurações abre o SO)
 - Labels SoM: mapas por `languageCode` (não ARB)
 
 ### Tema
 
-- `AppTheme.lightTheme` / `darkTheme`
-- Tokens: `AppColors`, `AppSpacing`, `AppRadii`, `GlassSurface` / `GlassSheet`
+- `CupertinoApp` + `AppTheme.lightTheme` / `darkTheme` (Material só no `builder`, transparente)
+- Tokens: `AppColors`, `AppSpacing`, `AppRadii`, `lumenGlassSettings` / `LumenGlass`, `GlassSurface` / `GlassSheet` / `showLumenSheet` / `LumenKeyboardInset`, `GlassNavBar` (cápsula + lente), `GlassAppBar` / `GlassScaffold` (`reservedTop`), `GlassIconButton`, `GlassChip`, `LumenFab`, `showGlassToast`
+- Liquid glass via `liquid_glass_renderer` (`LiquidGlass` / `FakeGlass` / `GlassGlow` / `LiquidGlassBlendGroup`) + `LumenGlassLite` em chips densos / surfaces Android; FakeGlass+blur no chrome/sheet Android; Impeller + `EnableFlutterGPU` / `FLTEnableFlutterGPU`
+- Zero visual Material 3 / You / Google (sem FAB/SnackBar/Chip/Card M3 na pele); transitions Cupertino
 - Responsive: `responsive.dart` (`kMinBodySecondary`, etc.)
+
+### Linha-base de hardware (glass + utilidades)
+
+Referência de QA — não é listing de loja. `minSdk` 26 / iOS deploy 17; glass pleno exige Impeller/Vulkan (API 29+ no Android).
+
+| Faixa | Aparelhos | Glass |
+|-------|-----------|-------|
+| Alvo confortável | iPhone 13+ / SE 3ª; Pixel 7+ ou S22+ (≥6 GB, Android 12+) | Vidro pleno na nav/app bar/sheets, 60 fps |
+| Mínimo usável | iPhone XS–11 (iOS 17); mid-range API 29+ (A54 / ~4–6 GB) | `FakeGlass` no chrome se GPU não aguentar |
+| Fora do foco | Emulador sem GPU, Web, Windows/Linux | Só FakeGlass / sem refração |
+
+Smoke: iPhone 14/15, Pixel 7/8 (ou S23), um mid-range Android. O que mais puxa chip é o glass (~335 mW GPU no Pixel 10 na doc do pacote); Health, alarmes, calendário e PDF são leves ao lado disso.
 
 ### Navegação atual
 
-Sem router nomeado: `Navigator.push` + modals. Home = root.
+Quatro abas no `LumenShell` (`PageView` full-bleed + `GlassNavBar` dock flutuante com indicador de vidro neutro), cada uma com `Navigator` aninhado. Sem `go_router` (FUT-52). Sem quinta aba. O inset inferior entra só em `MediaQuery.padding` — o conteúdo pinta atrás da cápsula para a refração aparecer. O shell e as abas usam `resizeToAvoidBottomInset: false`: teclado **não** sobe a tab bar nem as páginas; só gavetas via `showLumenSheet` / `LumenKeyboardInset` redimensionam. Telas empilhadas usam `GlassScaffold` + `GlassAppBar`: body abaixo de `reservedTop` (texto/gráfico nunca sob a cápsula). As raízes das abas **não** usam `GlassAppBar` (o rótulo mora na tab bar); ações ficam no cabeçalho do corpo via `GlassIconButton`. Bottom sheets abrem via `showLumenSheet` com `useRootNavigator: true` (acima da `GlassNavBar`) + `GlassSheet` (teclado único, FakeGlass legível, campo focado com `ensureVisible`).
+
+| Aba | Raiz |
+|-----|------|
+| Início | `HomeFichaScreen` (ficha viva) |
+| Dia | `DailyRoutineScreen` |
+| Remédios | `MedicationsScreen` |
+| Pasta clínica | `ClinicalFolderScreen` |
+
+Troca de aba (`_showTab`, toque na tab bar ou atalho que muda de aba): pop-to-root na aba de origem **e** na de destino. Toque na aba já selecionada também volta à raiz. A aba Início não consome o back do aparelho (`PopScope` / gesto iOS).
+
+Portas canônicas (helpers em `lumen_shell.dart`):
+
+- **Tarefas** — `openTasksHub`: aba Início → raiz → `TasksHubScreen` empilhada. Mesma pilha a partir do card na Início e de “Ver todas as tarefas” no Dia.
+- **Meus dias** — `openRoutineCalendarScreen`: mesma política (pilha da Início). Reusada pelo card na Início e pelo ícone de calendário no Dia.
+- **Pasta clínica** — `openClinicalFolderScreen`: 4ª aba na raiz (também a partir de Configurações).
+- **Dia / Remédios** — `openRoutineScreen` / `openMedicationsScreen`: só trocam de aba.
+
+Check-in e Des-Trava moram só na aba Dia. Perfil e Configurações empilham na aba ativa (`openProfileScreen` / `openSettingsScreen`). `HomeScreen` e `PatientChartScreen` saíram da narrativa de produto.
 
 ### Protótipo visual (Stitch, 2026-09-24)
 
@@ -783,7 +983,7 @@ O YAML do Stitch marca `primary` como `#006c53` e `#1FAF8A` como `primary-contai
 
 ## 11. Tasks de desenvolvimento (estado atual)
 
-Use esta lista como board. IDs batem com features da §6.
+Use esta lista como board. Tasks usam letra do epic + número sem zero (`H3`, `B7`). Features da §6 usam prefixo + dois dígitos (`CAL03`, `H03`). Não confundir os dois sistemas — ver [Como ler os IDs e as siglas](#como-ler-os-ids-e-as-siglas).
 
 ### Epic A — Fundação (concluído)
 
@@ -799,9 +999,9 @@ Use esta lista como board. IDs batem com features da §6.
 - [x] B2 Quick check-in modal completo
 - [x] B3 Daily routine screen + save
 - [x] B4 State of Mind editor + labels
-- [ ] B5 Unificar flag “med tomada” (check-in × rotina × MedicationLog)
+- [ ] B5 Unificar flag “med tomada” (check-in × rotina × MedicationLog) — segue aberta. A Fase 0.6 (multi-dose, M02) deixou a adesão real por slot em `MedicationLog`, mas o toggle “Tomei medicação” do check-in (`MoodEntry.tookMedication`) continua um resumo subjetivo solto, sem `medicationId`/`logId`
 - [ ] B6 Nome do usuário dinâmico (remover hardcode)
-- [ ] B7 Check-in grava State of Mind sozinho (prioridade do primeiro teste)
+- [x] B7 Check-in grava State of Mind sozinho (espelho HealthKit iOS 18+; cópia local sempre). Fase 0.4: nome único Check-in; o caminho rápido grava `MoodEntry` e funde o SoM no snapshot do dia (`mergeTodayStateOfMind`, sem N snapshots); `DayDigest` lê SoM só dos snapshots
 
 ### Epic C — Medicações
 
@@ -824,9 +1024,9 @@ Use esta lista como board. IDs batem com features da §6.
 - [x] D3 CorrelationEngine (vários insights)
 - [x] D4 Consent + mirror rotina
 - [x] D5 Bridge luz/áudio/SoM/meds
-- [ ] D6 Implementação sólida Health Connect (Android)
+- [x] D6 Implementação sólida Health Connect (Android)
 - [ ] D7 Cache local de snapshots Health (offline resiliente)
-- [ ] D8 Onboarding guiado na 1ª abertura
+- [x] D8 Onboarding guiado na 1ª abertura (intro + permissões já usadas; FUT-01 narrativo continua no backlog)
 - [ ] D9 Insights com período configurável e confiança estatística
 
 ### Epic E — Export clínico
@@ -834,11 +1034,27 @@ Use esta lista como board. IDs batem com features da §6.
 - [x] E1 Hub + WhatsApp formatter
 - [x] E2 Share card PNG
 - [x] E3 PDF generator rico
-- [ ] E4 Perfil paciente (nome, idade, diagnóstico opcional)
+- [x] E4 Perfil paciente (nome) — idade/diagnóstico ainda abertos
 - [ ] E5 Seletor de período 7/14/30 na UI
-- [ ] E6 Export mais completo no primeiro teste: PDF, WhatsApp e card já levam os salvamentos da rotina (hora, âncora, água, hábitos, medicação, reflexão e notas; o toggle esconde reflexão e pauta). Ainda falta a adesão real de dose (tomou / pulou) e a tabela de sono no período inteiro, sem cortar em 7 noites.
-- [ ] E7 Export CSV / JSON para o próprio usuário
-- [ ] E8 Toggle para ocultar notas íntimas na exportação (PRD §4.6)
+- [ ] E6 Export mais completo no primeiro teste: PDF, WhatsApp e card já levam os salvamentos da rotina (hora, Foco do dia, água, hábitos, medicação, reflexão e notas; o toggle esconde reflexão e pauta). Ainda falta a adesão real de dose (tomou / pulou) e a tabela de sono no período inteiro, sem cortar em 7 noites. Fase 0.3 (feedback) entregou o resto do item:
+
+  | Ponto | Estado |
+  |-------|--------|
+  | Pauta e fechamento (`therapistNotes` / `eveningReflection`) | ✅ WhatsApp e PDF levam quando `hideIntimateNotes` está desligado |
+  | Tarefas do período | ✅ bloco "Lista de tarefas" (feita / aberta) em WhatsApp e PDF, via `taskExportLines` |
+  | Humor / SoM | ✅ `MoodEntry` e/ou labels SoM do snapshot contam no estado emocional; legível com uma fonte só |
+  | Card visual | ✅ nunca leva pauta nem fechamento, mesmo com o toggle desligado |
+  | Adesão real de dose, sono do período inteiro | ⏳ aberto
+- [x] E7 Export JSON das chaves locais (`noa_*`) em Configurações; CSV clínico ainda fora
+- [x] E8 Toggle para ocultar notas íntimas na exportação (PRD §4.6)
+
+  | Ponto | Estado |
+  |-------|--------|
+  | Onde | `ClinicalFolderScreen` (4ª aba), `SwitchListTile` "Ocultar notas íntimas" com `Semantics` e ajuda |
+  | Padrão | `hideIntimateNotes` ligado (seguro); estado local da tela, sem chave de prefs nova |
+  | Desligado | WhatsApp, PDF e `TherapistReportScreen` incluem pauta e fechamento; a seção "Para a terapia" mostra o período na pasta |
+  | Ligado | pauta e fechamento ficam fora de todos os formatos |
+  | Card | sempre sem notas íntimas, independente do toggle |
 - [ ] E9 Data da próxima consulta no perfil do profissional
 
 ### Epic F — Des-Trava
@@ -859,19 +1075,21 @@ Use esta lista como board. IDs batem com features da §6.
 
 ### Epic H — Calendário e Raio-X (agora)
 
-- [ ] H1 Calendário do app (mês e semana) com badges
+- [x] H1 Calendário do app (mês) com badges de rotina/check-in + DayDigest (semana ainda fora)
 - [ ] H2 Ponte com o calendário do celular, nos dois sentidos
-- [ ] H3 Timeline de 24h
+- [ ] H3 Timeline de 24h com EventKit / compromissos nativos
 - [ ] H4 Anatomia do dia no hub clínico
 
 ### Epic I — Prótese do dia (agora)
 
 - [ ] I1 Curva de energia e foco
 - [ ] I2 Checklist de saída
-- [ ] I3 Perfil local (idade, peso, altura, importar do app de saúde)
-- [ ] I4 Central de tarefas: a lista única já está na rotina, com o nome Tarefas. Recorrência, alarme de 5 min, modo foco e fatiador continuam de fora
+- [x] I3 Perfil local: `FirstLaunchOnboarding` + `ProfileScreen` (idade, peso, altura, sexo biológico, tom de voz, importar do app de saúde); sem tipo sanguíneo, sem aba própria no shell
+- [x] I4 Central de tarefas na Ficha (Hoje / Recorrentes / Pontuais); Dia só checklist. Modo foco e fatiador continuam de fora. Fase 0.7: estilos de alerta honestos na UI (`alarm` = “Em destaque”); horário silencioso só de tarefas; permissão negada com CTA `SystemSettings`; app fechado = entrega agendada no SO, sem prometer Foco/DND
 - [ ] I5 Gasto de hiperfoco: botão e valor, sem gráfico
 - [ ] I6 Aviso de inércia: poucos passos abrem o Des-Trava
+- [x] I7 Hub de configurações no Perfil (tema, idioma/SO, acessos, export local)
+- [x] I8 Início = ficha viva + Pasta clínica + contatos múltiplos (Stitch `Design/Stitch/new/`). Fase 0.8: 4 abas; Tarefas/Meus dias na pilha da Início; Pasta via `openClinicalFolderScreen`; pop-to-root na troca de aba; sem `go_router`
 
 ### Epic J — Saúde que saiu do futuro (planejado)
 
@@ -890,6 +1108,12 @@ App usável localmente no iPhone do usuário-alvo: check-in, rotina, meds, sono,
 
 **Critério de saída:** uso diário real por ≥1 semana sem crash bloqueante.
 
+### Fase Feedback (subfase da Fase 0)
+
+Correções e melhorias da análise de uso real (confiança do dia, export clínico, check-in, navegação), com canal de feedback primeiro. Plano detalhado por etapas **0.1–0.8:** [FASE_0_FEEDBACK.md](FASE_0_FEEDBACK.md). Princípio: ferramentas de funcionamento pessoal locais antes de trabalho novo de SDK.
+
+**Status (2026-10-08):** 0.1–0.8 **feitas**. Em seguida: ~1 semana de uso diário real coletando feedback (Sobre → Mandar feedback). Só depois disso decide-se se abre uma **Feedback 2**, se vai direto à **Fase 1**, ou um híbrido (hotfixes + Fase 1). Detalhe do gate: [FASE_0_FEEDBACK.md](FASE_0_FEEDBACK.md) § “Semana de uso”.
+
 ### Primeiro teste — TestFlight
 
 O primeiro uso prático é um TestFlight. O build sobe depois do check-in espelhar o State of Mind sozinho, do material exportado ficar mais completo do que o de hoje, do texto de privacidade dizer o que o app lê e grava, e do lembrete de dose funcionar com o app fechado.
@@ -904,7 +1128,7 @@ O primeiro uso prático é um TestFlight. O build sobe depois do check-in espelh
 | Upload do TestFlight | P0 | G6 |
 | Notificações recorrentes de dose | P0 | C5–C6 |
 
-O export cobre sono, humor, recuperação, insights e os salvamentos da rotina (hora, âncora, água, hábitos, medicação do toggle, reflexão e notas). Com "Ocultar notas íntimas", reflexão e pauta ficam de fora. A medicação de dose (tomou ou pulou) ainda entra só como a contagem do check-in, e a tabela de sono continua cortando em 7 noites.
+O export cobre sono, humor, recuperação, insights e os salvamentos da rotina (hora, Foco do dia, água, hábitos, medicação do toggle, reflexão e notas). Com "Ocultar notas íntimas", reflexão e pauta ficam de fora. A medicação de dose (tomou ou pulou) ainda entra só como a contagem do check-in, e a tabela de sono continua cortando em 7 noites.
 
 C7 e C8 entram nesse build porque a ponte e os campos já existem. Subir o teste com a dose pela metade é o tipo de furo que aparece no primeiro uso. O lembrete também entra: um aviso por horário, Tomar e Adiar, inclusive com o app fechado, e o toque no corpo abre Remédios.
 
@@ -938,6 +1162,7 @@ C7 e C8 entram nesse build porque a ponte e os campos já existem. Subir o teste
 | Checklist de saída | P0 | I2, VIS02 |
 | Curva de energia e foco | P0 | I1, VIS01 |
 | Perfil local opcional | P0 | I3, P09 |
+| Configurações no Perfil | P0 | I7, H15, P10 |
 | Central de tarefas | P0 | I4, TSK01–TSK06 |
 | Gasto de hiperfoco: botão e valor | P1 | I5, EXP01 |
 | Aviso de inércia (Des-Trava) | P0 | I6 |
@@ -1059,6 +1284,8 @@ Ideias que ficam fora da implementação até a pergunta ter resposta. Não são
 | FUT-54 | Crashlytics / analytics privacy-first | |
 | FUT-55 | Monetização: freemium clínico / família | TBD ética |
 | FUT-56 | Criptografia em repouso e backup E2E | o PRD cita AES-256 e nuvem; o MVP segue SharedPreferences local |
+| ~~FUT-57~~ | ~~Migrar wrappers glass para `liquid_glass_renderer`~~ | ✅ Feito — `liquid_glass_renderer` + Impeller/FakeGlass |
+| ~~FUT-58~~ | ~~Migrar para `CupertinoApp`~~ | ✅ Feito — `CupertinoApp` + Material invisível no builder |
 
 ### 13.6 Des-Trava & bem-estar
 
@@ -1119,6 +1346,8 @@ _Use esta lista em brainstorms. Não priorizar aqui._
 
 ## 15. Glossário
 
+IDs de feature (`H03`, `M04`), epics (`H3`, `B7`), prioridades (`P0`) e siglas técnicas (HRV, SoM, i18n…) estão detalhados em [§6 — Como ler os IDs e as siglas](#como-ler-os-ids-e-as-siglas).
+
 | Termo | Significado |
 |-------|-------------|
 | Check-in | Registro rápido de humor/foco/energia |
@@ -1127,8 +1356,13 @@ _Use esta lista em brainstorms. Não priorizar aqui._
 | Insight | Correlação textual acionável |
 | Mirror | Escrita de dados locais no Apple Health |
 | State of Mind (SoM) | Modelo emocional estilo Apple Health |
-| Âncora | Único foco principal do dia |
+| Foco do dia | Nome de UI da tarefa principal do dia (fixada no checklist da aba Dia); grava o título em `mainFocusAnchor`. Escrito sempre com F maiúsculo para não confundir com o foco do Check-in |
+| Âncora | Sinônimo técnico de Foco do dia (campo `mainFocusAnchor`, ícone `AppIcons.anchor`, chaves arb `*Anchor*`). Não aparece como nome na UI. Não confundir com a âncora do HealthKit (`HKAnchoredObjectQuery`) |
+| Check-in | Formulário único de humor/foco/energia (`CheckInForm`); Home CTA a abolir |
 | Hub clínico | Tela de export para terapeuta |
+| Raio-X do dia | Timeline / anatomia do dia no calendário e no hub |
+| Soft Liquid Glass | Linguagem visual anterior (histórico Stitch); app atual = Apple Liquid Glass |
+| Apple Liquid Glass | Design system atual (`liquid_glass_renderer` + Impeller + tokens Lumen; `FakeGlass` no fallback) |
 
 ---
 
@@ -1146,27 +1380,33 @@ _Use esta lista em brainstorms. Não priorizar aqui._
 
 | Tela / sheet | Path |
 |--------------|------|
-| Home | `lib/features/home/presentation/home_screen.dart` |
-| Check-in | `lib/features/routine_mood/presentation/quick_checkin_modal.dart` |
-| Rotina | `lib/features/routine_mood/presentation/daily_routine_screen.dart` |
+| Início (ficha viva) | `lib/features/home/presentation/home_ficha_screen.dart` |
+| Check-in | `lib/features/routine_mood/presentation/check_in_form.dart` |
+| Dia / Rotina | `lib/features/routine_mood/presentation/daily_routine_screen.dart` |
+| Meus dias | `lib/features/calendar/presentation/routine_calendar_screen.dart` |
 | Medicações | `lib/features/medications/presentation/medications_screen.dart` |
 | Des-Trava | `lib/features/unstuck_assistant/presentation/unstuck_sheet.dart` |
-| Hub terapeuta | `lib/features/therapist_export/presentation/therapist_export_hub_screen.dart` |
+| Pasta clínica | `lib/features/therapist_export/presentation/clinical_folder_screen.dart` |
+| Contato profissional (sheet) | `lib/features/therapist_export/presentation/care_contact_editor_sheet.dart` |
+| DayDigest | `lib/features/calendar/domain/day_digest.dart` |
+| Central de Tarefas | `lib/features/tasks/presentation/tasks_hub_screen.dart` |
+| Perfil completo (feed + biométrico) | `lib/features/profile/presentation/profile_screen.dart` |
+| Configurações | `lib/features/settings/presentation/settings_screen.dart` |
+| Onboarding 1ª abertura | `lib/features/onboarding/presentation/first_launch_onboarding.dart` |
 
 ## Apêndice A2 — Referência visual
 
 | Tela | Protótipo |
 |------|-----------|
-| Home | `Design/lumen_in_cio_home_hub/code.html` |
-| Check-in | `Design/lumen_check_in_r_pido/code.html` |
-| Rotina | `Design/lumen_rotina_foco/code.html` |
-| Medicações | `Design/lumen_medica_es_janela/code.html` |
-| Des-Trava | `Design/lumen_des_trava_anti_paralisia/code.html` |
-| Hub terapeuta | `Design/lumen_hub_cl_nico/code.html` |
-| Marca | `Design/lumen_minimalist_mark/code.html` |
-| Tokens Stitch | `Design/soft_liquid_glass/DESIGN.md` |
+| Início (ficha viva) | `Design/Stitch/new/in_cio_hub_pessoal_ficha_viva/` |
+| Dia | `Design/Stitch/new/dia_execu_o_rotina/` |
+| Remédios | `Design/Stitch/new/rem_dios_posologia_alarmes/` |
+| Pasta clínica | `Design/Stitch/new/pasta_cl_nica_exporta_o_consulta/` |
+| Des-Trava | `Design/Stitch/new/des_trava_resgate_anti_paralisia/` |
+| Tokens Soft Liquid Glass | `Design/Stitch/new/lumen_soft_liquid_glass/DESIGN.md` |
+| Legado (frames antigos) | `Design/Stitch/lumen_*` |
 | Requisitos | `docs/PRD.md` |
-| PDF | `lib/features/therapist_export/service/therapist_pdf_generator.dart` |
+| PDF | `lib/features/therapist_export/service/therapist_pdf_generator.dart` (+ `pdf_report_style`, `therapist_pdf_share`, fontes `assets/fonts/NotoSans-*.ttf`) |
 | Consent Health | `lib/features/health_sync/presentation/health_sync_consent_sheet.dart` |
 | Bridge iOS | `ios/Runner/HealthKitBridge.swift` |
 
@@ -1183,4 +1423,4 @@ flutter analyze
 
 ---
 
-*Fim do GDD v1.1 — Lumen*
+*Fim do GDD v1.11 — Lumen*

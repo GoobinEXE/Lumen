@@ -12,55 +12,70 @@
   },
   "greetingMorning": "Buenos días, {name}",
   "@greetingMorning": {
-    "placeholders": { "name": { "type": "String" } }
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
   "greetingAfternoon": "Buenas tardes, {name}",
   "@greetingAfternoon": {
-    "placeholders": { "name": { "type": "String" } }
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
   "greetingEvening": "Buenas noches, {name}",
   "@greetingEvening": {
-    "placeholders": { "name": { "type": "String" } }
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
   "noPressureSubtitle": "Sin prisa, un paso a la vez.",
   "biorhythmCalm": "Biorritmo calmo",
   "routineGuiltLine": "{done} de {total}. Si no los haces todos hoy, continúa mañana sin culpa.",
   "@routineGuiltLine": {
     "placeholders": {
-      "done": { "type": "int" },
-      "total": { "type": "int" }
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
     }
   },
   "sleepTotalLabel": "Tiempo de descanso",
   "navHome": "Inicio",
-  "navRoutine": "Rutina",
+  "navRoutine": "Día",
   "navMeds": "Remedios",
   "hideIntimateNotes": "Ocultar notas íntimas",
-  "navClinic": "Clínico",
+  "hideIntimateNotesHelp": "La pauta y “cómo terminó el día” quedan fuera de lo que envíes",
+  "exportTasksHeading": "Lista de tareas",
+  "exportTasksNone": "Ninguna tarea en esos días",
+  "exportTasksCompletedMarker": "Hecha:",
+  "exportTasksOpenMarker": "Abierta:",
   "checkinDurationHint": "Unos 10 segundos",
   "unstuckRescueHint": "Salir de la parálisis",
-  "quickCheckinTitle": "Check-in Rápido",
+  "quickCheckinTitle": "Check-in",
   "quickCheckinSubtitle": "¿Cómo está tu mente en este momento?",
-  "unstuckButton": "Destraba",
-  "unstuckButtonSub": "Salir de la parálisis",
   "routineTitle": "Mi Rutina y Sentimientos",
-  "routineSubtitle": "Ancla del día, estado matutino y ritmo biológico",
-  "routineAnchorLabel": "La Única Ancla de Enfoque de Hoy",
-  "routineAnchorHint": "Ej: Completar borrador sin exigirme perfección...",
   "morningFeelingTitle": "Cómo Despertó tu Mente",
   "microHabitsTitle": "Micro-Pasos Restauradores",
   "waterAndMedsTitle": "Autocuidado Biológico",
   "therapistNotesTitle": "Temas para mi Terapeuta",
   "saveRoutineButton": "Guardar Rutina Diaria",
-  "checkinModalTitle": "Micro Check-in (3s)",
-  "checkinModalSubtitle": "Sin juicios. Solo cómo te sientes ahora.",
+  "checkinModalTitle": "Check-in",
+  "checkinModalSubtitle": "Cómo estás ahora, sea como sea.",
   "howAreYouFeeling": "¿Cómo te sientes en general?",
   "mentalFocusState": "Tu estado de concentración:",
   "energyBatteryState": "Nivel de batería / energía:",
   "tookMedicationChip": "Tomé medicación",
   "sensoryOverloadChip": "Sobrecarga sensorial",
   "optionalNoteHint": "Nota rápida opcional (ej: atascado en tarea X)...",
-  "saveCheckinButton": "Guardar Check-in",
+  "saveCheckinButton": "Guardar check-in",
   "focusFocused": "Enfocado",
   "focusHyperfocus": "Hiperenfoque",
   "focusScattered": "Disperso",
@@ -94,7 +109,21 @@
   "healthSyncSuccessMessage": "Conectado a Apple Health. Datos sincronizados.",
   "healthSyncDeniedMessage": "Permiso no concedido. Puedes habilitarlo en Ajustes → Salud → Acceso a Datos y Dispositivos.",
   "healthSyncConnectedLabel": "Sincronizado",
-  "medicationsCardTitle": "Medicamentos y Recordatorios",
+  "healthSyncSheetTitleAndroid": "Sincronizar con tu app de salud",
+  "healthSyncSheetSubtitleAndroid": "En Android, Lumen usa Samsung Health cuando está; si no, Health Connect — el hub del sistema.",
+  "healthSyncReadTitleAndroid": "Lo que leemos",
+  "healthSyncReadBodyAndroid": "Sueño, FC, HRV, pasos, ejercicio, altura y peso que autorices — para cruzar recuperación con el día.",
+  "healthSyncWriteTitleAndroid": "Lo que enviamos",
+  "healthSyncWriteBodyAndroid": "Agua y pausas de atención plena (como sesión de meditación). Humor, remedios, luz y audio quedan solo en Lumen en este aparato.",
+  "healthSyncMedsNoteAndroid": "Agenda y stock de remedios siguen en Lumen — Health Connect aún no tiene ese tipo.",
+  "healthSyncSystemNoteAndroid": "Luego el sistema pide permisos en el diálogo de Health Connect (o Samsung Health).",
+  "healthSyncOemGuideTitle": "¿Tu sueño está en la app de la marca?",
+  "healthSyncOemGuideBody": "Mi Fitness, Huawei Salud, Garmin y similares no hablan directo con Lumen. En la app de la marca, activa la sincronización con Health Connect. Luego vuelve aquí y toca Conectar.",
+  "healthSyncOpenHealthConnectButton": "Abrir Health Connect",
+  "healthSyncSuccessMessageAndroid": "Conectado. Los datos que liberaste ya entran en Lumen.",
+  "healthSyncDeniedMessageAndroid": "Sin permiso. Puedes liberarlo después en Health Connect o en ajustes de la app.",
+  "sleepNoDataHintAndroid": "Toca Sincronizar para conectar Health Connect (o Samsung Health) y liberar la lectura.",
+  "medicationsCardTitle": "Remedios de hoy",
   "medicationsCardSubtitle": "Seguimiento de dosis, curva de eficacia y receta",
   "dosesTodayTitle": "Dosis de Hoy",
   "takenTodayAt": "Tomado hoy a las {time}",
@@ -129,15 +158,24 @@
     "description": "Warning when controlled Rx stock is low"
   },
   "newMedicationButton": "Nuevo Medicamento",
-  "unstuckSheetTitle": "Asistente de Desbloqueo",
+  "unstuckSheetTitle": "Destraba",
   "unstuckSheetSubtitle": "Para superar la parálisis ejecutiva sin culpa.",
   "startTimerButton": "Iniciar 60s Sin Presión",
   "finishUnstuckButton": "Concluir y Volver al Día",
-  "therapistHubTitle": "Central del Terapeuta",
-  "therapistHubSubtitle": "Envío por WhatsApp, PDF, Tarjeta Visual o Texto",
   "sendWhatsAppButton": "Abrir en WhatsApp",
   "shareCardButton": "Compartir Imagen",
-  "exportPdfButton": "Ver y Exportar PDF",
+  "exportPdfButton": "Ver PDF",
+  "sharePdfButton": "Compartir PDF",
+  "viewPdfButton": "Ver PDF",
+  "sharePdfSubject": "Resumen clínico Lumen",
+  "sharePdfFailed": "No se pudo compartir el PDF ahora.",
+  "pdfStyleSectionLabel": "Estilo del PDF",
+  "pdfStyleClinicalLabel": "Clínico",
+  "pdfStyleLumenLabel": "Lumen",
+  "pdfAtAGlanceTitle": "Vista rápida",
+  "pdfDeviceFooter": "Generado en el dispositivo · Lumen",
+  "pdfKpiParalysisTitle": "Parálisis / trabado",
+  "pdfKpiMedicationTitle": "Medicación del período",
   "copyTextButton": "Copiar Texto",
   "textCopiedMessage": "¡Texto copiado al portapapeles!",
   "languageSelectorTitle": "Seleccionar Idioma",
@@ -170,7 +208,7 @@
       }
     }
   },
-  "dateFormatFullPattern": "EEEE, d 'de' MMMM",
+  "dateFormatFullPattern": "EEEE, d ''de'' MMMM",
   "@dateFormatFullPattern": {
     "description": "intl DateFormat pattern for full date on routine screen"
   },
@@ -194,19 +232,12 @@
       }
     }
   },
-  "homeTherapistBlurb": "Basta de intentar recordar en la sesión cómo fueron los últimos 7 días. Envía por WhatsApp con 1 toque, comparte una imagen con gráficos o genera el PDF formal.",
-  "@homeTherapistBlurb": {
-    "description": "Home card blurb for therapist export"
-  },
   "homeBrainPatternsTitle": "Patrones de tu Cerebro",
   "homeRecentEntriesTitle": "Últimos Registros",
-  "homeNoEntriesYet": "Aún no hay registros. ¡Haz tu primer check-in!",
+  "homeNoEntriesYet": "Todavía no hay nada registrado. El primer check-in lleva solo unos segundos.",
   "routineSavedSuccess": "¡Rutina guardada con éxito!",
-  "routineAppBarTitle": "Rutina y Sentimientos",
   "routineCompassTitle": "Tu Brújula Diaria",
   "routineCompassSubtitle": "Este espacio es 100% nativo de la app, funciona igual en iPhone y Android, con sincronización biométrica automática.",
-  "routineAnchorSubtitle": "Para evitar abrir 15 pestañas mentales y perderte:",
-  "routineEmotionalStateTitle": "Estado Emocional",
   "routineEmotionalStateSubtitle": "El mismo flujo de Apple Health — también disponible en Android:",
   "routineMicroHabitsSubtitle": "Añade o quita pasos — la lista es solo tuya:",
   "removeTooltip": "Eliminar",
@@ -256,8 +287,7 @@
       }
     }
   },
-  "checkinSavedSuccess": "¡Registrado con éxito! Cuidando de ti.",
-  "medicationsAppBarTitle": "Medicamentos y Recordatorios",
+  "checkinSavedSuccess": "Check-in guardado.",
   "importFromHealthTooltip": "Importar de Apple Health",
   "importHealthUnavailable": "La importación de medicamentos de Apple Health aún no está disponible en este iOS/SDK. El registro local sigue funcionando.",
   "importHealthCount": "{count} medicamento(s) importado(s) de Apple Health.",
@@ -334,12 +364,27 @@
     }
   },
   "snooze15mSnack": "¡Recordatorio pospuesto 15 minutos!",
-  "skipDoseTooltip": "Omitir dosis hoy",
-  "skipDoseDialogTitle": "¿Omitir dosis hoy?",
-  "skipDoseDialogBody": "Sin culpa. A veces el día pide una pausa o te despertaste tarde. Quedará anotado para que tu terapeuta entienda tu rutina.",
+  "skipDoseTooltip": "Omitir la dosis de las {time}",
+  "@skipDoseTooltip": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "skipDoseDialogTitle": "¿Omitir la dosis de las {time}?",
+  "@skipDoseDialogTitle": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "skipDoseDialogBody": "Solo esta quedará como omitida. Los demás horarios de hoy siguen igual.",
   "@skipDoseDialogBody": {
     "description": "Skip dose confirmation dialog body"
   },
+  "skipDoseConfirmButton": "Omitir esta",
   "skipReasonVoluntary": "Pausado voluntariamente",
   "defaultMedInstructions": "Tomar con agua después de la comida.",
   "defaultMedInstructionsShort": "Tomar con agua.",
@@ -414,6 +459,87 @@
   },
   "medReminderChannelName": "Recordatorios de Medicamentos",
   "medReminderChannelDesc": "Alertas puntuales de medicación TDAH sin juicios",
+  "taskReminderChannelName": "Recordatorios de tareas",
+  "taskReminderChannelDesc": "Avisos de la lista, al ritmo que elegiste",
+  "taskReminderTitle": "Es la hora: {title}",
+  "@taskReminderTitle": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "taskReminderBody": "Cuando puedas, márcala hecha o pospón un poco.",
+  "taskNotificationActionComplete": "Hecho",
+  "taskNotificationActionSnooze": "Posponer",
+  "taskEditorTitleNew": "Nueva tarea",
+  "taskEditorTitleEdit": "Editar tarea",
+  "taskTitleLabel": "¿Qué es?",
+  "taskTitleHint": "Ej: Leer el libro",
+  "taskTimeLabel": "Hora del aviso",
+  "taskTimeNone": "Sin hora",
+  "taskTimePick": "Elegir hora",
+  "taskRecurrenceLabel": "Se repite",
+  "taskRecurrenceOnce": "Puntual",
+  "taskRecurrenceDaily": "Cada día",
+  "taskRecurrenceWeekly": "Cada semana",
+  "taskRecurrenceBiweekly": "Cada 15 días",
+  "taskRecurrenceMonthly": "Cada mes",
+  "taskNagIntervalLabel": "Recordar de nuevo cada",
+  "taskNagIntervalValue": "{minutes} min",
+  "@taskNagIntervalValue": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "taskAlertStyleLabel": "Tipo de aviso",
+  "taskAlertStyleNotification": "Notificación",
+  "taskAlertStyleAlarm": "Destacado",
+  "taskAlertStyleInsistent": "Muy insistente",
+  "taskAlertStyleNotificationHint": "Un aviso común del sistema. Con Concentración o No molestar activado, queda en silencio.",
+  "taskAlertStyleAlarmHint": "En Android, aparece en la parte superior y usa el volumen de alarma. En iPhone, llega como una notificación.",
+  "taskAlertStyleInsistentHint": "En Android, puede abrirse a pantalla completa con el teléfono bloqueado. En iPhone, pide pasar por Concentración, pero el sistema decide.",
+  "taskWeekdaysLabel": "Días de la semana",
+  "taskDayOfMonthLabel": "Día del mes",
+  "taskOnceDateLabel": "Día",
+  "taskSaveButton": "Guardar tarea",
+  "taskDeleteButton": "Borrar",
+  "taskQuietHoursTitle": "Horario silencioso",
+  "taskQuietHoursSubtitle": "Los avisos de tarea que caen aquí esperan a que termine el silencio. Los recordatorios de medicamentos suenan como siempre.",
+  "taskQuietHoursStart": "Empieza",
+  "taskQuietHoursEnd": "Termina",
+  "taskQuietHoursSave": "Guardar silencio",
+  "taskEmptyTitleError": "Ponle un nombre a la tarea",
+  "taskReminderChip": "Aviso {time}",
+  "@taskReminderChip": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "taskManageQuietHours": "Horario silencioso",
+  "settingsQuietHoursSubtitle": "Las tareas quedan en silencio en este intervalo. Los medicamentos siguen avisando.",
+  "taskQuietHoursEditorNote": "Durante el horario silencioso, el aviso de esta tarea espera. Los medicamentos no se incluyen.",
+  "taskQuietHoursEditorLink": "Ajustar horario silencioso",
+  "taskReminderClosedAppNote": "El aviso queda programado en el dispositivo y suena aunque Lumen esté cerrado. Concentración, No molestar o el ahorro de batería aún pueden retenerlo o retrasarlo.",
+  "taskNotificationsDeniedTitle": "Notificaciones desactivadas",
+  "taskNotificationsDeniedBody": "Los avisos de tareas no aparecerán hasta que los permitas en Ajustes.",
+  "taskNotificationsDeniedAction": "Abrir Ajustes",
+  "taskExactAlarmMissingTitle": "El aviso puede retrasarse",
+  "taskExactAlarmMissingBody": "Sin el permiso Alarmas y recordatorios, Android puede mostrar el aviso unos minutos más tarde.",
+  "taskExactAlarmMissingAction": "Permitir en Ajustes",
+  "taskReminderHelpTitle": "Cómo llega el aviso",
+  "taskReminderHelpBody": "Lumen usa las notificaciones del dispositivo con el sonido predeterminado del sistema. Funciona con la app cerrada. Concentración, No molestar y la batería pueden retenerlo, y el horario silencioso solo se aplica a las tareas.",
+  "weekdayMonShort": "Lun",
+  "weekdayTueShort": "Mar",
+  "weekdayWedShort": "Mié",
+  "weekdayThuShort": "Jue",
+  "weekdayFriShort": "Vie",
+  "weekdaySatShort": "Sáb",
+  "weekdaySunShort": "Dom",
   "medSnoozeNotificationTitle": "⏰ Recordatorio Pospuesto: {name}",
   "@medSnoozeNotificationTitle": {
     "placeholders": {
@@ -513,14 +639,16 @@
   },
   "healthSourceUnavailable": "No disponible en esta plataforma",
   "healthSourceApple": "Apple Health (HealthKit)",
-  "healthSourceAndroid": "Health Connect / Samsung Health",
+  "healthSourceAndroid": "Health Connect",
+  "healthSourceHealthConnect": "Health Connect",
+  "healthSourceSamsung": "Samsung Health",
   "insightCollectingTitle": "Recopilando Patrones",
   "insightCollectingDescHealth": "Sigue registrando tu día. Con 3 a 5 días de datos de Apple Health, tus patrones biológicos aparecerán aquí.",
   "@insightCollectingDescHealth": {
     "description": "Empty-state insight when no Health/mood data yet"
   },
   "insightCollectingDescGeneric": "Sigue registrando tu día. Con 3 a 5 días de datos, tus patrones biológicos aparecerán aquí.",
-  "insightCollectingAdvice": "Prueba un micro check-in rápido después del almuerzo.",
+  "insightCollectingAdvice": "Prueba un check-in después del almuerzo — lleva solo unos segundos.",
   "insightRemParalysisTitle": "Sueño REM y Parálisis de Tareas",
   "@insightRemParalysisTitle": {
     "description": "Clinical correlation insight title"
@@ -594,7 +722,7 @@
     }
   },
   "insightNoiseAdvice": "Auriculares con cancelación o pausas en un entorno quieto ayudan a bajar la carga sensorial.",
-  "therapistExportHubTitle": "Central de Envío Clínico",
+  "therapistExportHubTitle": "Ficha",
   "configureTherapistPhoneTooltip": "Configurar Teléfono del Terapeuta",
   "errorLoadingData": "Error al cargar datos: {error}",
   "@errorLoadingData": {
@@ -629,8 +757,8 @@
     }
   },
   "shareCardImageFailed": "No se pudo generar la imagen en este momento.",
-  "pdfReportTitle": "Informe Clínico en PDF",
-  "pdfReportSubtitle": "Documento completo para historial, impresión o envío formal.",
+  "pdfReportTitle": "Informe clínico en PDF",
+  "pdfReportSubtitle": "Resumen para la sesión — compartir, imprimir o guardar en el historial.",
   "cardPreviewTitle": "Vista Previa de la Tarjeta",
   "exportablePngBadge": "Exportable en PNG",
   "therapistPhoneDialogTitle": "WhatsApp del Terapeuta",
@@ -674,9 +802,9 @@
   "weeklyCardGoodConcentration": "Buena concentracion",
   "weeklyCardSyncedFooter": "Sincronizado con Apple Health y Lumen",
   "weeklyCardPersonalUse": "Uso Clinico Personal",
-  "pdfHeaderTitle": "LUMEN - RESUMEN CLINICO TERAPEUTICO",
-  "pdfHeaderSubtitle": "Seguimiento de Sueño, Foco y Humor (TDAH)",
-  "pdfPatientPeriod": "Paciente: {name}  |  Periodo: Ultimos {days} dias",
+  "pdfHeaderTitle": "Lumen",
+  "pdfHeaderSubtitle": "Resumen para la sesión",
+  "pdfPatientPeriod": "Paciente: {name}  ·  Últimos {days} días",
   "@pdfPatientPeriod": {
     "placeholders": {
       "name": {
@@ -687,7 +815,7 @@
       }
     }
   },
-  "pdfIssuedAt": "Emision: {date}",
+  "pdfIssuedAt": "Emitido el {date}",
   "@pdfIssuedAt": {
     "placeholders": {
       "date": {
@@ -695,8 +823,8 @@
       }
     }
   },
-  "pdfSourceLine": "Fuente: Apple Health / Lumen App",
-  "pdfSection1Sleep": "1. BIOMETRIA DE SUEÑO (Apple Health)",
+  "pdfSourceLine": "Fuente: Apple Health / Health Connect · Lumen",
+  "pdfSection1Sleep": "Sueño",
   "pdfAvgSleepTitle": "Media de sueño",
   "pdfAvgSleepValue": "{hours}h / noche",
   "@pdfAvgSleepValue": {
@@ -706,7 +834,7 @@
       }
     }
   },
-  "pdfDeficitNights": "{count} de {total} noches en deficit (<6h)",
+  "pdfDeficitNights": "{count} de {total} noches en déficit (<6h)",
   "@pdfDeficitNights": {
     "placeholders": {
       "count": {
@@ -718,26 +846,26 @@
     }
   },
   "pdfAvgRemTitle": "REM medio",
-  "pdfRemDeficitAlert": "Alerta de deficit REM",
+  "pdfRemDeficitAlert": "Déficit de REM",
   "pdfRemWithinExpected": "Dentro de lo esperado",
   "pdfColDate": "Fecha",
-  "pdfColBedtime": "Hora de Acostar",
-  "pdfColWake": "Hora de Despertar",
-  "pdfColTotal": "Duracion Total",
-  "pdfColRem": "Sueño REM",
+  "pdfColBedtime": "Acostar",
+  "pdfColWake": "Despertar",
+  "pdfColTotal": "Total",
+  "pdfColRem": "REM",
   "pdfColDeep": "Profundo",
-  "pdfColScore": "Puntuacion",
-  "pdfSection1bRecovery": "1b. SEÑALES OBJETIVAS DE RECUPERACION",
+  "pdfColScore": "Score",
+  "pdfSection1bRecovery": "Recuperación",
   "pdfHrvAvgTitle": "HRV media",
-  "pdfHrvSubtitle": "Variabilidad cardiaca",
+  "pdfHrvSubtitle": "Variabilidad cardíaca",
   "pdfRestingHrTitle": "FC reposo",
-  "pdfPeriodAverage": "Media del periodo",
+  "pdfPeriodAverage": "Media del período",
   "pdfStepsPerDayTitle": "Pasos/día",
   "pdfExerciseTitle": "Ejercicio",
   "pdfDailyAverage": "Media diaria",
   "pdfDaylightTitle": "Luz diurna",
   "pdfNoiseTitle": "Ruido amb.",
-  "pdfSomFromAppleHealth": "Incluye {count} registro(s) de Estado Emocional importados de Apple Health.",
+  "pdfSomFromAppleHealth": "Incluye {count} registro(s) de estado emocional de Apple Health.",
   "@pdfSomFromAppleHealth": {
     "placeholders": {
       "count": {
@@ -745,12 +873,12 @@
       }
     }
   },
-  "pdfSection2Executive": "2. FUNCIONAMIENTO EJECUTIVO Y HUMOR REPORTADO",
-  "pdfStatParalyzed": "Bloqueado / Parálisis",
-  "pdfStatScattered": "Disperso / Inquieto",
-  "pdfStatFocused": "Foco Estable",
-  "pdfStatHyperfocus": "Hiperenfoque Intenso",
-  "pdfStatSensory": "Sobrecarga Sensorial",
+  "pdfSection2Executive": "Funcionamiento y humor",
+  "pdfStatParalyzed": "Bloqueado",
+  "pdfStatScattered": "Disperso",
+  "pdfStatFocused": "Foco estable",
+  "pdfStatHyperfocus": "Hiperenfoque",
+  "pdfStatSensory": "Sobrecarga",
   "pdfReportsLabel": "{count} relatos",
   "@pdfReportsLabel": {
     "placeholders": {
@@ -767,8 +895,8 @@
       }
     }
   },
-  "pdfTopEmotionWords": "Palabras emocionales más frecuentes (State of Mind):",
-  "pdfMedicationTaken": "Medicacion tomada: {taken} de {total} registros",
+  "pdfTopEmotionWords": "Palabras emocionales más frecuentes:",
+  "pdfMedicationTaken": "Medicación tomada: {taken} de {total} registros",
   "@pdfMedicationTaken": {
     "placeholders": {
       "taken": {
@@ -779,8 +907,8 @@
       }
     }
   },
-  "pdfSection3Correlations": "3. CORRELACIONES FISIOLOGICAS",
-  "pdfClinicalSuggestion": "Sugerencia Clinica: {advice}",
+  "pdfSection3Correlations": "Correlaciones",
+  "pdfClinicalSuggestion": "Sugerencia: {advice}",
   "@pdfClinicalSuggestion": {
     "placeholders": {
       "advice": {
@@ -788,8 +916,8 @@
       }
     }
   },
-  "pdfSection4Triggers": "4. REGISTROS Y GATILLOS REPORTADOS POR EL PACIENTE",
-  "pdfEntryLine": "{date} a las {time} | Foco: {focus} | Humor: {mood}{labels}",
+  "pdfSection4Triggers": "Registros y gatillos",
+  "pdfEntryLine": "{date} a las {time} · Foco: {focus} · Humor: {mood}{labels}",
   "@pdfEntryLine": {
     "placeholders": {
       "date": {
@@ -809,7 +937,7 @@
       }
     }
   },
-  "pdfFooterDisclaimer": "Documento generado por la app Lumen. Los datos biometricos se sincronizan via Apple Health / Health Connect y no sustituyen evaluacion diagnostica presencial.",
+  "pdfFooterDisclaimer": "Documento generado por Lumen. No es un dispositivo médico y no diagnostica, trata, cura ni previene ninguna condición médica. Los datos de Apple Health / Health Connect no sustituyen una evaluación presencial: consulta a un profesional de la salud.",
   "@pdfFooterDisclaimer": {
     "description": "Legal/clinical disclaimer on PDF footer"
   },
@@ -1051,5 +1179,529 @@
       }
     }
   },
-  "deleteMedConfirmButton": "Quitar"
+  "deleteMedConfirmButton": "Quitar",
+  "doseSkippedStatus": "Queda para la próxima.",
+  "durationMinutes": "{minutes} min",
+  "@durationMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "editMedicationSheetTitle": "Editar medicamento",
+  "editMedicationTooltip": "Editar",
+  "eveningReflectionHint": "Ej: Me trabé en la lista y volví al final de la tarde.",
+  "eveningReflectionSubtitle": "Una línea sobre lo que quedó, si quieres.",
+  "eveningReflectionTitle": "Cómo cerró el día",
+  "exportRoutineAnchorEmpty": "Sin Foco del día",
+  "exportRoutineCount": "{count} registros en el período",
+  "@exportRoutineCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "exportRoutineHabits": "Tareas: {habits}",
+  "@exportRoutineHabits": {
+    "placeholders": {
+      "habits": {
+        "type": "String"
+      }
+    }
+  },
+  "exportRoutineHabitsNone": "Tareas: ninguna marcada",
+  "exportRoutineHeading": "Rutina guardada",
+  "exportRoutineMedNo": "Medicación prescrita: no tomada",
+  "exportRoutineMedYes": "Medicación prescrita: tomada",
+  "exportRoutineNotes": "Agenda: {text}",
+  "@exportRoutineNotes": {
+    "placeholders": {
+      "text": {
+        "type": "String"
+      }
+    }
+  },
+  "exportRoutineReflection": "Cómo cerró el día: {text}",
+  "@exportRoutineReflection": {
+    "placeholders": {
+      "text": {
+        "type": "String"
+      }
+    }
+  },
+  "exportRoutineWater": "Agua: {count} vasos",
+  "@exportRoutineWater": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "greetingName": "tú",
+  "homeRoutineSnapshotLine": "{time} · {anchor}",
+  "@homeRoutineSnapshotLine": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      },
+      "anchor": {
+        "type": "String"
+      }
+    }
+  },
+  "medAddTimeButton": "Agregar horario",
+  "medRemoveTimeTooltip": "Eliminar el horario de las {time}",
+  "@medRemoveTimeTooltip": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "medEditTimeTooltip": "Cambiar el horario de las {time}",
+  "@medEditTimeTooltip": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "medDuplicateTimeWarning": "Ya hay una dosis a las {time}. Elige otro horario.",
+  "@medDuplicateTimeWarning": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "medTimesSectionLabel": "Horarios",
+  "medUpdatedSuccess": "{name} actualizado.",
+  "@medUpdatedSuccess": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "medWindowHours": "{hours} h de ventana",
+  "@medWindowHours": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "patientDisplayName": "Paciente",
+  "presetAtentah": "Atentah",
+  "presetBupropiona": "Bupropiona",
+  "presetConcerta": "Concerta",
+  "presetRitalina": "Ritalina",
+  "presetRitalinaLa": "Ritalina LA",
+  "presetVenvanse": "Venvanse",
+  "routineCalendarDayEmpty": "Nada guardado ese día.",
+  "routineCalendarEventTitle": "Rutina",
+  "routineCalendarNext": "Mes siguiente",
+  "routineCalendarPrevious": "Mes anterior",
+  "routineCalendarTitle": "Mis días",
+  "routineTimelineEmpty": "Nada guardado hoy. Cuando guardes, aparece aquí con la hora.",
+  "routineTimelineSubtitle": "Cada vez que guardas, queda una tarjeta con la hora.",
+  "routineTimelineTitle": "Hoy, por horario",
+  "sleepHoursValue": "{hours}h",
+  "@sleepHoursValue": {
+    "placeholders": {
+      "hours": {
+        "type": "String"
+      }
+    }
+  },
+  "stageRemShort": "REM",
+  "unitDecibels": "{value} dB",
+  "@unitDecibels": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "unitMeters": "{value}m",
+  "@unitMeters": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "unitMilliseconds": "{value} ms",
+  "@unitMilliseconds": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "waterGoalSuffix": " / 2000 ml",
+  "profileSheetTitle": "Tu ficha",
+  "profileSheetSubtitle": "Lo que Lumen ya tiene registrado de ti",
+  "profileNameLabel": "Nombre o apodo",
+  "profileNameHint": "Cómo prefieres que te llamen",
+  "profileNameSave": "Guardar nombre",
+  "profileNameEmpty": "Sin nombre aún — toca para editar",
+  "profileTherapistPhoneLabel": "WhatsApp de la terapeuta",
+  "profileTherapistPhoneEmpty": "Ningún número guardado",
+  "profileMedsLabel": "Medicamentos registrados",
+  "profileMedsEmpty": "Ningún medicamento en la lista",
+  "profileMedsCount": "{count} en la lista",
+  "@profileMedsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profileSummaryCheckins": "{count} check-ins en el período",
+  "@profileSummaryCheckins": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profileSummarySleep": "Sueño medio {hours}h",
+  "@profileSummarySleep": {
+    "placeholders": {
+      "hours": {
+        "type": "String"
+      }
+    }
+  },
+  "profileSummarySleepEmpty": "Sin datos de sueño en el período",
+  "profileSummaryFocus": "Foco fluido {focused} · Parálisis {paralyzed}",
+  "@profileSummaryFocus": {
+    "placeholders": {
+      "focused": {
+        "type": "int"
+      },
+      "paralyzed": {
+        "type": "int"
+      }
+    }
+  },
+  "profileSummaryRoutine": "{count} rutinas guardadas",
+  "@profileSummaryRoutine": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profileEditNameTitle": "Tu nombre",
+  "profileClinicalSectionTitle": "Área clínica",
+  "profileClinicalSectionSubtitle": "Resumen para la sesión: WhatsApp, tarjeta o PDF",
+  "profileScreenTitle": "Mi perfil",
+  "profileViewProfileCta": "Ver mi perfil",
+  "profileOpenTooltip": "Mi perfil",
+  "profileEditButton": "Editar perfil",
+  "profileEditSheetTitle": "Editar perfil",
+  "profileEditSave": "Guardar",
+  "profileAgeYears": "{age} años",
+  "profileHeightChip": "{cm} cm",
+  "profileWeightChip": "{kg} kg",
+  "profileFeedTitle": "Tu línea de tiempo",
+  "profileFeedEmpty": "Todavía no hay nada aquí. Tus registros aparecen apenas empiezas a usar Lumen.",
+  "profileFeedRoutineTitle": "Rutina guardada",
+  "profileFeedSleepTitle": "Dormiste {hours}h",
+  "profileFeedSleepDetail": "Calidad {score}%",
+  "profileFeedRecoveryTitle": "Cuerpo y recuperación",
+  "profileFeedRecoveryHrv": "VFC {ms} ms",
+  "profileFeedRecoverySteps": "{steps} pasos",
+  "profileFeedDoseTaken": "Dosis tomada",
+  "profileFeedDoseSkipped": "Dosis omitida",
+  "profileFeedTaskDone": "Tarea hecha",
+  "weeklyCardLastNDays": "Últimos {days} días",
+  "@weeklyCardLastNDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "weeklyCardCheckins": "Check-ins",
+  "weeklyCardSensory": "Sobrecarga sensorial",
+  "weeklyCardMedToggle": "Med en el check-in",
+  "weeklyCardRecoveryHrv": "HRV medio",
+  "onboardingWelcomeTitle": "Hola, este es Lumen",
+  "onboardingWelcomeBody": "Un compañero para quien tiene TDAH: check-in de ánimo y foco en segundos, rutina del día, medicamentos con recordatorio, sueño de la app de salud y un resumen listo para la sesión.",
+  "onboardingPrivacyTitle": "Todo se queda en tu dispositivo",
+  "onboardingPrivacyBody": "Sin cuenta, sin login, sin nube de Lumen. Lo que registras vive solo en este teléfono. Si quieres, la sincronización de salud habla directo con Apple Health o Health Connect, también dentro del dispositivo. Lumen no es un dispositivo médico y no diagnostica, trata, cura ni previene ninguna condición médica: si dudas, habla con quien te acompaña.",
+  "onboardingStepLabel": "Paso {current} de {total}",
+  "@onboardingStepLabel": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "onboardingHealthTitle": "¿Traer datos de la app de salud?",
+  "onboardingHealthBody": "Con sueño y recuperación de Apple Health o Health Connect, Lumen cruza una noche corta con un día disperso. También aprovecha altura, peso, fecha de nacimiento y sexo biológico que ya están ahí, para que no los escribas de nuevo.",
+  "onboardingHealthNote": "El intercambio ocurre entre las dos apps, dentro del teléfono. Nada sale del dispositivo.",
+  "onboardingHealthYes": "Sí, sincronizar",
+  "onboardingHealthImported": "{count, plural, =0{App de salud conectada. Por ahora no llegó ningún dato de perfil.} =1{App de salud conectada. 1 dato ya entró en tu perfil.} other{App de salud conectada. {count} datos ya entraron en tu perfil.}}",
+  "@onboardingHealthImported": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "onboardingHealthDenied": "Sin acceso a la app de salud por ahora. Puedes activarlo después en la tarjeta de sueño.",
+  "onboardingPermissionsTitle": "Avisos y calendario",
+  "onboardingPermissionsBody": "Para que el recordatorio de dosis llegue a tiempo, Lumen usa las notificaciones del sistema. El calendario sirve para marcar la rutina del día. Tú eliges qué permitir y lo cambias en Ajustes cuando quieras.",
+  "onboardingPermissionsNote": "Negar no bloquea nada: la app sigue funcionando con lo que esté activado.",
+  "onboardingContinue": "Permitir accesos",
+  "onboardingSkip": "Ahora no",
+  "onboardingBack": "Volver",
+  "onboardingStatusTitle": "Qué quedó activado",
+  "onboardingStatusHealth": "App de salud",
+  "onboardingStatusNotifications": "Notificaciones de dosis",
+  "onboardingStatusCalendar": "Calendario",
+  "onboardingStatusOn": "Activado",
+  "onboardingStatusOff": "Desactivado",
+  "onboardingStatusSkipped": "No solicitado",
+  "onboardingStatusRequested": "Pedido al sistema",
+  "onboardingProfileTitle": "Ahora, sobre ti",
+  "onboardingProfileBody": "Solo lo básico para personalizar Lumen. Se queda en el dispositivo y lo editas cuando quieras.",
+  "onboardingProfileBodyHealth": "Algunos campos ya vinieron de la app de salud. Revisa que estén bien y completa lo que falta.",
+  "onboardingBirthDateLabel": "Fecha de nacimiento",
+  "onboardingBirthDatePick": "Elegir fecha",
+  "onboardingVoiceToneLabel": "Cómo hablarte",
+  "onboardingVoiceToneHint": "Define el tono de los mensajes de Lumen. Se puede cambiar después.",
+  "voiceToneRelaxed": "Relajado",
+  "voiceToneCasual": "Casual",
+  "voiceToneNeutral": "Directo al punto",
+  "voiceToneFormal": "Formal",
+  "voiceToneFemaleAdult": "Femenino",
+  "voiceToneGirlYouth": "Niña",
+  "voiceToneBoyYouth": "Niño",
+  "onboardingHeightLabel": "Altura (cm)",
+  "onboardingWeightLabel": "Peso (kg)",
+  "onboardingBiologicalSexLabel": "Sexo biológico",
+  "biologicalSexMale": "Masculino",
+  "biologicalSexFemale": "Femenino",
+  "biologicalSexOther": "Otro",
+  "onboardingFromHealthTag": "Vino de la app de salud",
+  "onboardingMissingFields": "Falta: {fields}",
+  "@onboardingMissingFields": {
+    "placeholders": {
+      "fields": {
+        "type": "String"
+      }
+    }
+  },
+  "onboardingInvalidNumber": "Revisa este número",
+  "onboardingFinish": "Empezar a usar",
+  "onboardingDoneSnack": "Todo listo, {name}. Si falta algo, se puede activar después en las tarjetas.",
+  "@onboardingDoneSnack": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "onboardingNext": "Continuar",
+  "navFicha": "Ficha",
+  "chartAppBarTitle": "Ficha",
+  "chartMyDíasTitle": "Mis días",
+  "chartMyDíasSubtitle": "Todo lo que registraste, en un solo lugar",
+  "chartOpenCalendar": "Abrir calendario",
+  "chartTareasTitle": "Tareas",
+  "chartTareasSubtitle": "Lista completa: hoy, recurrentes y puntuales",
+  "chartOpenTareas": "Ver todas las tareas",
+  "dayDigestTitle": "Ese día",
+  "dayDigestEmpty": "Nada registrado ese día.",
+  "dayDigestCheckInsTitle": "Check-ins",
+  "dayDigestCheckInsEmpty": "Ningún check-in ese día.",
+  "dayDigestSomTitle": "Estado mental",
+  "dayDigestSomEmpty": "Ningún estado mental ese día.",
+  "dayDigestRutinaTitle": "Rutina",
+  "dayDigestRutinaEmpty": "Ningún guardado de rutina ese día.",
+  "dayDigestRemediosTitle": "Remedios",
+  "dayDigestRemediosEmpty": "Ninguna dosis ese día.",
+  "dayDigestTareasTitle": "Tareas done",
+  "dayDigestTareasEmpty": "Ninguna tarea marcada ese día.",
+  "dayDigestNoteLabel": "Nota: {note}",
+  "@dayDigestNoteLabel": {
+    "placeholders": {
+      "note": {
+        "type": "String"
+      }
+    }
+  },
+  "tasksHubTitle": "Tareas",
+  "tasksHubTodaySection": "Para hoy",
+  "tasksHubRecurrentesSection": "Recurrentes",
+  "tasksHubOnceSection": "Puntuales",
+  "tasksHubEmptyToday": "Nada para hoy. Tranquilo.",
+  "tasksHubEmptyRecurrentes": "Ninguna tarea que se repita.",
+  "tasksHubEmptyOnce": "Ninguna tarea puntual.",
+  "tasksHubOpenFromDía": "Ver todas las tareas",
+  "dayChecklistSubtitle": "Solo lo de hoy",
+  "dayFocusSubtitle": "Fija una tarea y se convierte en el Foco del día, en la Ficha y el calendario.",
+  "homeMyDíasTitle": "Mis días",
+  "homeMyDíasSubtitle": "Relee pautas, palabras y lo que pasó",
+  "exportRutinaSom": "Estado mental: {labels}",
+  "@exportRutinaSom": {
+    "placeholders": {
+      "labels": {
+        "type": "String"
+      }
+    }
+  },
+  "exportRoutineSom": "Estado emocional: {labels}",
+  "@exportRoutineSom": {
+    "placeholders": {
+      "labels": {
+        "type": "String"
+      }
+    }
+  },
+  "routineAppBarTitleShort": "Día",
+  "checkinSectionTitle": "Check-in",
+  "checkinSectionSubtitle": "Ánimo, foco y energía de ahora",
+  "taskDayAnchorTooltip": "Fijar como Foco del día",
+  "taskDayAnchorBadge": "Foco del día",
+  "homeDayAnchorTitle": "Foco del día",
+  "homeDayAnchorEmpty": "Todavía no hay Foco del día. Fija una tarea en Día.",
+  "therapyNotesSectionTitle": "Para la terapia",
+  "therapyNotesSectionSubtitle": "Pauta y cómo cerró el día, sin exportar",
+  "therapyNotesEmpty": "Todavía no hay pauta ni cierre guardados.",
+  "therapyNotesReflectionSnippet": "Cerró: {text}",
+  "therapyNotesPautaSnippet": "Pauta: {text}",
+  "homeMyDaysSubtitle": "El calendario con lo que guardaste cada día",
+  "@therapyNotesReflectionSnippet": {
+    "placeholders": {
+      "text": {
+        "type": "String"
+      }
+    }
+  },
+  "@therapyNotesPautaSnippet": {
+    "placeholders": {
+      "text": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsPrivacyTitle": "Privacidad",
+  "settingsPrivacySubtitle": "Sin cuenta, sin login, sin nube de Lumen — todo queda en el dispositivo",
+  "settingsPrivacyOpenFailed": "No se pudo abrir la política ahora. Inténtalo de nuevo",
+  "settingsFeedbackTile": "Enviar comentarios",
+  "settingsFeedbackSubtitle": "¿Encontraste un error o tuviste una idea? Abre un formulario corto",
+  "settingsFeedbackOpenFailed": "No se pudo abrir el formulario ahora. Inténtalo de nuevo",
+  "settingsClinicalExportSubtitle": "Va a la pestaña Carpeta clínica, con el resumen para la sesión",
+  "navOpensTabHint": "Abre la pestaña {tab}",
+  "@navOpensTabHint": {
+    "placeholders": {
+      "tab": {
+        "type": "String"
+      }
+    }
+  },
+  "navClinicalFolder": "Carpeta clínica",
+  "clinicalFolderTitle": "Carpeta clínica",
+  "settingsScreenTitle": "Ajustes",
+  "settingsOpenTooltip": "Ajustes",
+  "settingsAppearanceSection": "Apariencia",
+  "settingsThemeTitle": "Tema",
+  "settingsThemeSubtitle": "Claro, oscuro o el del dispositivo",
+  "settingsLanguageSection": "Idioma",
+  "settingsLanguageTitle": "Idioma de la app",
+  "settingsLanguageSubtitle": "Ahora: {current}. Abre el selector del sistema",
+  "@settingsLanguageSubtitle": {
+    "placeholders": {
+      "current": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsAccessSection": "Accesos",
+  "settingsNotificationsTitle": "Notificaciones",
+  "settingsNotificationsSubtitle": "Recordatorios de dosis y tareas en el sistema",
+  "settingsHealthTitle": "Salud",
+  "settingsHealthConnected": "Conectado — toca para apagar el espejo",
+  "settingsHealthDisconnected": "Apagado — toca para conectar de nuevo",
+  "settingsCalendarTitle": "Calendario del dispositivo",
+  "settingsCalendarSubtitle": "Eventos de la rutina en el calendario nativo",
+  "settingsCalendarGranted": "Calendario permitido",
+  "settingsCalendarDenied": "Sin acceso al calendario. Puedes activarlo en Ajustes",
+  "settingsQuietHoursTitle": "Horario silencioso",
+  "settingsSystemPermissionsTitle": "Permisos del sistema",
+  "settingsSystemPermissionsSubtitle": "Abre la ficha de Lumen en Ajustes",
+  "settingsOpenSystemFailed": "No se pudo abrir Ajustes. Prueba desde el sistema",
+  "settingsDataSection": "Datos y almacenamiento",
+  "settingsExportLocalTitle": "Exportar almacenamiento",
+  "settingsExportLocalSubtitle": "Copia las claves locales en un JSON para guardar",
+  "settingsExportLocalDone": "Listo — elige dónde guardar el archivo",
+  "settingsExportLocalFailed": "No se pudo exportar ahora. Inténtalo de nuevo",
+  "settingsExportLocalShareSubject": "Copia local de Lumen",
+  "settingsClinicalExportTitle": "Carpeta clínica",
+  "settingsAboutSection": "Acerca de",
+  "homeFichaSubtitle": "Tu ficha viva: lo que importa hoy, en un solo lugar.",
+  "homeFichaIdentityHint": "Tu ficha personal",
+  "homeOverviewTitle": "Resumen del día",
+  "homeTasksTitle": "Tareas",
+  "homeTasksSubtitle": "Recordatorios y lo que te propusiste",
+  "homeMyDaysTitle": "Mis días",
+  "careContactsSectionTitle": "Mis profesionales",
+  "careContactsSectionHint": "Red de apoyo",
+  "careContactsEmpty": "Nadie por aquí todavía. Guarda el contacto de quien te acompaña para tenerlo a mano.",
+  "careContactAdd": "Añadir profesional",
+  "careContactEditorTitleNew": "Nuevo profesional",
+  "careContactEditorTitleEdit": "Editar profesional",
+  "careContactNameLabel": "Nombre",
+  "careContactNameHint": "Cómo llamas a esta persona",
+  "careContactPhoneLabel": "Teléfono o WhatsApp",
+  "careContactPhoneHint": "+34 600 000 000",
+  "careContactPhoneEmpty": "Sin teléfono guardado",
+  "careContactRoleLabel": "Función",
+  "careContactRoleTherapist": "Terapeuta",
+  "careContactRolePsychologist": "Psicólogo/a",
+  "careContactRolePsychiatrist": "Psiquiatra",
+  "careContactRoleOther": "Otro",
+  "careContactEmptyError": "Pon al menos un nombre o un teléfono.",
+  "careContactDeleteButton": "Quitar",
+  "careContactDeleteConfirmTitle": "¿Quitar a {name}?",
+  "@careContactDeleteConfirmTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "careContactDeleteConfirmBody": "Sale de tu lista. Puedes añadirlo de nuevo cuando quieras.",
+  "careContactCallTooltip": "Llamar",
+  "careContactWhatsAppTooltip": "Abrir en WhatsApp",
+  "careContactEditTooltip": "Editar contacto",
+  "careContactLaunchFailed": "No pude abrir eso. ¿Revisas el número?",
+  "diaUnstuckPrompt": "¿Te trabaste en algún paso?",
+  "diaUnstuckOpen": "Abrir Des-Trava",
+  "unstuckModeBadge": "Modo rescate",
+  "chartMyDaysTitle": "Mis días",
+  "chartMyDaysSubtitle": "Todo lo que registraste, en un solo lugar",
+  "chartOpenTasks": "Ver todas las tareas",
+  "chartTasksSubtitle": "Lista completa: hoy, recurrentes y puntuales",
+  "chartTasksTitle": "Tareas",
+  "dayDigestMedsEmpty": "Ninguna dosis ese día.",
+  "dayDigestMedsTitle": "Medicamentos",
+  "dayDigestRoutineEmpty": "Ningún guardado de rutina ese día.",
+  "dayDigestRoutineTitle": "Rutina",
+  "dayDigestTasksEmpty": "Ninguna tarea marcada ese día.",
+  "dayDigestTasksTitle": "Tareas hechas",
+  "tasksHubEmptyRecurring": "Ninguna tarea que se repite.",
+  "tasksHubOpenFromDay": "Ver todas las tareas",
+  "tasksHubRecurringSection": "Recurrentes"
 }

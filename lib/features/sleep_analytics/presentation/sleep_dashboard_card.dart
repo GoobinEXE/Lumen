@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/localization/locale_provider.dart';
@@ -5,8 +8,10 @@ import '../../../core/providers.dart';
 import '../../../core/icons/app_icons.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
+import '../../../core/theme/glass_surface.dart';
 import '../../../core/theme/responsive.dart';
 import '../../../core/widgets/async_placeholders.dart';
+import '../../../core/widgets/glass_toast.dart';
 import 'package:noa/integrations/health/models/sleep_record.dart';
 import '../../health_sync/data/health_sync_prefs.dart';
 import '../../health_sync/presentation/health_sync_consent_sheet.dart';
@@ -19,14 +24,21 @@ class SleepDashboardCard extends ConsumerWidget {
     final result = await HealthSyncConsentSheet.show(context);
     if (!context.mounted) return;
 
+    final android = !kIsWeb && Platform.isAndroid;
     if (result == true) {
-      ScaffoldMessenger.of(
+      showGlassToast(
         context,
-      ).showSnackBar(SnackBar(content: Text(l10n.healthSyncSuccessMessage)));
+        android
+            ? l10n.healthSyncSuccessMessageAndroid
+            : l10n.healthSyncSuccessMessage,
+      );
     } else if (result == false) {
-      ScaffoldMessenger.of(
+      showGlassToast(
         context,
-      ).showSnackBar(SnackBar(content: Text(l10n.healthSyncDeniedMessage)));
+        android
+            ? l10n.healthSyncDeniedMessageAndroid
+            : l10n.healthSyncDeniedMessage,
+      );
     }
   }
 
@@ -91,10 +103,9 @@ class SleepDashboardCard extends ConsumerWidget {
       ],
     );
 
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(18),
-        child: Column(
+    return GlassSurface(
+      padding: const EdgeInsets.all(18),
+      child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (narrow) ...[
@@ -152,7 +163,9 @@ class SleepDashboardCard extends ConsumerWidget {
                         ),
                         const SizedBox(height: 6),
                         Text(
-                          l10n.sleepNoDataHint,
+                          !kIsWeb && Platform.isAndroid
+                              ? l10n.sleepNoDataHintAndroid
+                              : l10n.sleepNoDataHint,
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: AppColors.mutedText(isDark),
                           ),
@@ -310,7 +323,6 @@ class SleepDashboardCard extends ConsumerWidget {
             ),
           ],
         ),
-      ),
     );
   }
 

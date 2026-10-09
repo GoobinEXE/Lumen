@@ -12,48 +12,63 @@
   },
   "greetingMorning": "おはよう、{name}",
   "@greetingMorning": {
-    "placeholders": { "name": { "type": "String" } }
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
   "greetingAfternoon": "こんにちは、{name}",
   "@greetingAfternoon": {
-    "placeholders": { "name": { "type": "String" } }
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
   "greetingEvening": "こんばんは、{name}",
   "@greetingEvening": {
-    "placeholders": { "name": { "type": "String" } }
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
   "noPressureSubtitle": "急がなくていい。一歩ずつ。",
   "biorhythmCalm": "ゆるやかなリズム",
   "routineGuiltLine": "{done} / {total}。今日全部できなくても、明日またで大丈夫。",
   "@routineGuiltLine": {
     "placeholders": {
-      "done": { "type": "int" },
-      "total": { "type": "int" }
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
     }
   },
   "sleepTotalLabel": "睡眠時間",
   "navHome": "ホーム",
-  "navRoutine": "習慣",
+  "navRoutine": "今日",
   "navMeds": "薬",
   "hideIntimateNotes": "プライベートなメモを隠す",
-  "navClinic": "臨床",
+  "hideIntimateNotesHelp": "セッションの話題と「一日の終わり方」は送信内容に含まれません",
+  "exportTasksHeading": "タスク一覧",
+  "exportTasksNone": "この期間のタスクはありません",
+  "exportTasksCompletedMarker": "完了:",
+  "exportTasksOpenMarker": "未完了:",
   "checkinDurationHint": "およそ10秒",
   "unstuckRescueHint": "固まりをほどく",
-  "quickCheckinTitle": "クイックチェックイン",
+  "quickCheckinTitle": "チェックイン",
   "quickCheckinSubtitle": "今、心と頭はどう感じていますか？",
-  "unstuckButton": "ほどく",
-  "unstuckButtonSub": "固まりをほどく",
   "routineTitle": "日課と気分の記録",
-  "routineSubtitle": "今日のアンカー、朝の気分、生体リズム",
-  "routineAnchorLabel": "今日たった1つのフォーカスアンカー",
-  "routineAnchorHint": "例：完璧を求めず、ドラフトの作成を少し進める...",
   "morningFeelingTitle": "目覚めの状態",
   "microHabitsTitle": "心身を整える小さなステップ",
   "waterAndMedsTitle": "水分と服薬のケア",
   "therapistNotesTitle": "セラピストに相談したいこと",
   "saveRoutineButton": "日課を保存",
-  "checkinModalTitle": "3秒チェックイン",
-  "checkinModalSubtitle": "自分を責めない。ありのままの今を記録。",
+  "checkinModalTitle": "チェックイン",
+  "checkinModalSubtitle": "今の自分を、そのまま記録してみて。",
   "howAreYouFeeling": "今の全体的な気分は？",
   "mentalFocusState": "現在の集中状態：",
   "energyBatteryState": "エネルギー残量：",
@@ -94,7 +109,21 @@
   "healthSyncSuccessMessage": "Apple Health に接続し、データを同期しました。",
   "healthSyncDeniedMessage": "許可がありません。設定 → ヘルスケア → データアクセスとデバイス から有効にできます。",
   "healthSyncConnectedLabel": "同期済み",
-  "medicationsCardTitle": "お薬とリマインダー",
+  "healthSyncSheetTitleAndroid": "ヘルスケアアプリと同期",
+  "healthSyncSheetSubtitleAndroid": "Android では Samsung Health があればそれを使い、なければシステムの Health Connect を使います。",
+  "healthSyncReadTitleAndroid": "読み取るもの",
+  "healthSyncReadBodyAndroid": "許可した睡眠・心拍・HRV・歩数・運動・身長・体重。回復と一日を突き合わせます。",
+  "healthSyncWriteTitleAndroid": "書き込むもの",
+  "healthSyncWriteBodyAndroid": "水分とマインドフルネス（瞑想セッションとして）。気分・薬・光・音はこの端末の Lumen のみです。",
+  "healthSyncMedsNoteAndroid": "薬の予定と在庫は Lumen のままです。Health Connect にはまだその型がありません。",
+  "healthSyncSystemNoteAndroid": "次に Health Connect（または Samsung Health）の権限ダイアログが表示されます。",
+  "healthSyncOemGuideTitle": "睡眠がメーカーアプリにありますか？",
+  "healthSyncOemGuideBody": "Mi Fitness、Huawei ヘルスケア、Garmin などは Lumen と直接つながりません。メーカーアプリで Health Connect 同期をオンにし、ここに戻って接続をタップしてください。",
+  "healthSyncOpenHealthConnectButton": "Health Connect を開く",
+  "healthSyncSuccessMessageAndroid": "接続しました。許可したデータが Lumen に入ります。",
+  "healthSyncDeniedMessageAndroid": "許可がありません。あとで Health Connect かアプリ設定から許可できます。",
+  "sleepNoDataHintAndroid": "「同期」で Health Connect（または Samsung Health）に接続し、読み取りを有効にします。",
+  "medicationsCardTitle": "今日の薬",
   "medicationsCardSubtitle": "服薬記録、効果の持続時間、処方箋の管理",
   "dosesTodayTitle": "今日の服薬",
   "takenTodayAt": "服用完了：{time}",
@@ -129,15 +158,24 @@
     "description": "Warning when controlled Rx stock is low"
   },
   "newMedicationButton": "薬を追加",
-  "unstuckSheetTitle": "フリーズ解消アシスタント",
+  "unstuckSheetTitle": "フリーズをほどく",
   "unstuckSheetSubtitle": "実行機能のフリーズを罪悪感なく解きほぐす。",
   "startTimerButton": "プレッシャーなしで60秒開始",
   "finishUnstuckButton": "完了して日常に戻る",
-  "therapistHubTitle": "セラピスト共有ハブ",
-  "therapistHubSubtitle": "WhatsApp、PDF、画像カード、またはテキストで送信",
   "sendWhatsAppButton": "WhatsAppで送信",
   "shareCardButton": "画像を共有",
-  "exportPdfButton": "PDFレポートを表示・出力",
+  "exportPdfButton": "PDFを見る",
+  "sharePdfButton": "PDFを共有",
+  "viewPdfButton": "PDFを見る",
+  "sharePdfSubject": "Lumen 臨床サマリー",
+  "sharePdfFailed": "いまPDFを共有できませんでした。",
+  "pdfStyleSectionLabel": "PDFのスタイル",
+  "pdfStyleClinicalLabel": "臨床",
+  "pdfStyleLumenLabel": "Lumen",
+  "pdfAtAGlanceTitle": "ひと目で",
+  "pdfDeviceFooter": "端末で生成 · Lumen",
+  "pdfKpiParalysisTitle": "麻痺 / 固まり",
+  "pdfKpiMedicationTitle": "期間の服薬",
   "copyTextButton": "テキストをコピー",
   "textCopiedMessage": "テキストをクリップボードにコピーしました！",
   "languageSelectorTitle": "言語を選択",
@@ -194,19 +232,12 @@
       }
     }
   },
-  "homeTherapistBlurb": "セッションで直近7日間を思い出す必要はありません。WhatsAppで1タップ送信、グラフ画像の共有、正式なPDF生成ができます。",
-  "@homeTherapistBlurb": {
-    "description": "Home card blurb for therapist export"
-  },
   "homeBrainPatternsTitle": "あなたの脳のパターン",
   "homeRecentEntriesTitle": "最近の記録",
-  "homeNoEntriesYet": "まだ記録がありません。最初のチェックインを！",
+  "homeNoEntriesYet": "まだ記録はありません。最初のチェックインは数秒で終わります。",
   "routineSavedSuccess": "日課を保存しました！",
-  "routineAppBarTitle": "日課と気分",
   "routineCompassTitle": "今日のコンパス",
   "routineCompassSubtitle": "このスペースはアプリネイティブで、iPhoneとAndroidで同じく動作し、生体データを自動同期します。",
-  "routineAnchorSubtitle": "頭の中に15個のタブを開いて迷子にならないために：",
-  "routineEmotionalStateTitle": "感情の状態",
   "routineEmotionalStateSubtitle": "Apple Healthと同じ流れ — Androidでも利用可能：",
   "routineMicroHabitsSubtitle": "ステップの追加・削除 — リストはあなた専用：",
   "removeTooltip": "削除",
@@ -256,8 +287,7 @@
       }
     }
   },
-  "checkinSavedSuccess": "記録しました！あなたを大切に。",
-  "medicationsAppBarTitle": "お薬とリマインダー",
+  "checkinSavedSuccess": "チェックインを保存しました。",
   "importFromHealthTooltip": "Apple Healthからインポート",
   "importHealthUnavailable": "このiOS/SDKではApple Healthからの薬のインポートはまだ利用できません。ローカル登録は引き続き使えます。",
   "importHealthCount": "Apple Healthから{count}件の薬をインポートしました。",
@@ -334,12 +364,27 @@
     }
   },
   "snooze15mSnack": "リマインダーを15分延期しました！",
-  "skipDoseTooltip": "今日の服薬をスキップ",
-  "skipDoseDialogTitle": "今日の服薬をスキップしますか？",
-  "skipDoseDialogBody": "罪悪感は不要です。日によっては休みが必要だったり、遅く起きたりします。セラピストがルーティンを理解できるよう記録します。",
+  "skipDoseTooltip": "{time}の服薬をスキップ",
+  "@skipDoseTooltip": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "skipDoseDialogTitle": "{time}の服薬をスキップしますか？",
+  "@skipDoseDialogTitle": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "skipDoseDialogBody": "スキップとして記録されるのはこの服薬だけです。今日のほかの時間は予定どおりです。",
   "@skipDoseDialogBody": {
     "description": "Skip dose confirmation dialog body"
   },
+  "skipDoseConfirmButton": "これをスキップ",
   "skipReasonVoluntary": "自主的に一時停止",
   "defaultMedInstructions": "食後に水と一緒に服用。",
   "defaultMedInstructionsShort": "水と一緒に服用。",
@@ -414,6 +459,87 @@
   },
   "medReminderChannelName": "服薬リマインダー",
   "medReminderChannelDesc": "ADHD服薬のタイムリーな通知（非難なし）",
+  "taskReminderChannelName": "タスクのリマインダー",
+  "taskReminderChannelDesc": "タスクリストの通知。自分で決めたペースで",
+  "taskReminderTitle": "そろそろ: {title}",
+  "@taskReminderTitle": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "taskReminderBody": "できたときに完了するか、少しあとで。",
+  "taskNotificationActionComplete": "完了",
+  "taskNotificationActionSnooze": "あとで",
+  "taskEditorTitleNew": "新しいタスク",
+  "taskEditorTitleEdit": "タスクを編集",
+  "taskTitleLabel": "なにを？",
+  "taskTitleHint": "例: 本を読む",
+  "taskTimeLabel": "通知の時間",
+  "taskTimeNone": "時間なし",
+  "taskTimePick": "時間を選ぶ",
+  "taskRecurrenceLabel": "繰り返し",
+  "taskRecurrenceOnce": "一度だけ",
+  "taskRecurrenceDaily": "毎日",
+  "taskRecurrenceWeekly": "毎週",
+  "taskRecurrenceBiweekly": "隔週",
+  "taskRecurrenceMonthly": "毎月",
+  "taskNagIntervalLabel": "再通知の間隔",
+  "taskNagIntervalValue": "{minutes}分",
+  "@taskNagIntervalValue": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "taskAlertStyleLabel": "通知の種類",
+  "taskAlertStyleNotification": "通知",
+  "taskAlertStyleAlarm": "目立つ通知",
+  "taskAlertStyleInsistent": "さらに目立たせる",
+  "taskAlertStyleNotificationHint": "通常のシステム通知です。集中モードやおやすみモード中は静かに届きます。",
+  "taskAlertStyleAlarmHint": "Androidでは画面上部に表示され、アラーム音量を使います。iPhoneでは通常の通知と同じように届きます。",
+  "taskAlertStyleInsistentHint": "Androidではロック中に全画面で開くことがあります。iPhoneでは集中モードを通すよう要求しますが、最終的にはシステムが決めます。",
+  "taskWeekdaysLabel": "曜日",
+  "taskDayOfMonthLabel": "毎月の日",
+  "taskOnceDateLabel": "日",
+  "taskSaveButton": "タスクを保存",
+  "taskDeleteButton": "削除",
+  "taskQuietHoursTitle": "サイレント時間",
+  "taskQuietHoursSubtitle": "この時間に重なったタスク通知は、サイレント時間が終わるまで待ちます。服薬リマインダーは通常どおり鳴ります。",
+  "taskQuietHoursStart": "開始",
+  "taskQuietHoursEnd": "終了",
+  "taskQuietHoursSave": "サイレントを保存",
+  "taskEmptyTitleError": "タスク名を入れてね",
+  "taskReminderChip": "通知 {time}",
+  "@taskReminderChip": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "taskManageQuietHours": "サイレント時間",
+  "settingsQuietHoursSubtitle": "この時間はタスク通知を静かにします。服薬リマインダーは引き続き通知します。",
+  "taskQuietHoursEditorNote": "サイレント時間中は、このタスクの通知が待機します。服薬リマインダーは対象外です。",
+  "taskQuietHoursEditorLink": "サイレント時間を調整",
+  "taskReminderClosedAppNote": "通知は端末に予約されるため、Lumenを閉じていても鳴ります。集中モード、おやすみモード、省電力設定によって保留または遅延することがあります。",
+  "taskNotificationsDeniedTitle": "通知がオフです",
+  "taskNotificationsDeniedBody": "設定で許可するまで、タスクの通知は表示されません。",
+  "taskNotificationsDeniedAction": "設定を開く",
+  "taskExactAlarmMissingTitle": "通知が遅れることがあります",
+  "taskExactAlarmMissingBody": "「アラームとリマインダー」の権限がない場合、Androidでは通知が数分遅れることがあります。",
+  "taskExactAlarmMissingAction": "設定で許可",
+  "taskReminderHelpTitle": "通知の届き方",
+  "taskReminderHelpBody": "Lumenは端末の標準通知音を使います。アプリを閉じていても動作します。集中モード、おやすみモード、バッテリー設定によって保留されることがあり、サイレント時間はタスクだけに適用されます。",
+  "weekdayMonShort": "月",
+  "weekdayTueShort": "火",
+  "weekdayWedShort": "水",
+  "weekdayThuShort": "木",
+  "weekdayFriShort": "金",
+  "weekdaySatShort": "土",
+  "weekdaySunShort": "日",
   "medSnoozeNotificationTitle": "⏰ 延期リマインダー: {name}",
   "@medSnoozeNotificationTitle": {
     "placeholders": {
@@ -513,14 +639,16 @@
   },
   "healthSourceUnavailable": "このプラットフォームでは利用不可",
   "healthSourceApple": "Apple Health (HealthKit)",
-  "healthSourceAndroid": "Health Connect / Samsung Health",
+  "healthSourceAndroid": "Health Connect",
+  "healthSourceHealthConnect": "Health Connect",
+  "healthSourceSamsung": "Samsung Health",
   "insightCollectingTitle": "パターン収集中",
   "insightCollectingDescHealth": "日々を記録し続けて。Apple Healthのデータが3〜5日あれば、生体パターンがここに表示されます。",
   "@insightCollectingDescHealth": {
     "description": "Empty-state insight when no Health/mood data yet"
   },
   "insightCollectingDescGeneric": "日々を記録し続けて。データが3〜5日あれば、生体パターンがここに表示されます。",
-  "insightCollectingAdvice": "昼食後に短いマイクロチェックインを試してみて。",
+  "insightCollectingAdvice": "昼食後にチェックインしてみて。数秒で終わります。",
   "insightRemParalysisTitle": "レム睡眠とタスク麻痺",
   "@insightRemParalysisTitle": {
     "description": "Clinical correlation insight title"
@@ -594,7 +722,7 @@
     }
   },
   "insightNoiseAdvice": "ノイズキャンセリングや静かな場所での休憩が感覚負荷を下げます。",
-  "therapistExportHubTitle": "臨床共有ハブ",
+  "therapistExportHubTitle": "記録",
   "configureTherapistPhoneTooltip": "セラピストの電話番号を設定",
   "errorLoadingData": "データの読み込みエラー: {error}",
   "@errorLoadingData": {
@@ -630,7 +758,7 @@
   },
   "shareCardImageFailed": "いま画像を生成できませんでした。",
   "pdfReportTitle": "臨床PDFレポート",
-  "pdfReportSubtitle": "カルテ・印刷・正式送付用の完全ドキュメント。",
+  "pdfReportSubtitle": "セッション用サマリー — 共有・印刷・カルテ保存。",
   "cardPreviewTitle": "カードのプレビュー",
   "exportablePngBadge": "PNGで書き出し可能",
   "therapistPhoneDialogTitle": "セラピストのWhatsApp",
@@ -674,9 +802,9 @@
   "weeklyCardGoodConcentration": "良い集中",
   "weeklyCardSyncedFooter": "Apple Health & Lumenと同期",
   "weeklyCardPersonalUse": "個人の臨床利用",
-  "pdfHeaderTitle": "LUMEN - 治療的臨床サマリー",
-  "pdfHeaderSubtitle": "睡眠・集中・気分の追跡（ADHD）",
-  "pdfPatientPeriod": "患者: {name}  |  期間: 直近{days}日",
+  "pdfHeaderTitle": "Lumen",
+  "pdfHeaderSubtitle": "セッション用サマリー",
+  "pdfPatientPeriod": "患者: {name}  ·  直近{days}日",
   "@pdfPatientPeriod": {
     "placeholders": {
       "name": {
@@ -687,7 +815,7 @@
       }
     }
   },
-  "pdfIssuedAt": "発行: {date}",
+  "pdfIssuedAt": "発行日 {date}",
   "@pdfIssuedAt": {
     "placeholders": {
       "date": {
@@ -695,8 +823,8 @@
       }
     }
   },
-  "pdfSourceLine": "ソース: Apple Health / Lumen App",
-  "pdfSection1Sleep": "1. 睡眠バイオメトリクス（Apple Health）",
+  "pdfSourceLine": "ソース: Apple Health / Health Connect · Lumen",
+  "pdfSection1Sleep": "睡眠",
   "pdfAvgSleepTitle": "平均睡眠",
   "pdfAvgSleepValue": "{hours}時間 / 夜",
   "@pdfAvgSleepValue": {
@@ -718,16 +846,16 @@
     }
   },
   "pdfAvgRemTitle": "平均レム",
-  "pdfRemDeficitAlert": "レム不足アラート",
+  "pdfRemDeficitAlert": "レム不足",
   "pdfRemWithinExpected": "想定範囲内",
   "pdfColDate": "日付",
-  "pdfColBedtime": "就寝時刻",
-  "pdfColWake": "起床時刻",
-  "pdfColTotal": "総時間",
-  "pdfColRem": "レム睡眠",
-  "pdfColDeep": "深い睡眠",
+  "pdfColBedtime": "就寝",
+  "pdfColWake": "起床",
+  "pdfColTotal": "合計",
+  "pdfColRem": "レム",
+  "pdfColDeep": "深い",
   "pdfColScore": "スコア",
-  "pdfSection1bRecovery": "1b. 客観的な回復サイン",
+  "pdfSection1bRecovery": "回復",
   "pdfHrvAvgTitle": "平均HRV",
   "pdfHrvSubtitle": "心拍変動",
   "pdfRestingHrTitle": "安静時心拍",
@@ -737,7 +865,7 @@
   "pdfDailyAverage": "日次平均",
   "pdfDaylightTitle": "日照",
   "pdfNoiseTitle": "環境音",
-  "pdfSomFromAppleHealth": "Apple Health から取り込んだ State of Mind 記録が {count} 件含まれます。",
+  "pdfSomFromAppleHealth": "Apple Health の感情状態記録が {count} 件含まれます。",
   "@pdfSomFromAppleHealth": {
     "placeholders": {
       "count": {
@@ -745,12 +873,12 @@
       }
     }
   },
-  "pdfSection2Executive": "2. 実行機能と報告された気分",
-  "pdfStatParalyzed": "フリーズ／麻痺",
-  "pdfStatScattered": "散漫／落ち着かない",
+  "pdfSection2Executive": "実行機能と気分",
+  "pdfStatParalyzed": "フリーズ",
+  "pdfStatScattered": "散漫",
   "pdfStatFocused": "安定した集中",
-  "pdfStatHyperfocus": "強い過集中",
-  "pdfStatSensory": "感覚過負荷",
+  "pdfStatHyperfocus": "過集中",
+  "pdfStatSensory": "過負荷",
   "pdfReportsLabel": "{count} 件",
   "@pdfReportsLabel": {
     "placeholders": {
@@ -767,7 +895,7 @@
       }
     }
   },
-  "pdfTopEmotionWords": "よく使われた感情語（State of Mind）：",
+  "pdfTopEmotionWords": "よく使われた感情語：",
   "pdfMedicationTaken": "服薬: {taken}/{total} 記録",
   "@pdfMedicationTaken": {
     "placeholders": {
@@ -779,8 +907,8 @@
       }
     }
   },
-  "pdfSection3Correlations": "3. 生理学的相関",
-  "pdfClinicalSuggestion": "臨床の提案: {advice}",
+  "pdfSection3Correlations": "相関",
+  "pdfClinicalSuggestion": "提案: {advice}",
   "@pdfClinicalSuggestion": {
     "placeholders": {
       "advice": {
@@ -788,8 +916,8 @@
       }
     }
   },
-  "pdfSection4Triggers": "4. 患者が報告した記録とトリガー",
-  "pdfEntryLine": "{date} {time} | 集中: {focus} | 気分: {mood}{labels}",
+  "pdfSection4Triggers": "記録とトリガー",
+  "pdfEntryLine": "{date} {time} · 集中: {focus} · 気分: {mood}{labels}",
   "@pdfEntryLine": {
     "placeholders": {
       "date": {
@@ -809,7 +937,7 @@
       }
     }
   },
-  "pdfFooterDisclaimer": "Lumenアプリが生成した文書です。生体データはApple Health / Health Connect経由で同期され、対面の診断評価の代わりにはなりません。",
+  "pdfFooterDisclaimer": "Lumenが端末内で生成した文書です。医療機器ではなく、いかなる病状の診断・治療・治癒・予防もしません。Apple Health / Health Connectのデータは対面評価の代わりにはなりません。健康上の判断は医療専門家に相談してください。",
   "@pdfFooterDisclaimer": {
     "description": "Legal/clinical disclaimer on PDF footer"
   },
@@ -1051,5 +1179,504 @@
       }
     }
   },
-  "deleteMedConfirmButton": "削除"
+  "deleteMedConfirmButton": "削除",
+  "doseSkippedStatus": "また今度で大丈夫。",
+  "durationMinutes": "{minutes}分",
+  "@durationMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "editMedicationSheetTitle": "薬を編集",
+  "editMedicationTooltip": "編集",
+  "eveningReflectionHint": "例: リストで止まって夕方に戻った。",
+  "eveningReflectionSubtitle": "残ったことの一行でも、あれば。",
+  "eveningReflectionTitle": "一日の終わり",
+  "exportRoutineAnchorEmpty": "今日のフォーカスなし",
+  "exportRoutineCount": "期間中の記録 {count} 件",
+  "@exportRoutineCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "exportRoutineHabits": "タスク: {habits}",
+  "@exportRoutineHabits": {
+    "placeholders": {
+      "habits": {
+        "type": "String"
+      }
+    }
+  },
+  "exportRoutineHabitsNone": "タスク: なし",
+  "exportRoutineHeading": "保存したルーティン",
+  "exportRoutineMedNo": "処方薬: 未服用",
+  "exportRoutineMedYes": "処方薬: 服用済み",
+  "exportRoutineNotes": "相談メモ: {text}",
+  "@exportRoutineNotes": {
+    "placeholders": {
+      "text": {
+        "type": "String"
+      }
+    }
+  },
+  "exportRoutineReflection": "一日の終わり: {text}",
+  "@exportRoutineReflection": {
+    "placeholders": {
+      "text": {
+        "type": "String"
+      }
+    }
+  },
+  "exportRoutineWater": "水分: {count} 杯",
+  "@exportRoutineWater": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "greetingName": "あなた",
+  "homeRoutineSnapshotLine": "{time} · {anchor}",
+  "@homeRoutineSnapshotLine": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      },
+      "anchor": {
+        "type": "String"
+      }
+    }
+  },
+  "medAddTimeButton": "時間を追加",
+  "medRemoveTimeTooltip": "{time}の時間を削除",
+  "@medRemoveTimeTooltip": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "medEditTimeTooltip": "{time}の時間を変更",
+  "@medEditTimeTooltip": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "medDuplicateTimeWarning": "{time}にはすでに服薬予定があります。別の時間を選んでください。",
+  "@medDuplicateTimeWarning": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "medTimesSectionLabel": "時間",
+  "medUpdatedSuccess": "{name} を更新しました。",
+  "@medUpdatedSuccess": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "medWindowHours": "{hours}時間のウィンドウ",
+  "@medWindowHours": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "patientDisplayName": "患者",
+  "presetAtentah": "Atentah",
+  "presetBupropiona": "ブプロピオン",
+  "presetConcerta": "コンサータ",
+  "presetRitalina": "リタリン",
+  "presetRitalinaLa": "リタリンLA",
+  "presetVenvanse": "ビバンセ",
+  "routineCalendarDayEmpty": "その日に保存なし。",
+  "routineCalendarEventTitle": "ルーティン",
+  "routineCalendarNext": "翌月",
+  "routineCalendarPrevious": "前月",
+  "routineCalendarTitle": "これまでの日",
+  "routineTimelineEmpty": "今日はまだ保存なし。保存すると時刻付きでここに出ます。",
+  "routineTimelineSubtitle": "保存するたび、時刻付きカードが残ります。",
+  "routineTimelineTitle": "今日のタイムライン",
+  "sleepHoursValue": "{hours}時間",
+  "@sleepHoursValue": {
+    "placeholders": {
+      "hours": {
+        "type": "String"
+      }
+    }
+  },
+  "stageRemShort": "REM",
+  "unitDecibels": "{value} dB",
+  "@unitDecibels": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "unitMeters": "{value}m",
+  "@unitMeters": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "unitMilliseconds": "{value} ms",
+  "@unitMilliseconds": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "waterGoalSuffix": " / 2000 ml",
+  "profileSheetTitle": "あなたのシート",
+  "profileSheetSubtitle": "Lumenにすでに記録されていること",
+  "profileNameLabel": "名前または呼び名",
+  "profileNameHint": "呼ばれたい名前",
+  "profileNameSave": "名前を保存",
+  "profileNameEmpty": "まだ名前なし — タップして編集",
+  "profileTherapistPhoneLabel": "セラピストのWhatsApp",
+  "profileTherapistPhoneEmpty": "番号未保存",
+  "profileMedsLabel": "登録済みの薬",
+  "profileMedsEmpty": "リストに薬がありません",
+  "profileMedsCount": "リストに {count} 件",
+  "@profileMedsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profileSummaryCheckins": "期間中のチェックイン {count} 回",
+  "@profileSummaryCheckins": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profileSummarySleep": "平均睡眠 {hours}時間",
+  "@profileSummarySleep": {
+    "placeholders": {
+      "hours": {
+        "type": "String"
+      }
+    }
+  },
+  "profileSummarySleepEmpty": "期間中の睡眠データなし",
+  "profileSummaryFocus": "スムーズな集中 {focused} · 麻痺 {paralyzed}",
+  "@profileSummaryFocus": {
+    "placeholders": {
+      "focused": {
+        "type": "int"
+      },
+      "paralyzed": {
+        "type": "int"
+      }
+    }
+  },
+  "profileSummaryRoutine": "保存したルーティン {count} 件",
+  "@profileSummaryRoutine": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profileEditNameTitle": "あなたの名前",
+  "profileClinicalSectionTitle": "臨床エリア",
+  "profileClinicalSectionSubtitle": "セッション用まとめ: WhatsApp、カード、PDF",
+  "profileScreenTitle": "マイプロフィール",
+  "profileViewProfileCta": "プロフィールを見る",
+  "profileOpenTooltip": "マイプロフィール",
+  "profileEditButton": "プロフィールを編集",
+  "profileEditSheetTitle": "プロフィールを編集",
+  "profileEditSave": "保存",
+  "profileAgeYears": "{age}歳",
+  "profileHeightChip": "{cm} cm",
+  "profileWeightChip": "{kg} kg",
+  "profileFeedTitle": "あなたのタイムライン",
+  "profileFeedEmpty": "まだ何もありません。Lumen を使い始めると記録がここに表示されます。",
+  "profileFeedRoutineTitle": "ルーティンを保存",
+  "profileFeedSleepTitle": "睡眠 {hours}時間",
+  "profileFeedSleepDetail": "質 {score}%",
+  "profileFeedRecoveryTitle": "体と回復",
+  "profileFeedRecoveryHrv": "HRV {ms} ms",
+  "profileFeedRecoverySteps": "{steps} 歩",
+  "profileFeedDoseTaken": "服用済み",
+  "profileFeedDoseSkipped": "スキップ",
+  "profileFeedTaskDone": "タスク完了",
+  "weeklyCardLastNDays": "直近 {days} 日",
+  "@weeklyCardLastNDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "weeklyCardCheckins": "チェックイン",
+  "weeklyCardSensory": "感覚オーバーロード",
+  "weeklyCardMedToggle": "チェックインの服薬",
+  "weeklyCardRecoveryHrv": "平均HRV",
+  "onboardingWelcomeTitle": "こんにちは、Lumenです",
+  "onboardingWelcomeBody": "ADHDのある人のためのコンパニオン：気分と集中を数秒でチェックインし、日課やリマインダー付きの薬、ヘルスケアアプリの睡眠をまとめて、セッションに持っていけます。",
+  "onboardingPrivacyTitle": "すべてこの端末の中に",
+  "onboardingPrivacyBody": "アカウントもログインもLumenのクラウドもありません。記録はこのスマートフォンだけに保存されます。希望すれば、ヘルス同期はApple HealthまたはHealth Connectと端末内で直接やり取りします。Lumenは医療機器ではなく、いかなる病状の診断・治療・治癒・予防もしません。迷ったら、あなたを支える専門家に相談してください。",
+  "onboardingStepLabel": "ステップ {current} / {total}",
+  "@onboardingStepLabel": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "onboardingHealthTitle": "ヘルスケアアプリからデータを取り込む？",
+  "onboardingHealthBody": "Apple HealthやHealth Connectの睡眠と回復のデータで、短い夜と散漫な一日のつながりが見えてきます。そこに保存済みの身長・体重・生年月日・生物学的性別も使うので、入力し直す手間がありません。",
+  "onboardingHealthNote": "やり取りは2つのアプリの間、端末の中だけで行われます。外には何も出ません。",
+  "onboardingHealthYes": "はい、同期する",
+  "onboardingHealthImported": "{count, plural, =0{ヘルスケアアプリと接続しました。プロフィールのデータはまだ届いていません。} =1{ヘルスケアアプリと接続しました。1項目がプロフィールに入りました。} other{ヘルスケアアプリと接続しました。{count}項目がプロフィールに入りました。}}",
+  "@onboardingHealthImported": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "onboardingHealthDenied": "今はヘルスケアアプリにアクセスできません。あとで睡眠カードからオンにできます。",
+  "onboardingPermissionsTitle": "通知とカレンダー",
+  "onboardingPermissionsBody": "服薬リマインダーを時間どおり届けるため、Lumenはシステムの通知を使います。カレンダーは日課を書き込むために使います。許可するものは自分で選べて、設定からいつでも変えられます。",
+  "onboardingPermissionsNote": "拒否しても何も止まりません。オンになっているものだけでアプリは動き続けます。",
+  "onboardingContinue": "アクセスを許可",
+  "onboardingSkip": "今はしない",
+  "onboardingBack": "戻る",
+  "onboardingStatusTitle": "オンになったもの",
+  "onboardingStatusHealth": "ヘルスケアアプリ",
+  "onboardingStatusNotifications": "服薬の通知",
+  "onboardingStatusCalendar": "カレンダー",
+  "onboardingStatusOn": "オン",
+  "onboardingStatusOff": "オフ",
+  "onboardingStatusSkipped": "未リクエスト",
+  "onboardingStatusRequested": "システムにリクエスト済み",
+  "onboardingProfileTitle": "次はあなたのこと",
+  "onboardingProfileBody": "Lumenをあなた向けにするための基本情報だけ。端末の中に残り、いつでも編集できます。",
+  "onboardingProfileBodyHealth": "一部の項目はヘルスケアアプリから入っています。合っているか確認して、残りを埋めてください。",
+  "onboardingBirthDateLabel": "生年月日",
+  "onboardingBirthDatePick": "日付を選ぶ",
+  "onboardingVoiceToneLabel": "話しかけ方",
+  "onboardingVoiceToneHint": "Lumenのメッセージのトーンを決めます。あとで変えられます。",
+  "voiceToneRelaxed": "ゆるめ",
+  "voiceToneCasual": "カジュアル",
+  "voiceToneNeutral": "率直",
+  "voiceToneFormal": "フォーマル",
+  "voiceToneFemaleAdult": "女性向け",
+  "voiceToneGirlYouth": "女の子",
+  "voiceToneBoyYouth": "男の子",
+  "onboardingHeightLabel": "身長 (cm)",
+  "onboardingWeightLabel": "体重 (kg)",
+  "onboardingBiologicalSexLabel": "生物学的性別",
+  "biologicalSexMale": "男性",
+  "biologicalSexFemale": "女性",
+  "biologicalSexOther": "その他",
+  "onboardingFromHealthTag": "ヘルスケアアプリから",
+  "onboardingMissingFields": "未入力: {fields}",
+  "@onboardingMissingFields": {
+    "placeholders": {
+      "fields": {
+        "type": "String"
+      }
+    }
+  },
+  "onboardingInvalidNumber": "この数値を確認してください",
+  "onboardingFinish": "使い始める",
+  "onboardingDoneSnack": "準備できました、{name}さん。足りないものがあれば、あとでカードからオンにできます。",
+  "@onboardingDoneSnack": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "onboardingNext": "続ける",
+  "chartAppBarTitle": "記録",
+  "chartMyDaysTitle": "これまでの日",
+  "chartMyDaysSubtitle": "記録したことがひとところに",
+  "chartOpenCalendar": "カレンダーを開く",
+  "chartTasksTitle": "タスク",
+  "chartTasksSubtitle": "今日・繰り返し・単発",
+  "chartOpenTasks": "すべてのタスク",
+  "dayDigestTitle": "その日",
+  "dayDigestEmpty": "その日の記録はありません。",
+  "dayDigestCheckInsTitle": "チェックイン",
+  "dayDigestCheckInsEmpty": "チェックインはありません。",
+  "dayDigestSomTitle": "メンタルの状態",
+  "dayDigestSomEmpty": "状態の記録はありません。",
+  "dayDigestRoutineTitle": "ルーティン",
+  "dayDigestRoutineEmpty": "ルーティンの保存はありません。",
+  "dayDigestMedsTitle": "薬",
+  "dayDigestMedsEmpty": "服薬記録はありません。",
+  "dayDigestTasksTitle": "できたタスク",
+  "dayDigestTasksEmpty": "完了したタスクはありません。",
+  "dayDigestNoteLabel": "メモ: {note}",
+  "@dayDigestNoteLabel": {
+    "placeholders": {
+      "note": {
+        "type": "String"
+      }
+    }
+  },
+  "tasksHubTitle": "タスク",
+  "tasksHubTodaySection": "今日",
+  "tasksHubRecurringSection": "繰り返し",
+  "tasksHubOnceSection": "単発",
+  "tasksHubEmptyToday": "今日のタスクはありません。",
+  "tasksHubEmptyRecurring": "繰り返しタスクはありません。",
+  "tasksHubEmptyOnce": "単発タスクはありません。",
+  "tasksHubOpenFromDay": "すべてのタスク",
+  "dayChecklistSubtitle": "今日分だけ",
+  "dayFocusSubtitle": "タスクを固定すると、プロフィールとカレンダーに今日のフォーカスとして表示されます。",
+  "homeMyDaysTitle": "これまでの日",
+  "homeMyDaysSubtitle": "日ごとに保存した内容を見るカレンダー",
+  "exportRoutineSom": "感情の状態: {labels}",
+  "@exportRoutineSom": {
+    "placeholders": {
+      "labels": {
+        "type": "String"
+      }
+    }
+  },
+  "routineAppBarTitleShort": "今日",
+  "checkinSectionTitle": "チェックイン",
+  "checkinSectionSubtitle": "今の気分、集中、エネルギー",
+  "taskDayAnchorTooltip": "今日のフォーカスに固定",
+  "taskDayAnchorBadge": "今日のフォーカス",
+  "homeDayAnchorTitle": "今日のフォーカス",
+  "homeDayAnchorEmpty": "まだ今日のフォーカスはありません。「今日」でタスクを固定してください。",
+  "therapyNotesSectionTitle": "セラピー用",
+  "therapyNotesSectionSubtitle": "議題と一日の締めを、共有なしで読む",
+  "therapyNotesEmpty": "議題や締めのメモはまだないよ。",
+  "therapyNotesReflectionSnippet": "締め: {text}",
+  "therapyNotesPautaSnippet": "議題: {text}",
+  "@therapyNotesReflectionSnippet": {
+    "placeholders": {
+      "text": {
+        "type": "String"
+      }
+    }
+  },
+  "@therapyNotesPautaSnippet": {
+    "placeholders": {
+      "text": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsPrivacyTitle": "プライバシー",
+  "settingsPrivacySubtitle": "アカウントもログインもLumenのクラウドもなく、すべてはこの端末の中",
+  "settingsPrivacyOpenFailed": "今はプライバシーポリシーを開けませんでした。もう一度試してください",
+  "settingsFeedbackTile": "フィードバックを送る",
+  "settingsFeedbackSubtitle": "不具合やアイデアはこちら。短いフォームが開きます",
+  "settingsFeedbackOpenFailed": "今はフォームを開けませんでした。もう一度試してください",
+  "settingsClinicalExportSubtitle": "「臨床フォルダ」タブを開き、セッション用のまとめを表示",
+  "navOpensTabHint": "{tab}タブを開きます",
+  "@navOpensTabHint": {
+    "placeholders": {
+      "tab": {
+        "type": "String"
+      }
+    }
+  },
+  "navClinicalFolder": "臨床フォルダ",
+  "clinicalFolderTitle": "臨床フォルダ",
+  "settingsScreenTitle": "設定",
+  "settingsOpenTooltip": "設定",
+  "settingsAppearanceSection": "見た目",
+  "settingsThemeTitle": "テーマ",
+  "settingsThemeSubtitle": "ライト、ダーク、または端末に合わせる",
+  "settingsLanguageSection": "言語",
+  "settingsLanguageTitle": "アプリの言語",
+  "settingsLanguageSubtitle": "いま: {current}。システムの選択画面を開きます",
+  "@settingsLanguageSubtitle": {
+    "placeholders": {
+      "current": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsAccessSection": "アクセス",
+  "settingsNotificationsTitle": "通知",
+  "settingsNotificationsSubtitle": "服薬とタスクのリマインダーをシステムで",
+  "settingsHealthTitle": "ヘルスケア",
+  "settingsHealthConnected": "接続中 — タップでミラーをオフ",
+  "settingsHealthDisconnected": "オフ — タップで再接続",
+  "settingsCalendarTitle": "端末のカレンダー",
+  "settingsCalendarSubtitle": "ルーチンの予定をネイティブカレンダーへ",
+  "settingsCalendarGranted": "カレンダーを許可済み",
+  "settingsCalendarDenied": "カレンダーにアクセスできません。設定で許可できます",
+  "settingsQuietHoursTitle": "サイレント時間",
+  "settingsSystemPermissionsTitle": "システムの権限",
+  "settingsSystemPermissionsSubtitle": "設定でLumenのページを開きます",
+  "settingsOpenSystemFailed": "設定を開けませんでした。システムから試してください",
+  "settingsDataSection": "データと保存",
+  "settingsExportLocalTitle": "ストレージを書き出す",
+  "settingsExportLocalSubtitle": "ローカルのキーをJSONにコピーして保存",
+  "settingsExportLocalDone": "できた — 保存先を選んでね",
+  "settingsExportLocalFailed": "いまは書き出せなかった。もう一度試して",
+  "settingsExportLocalShareSubject": "Lumenのローカルバックアップ",
+  "settingsClinicalExportTitle": "臨床フォルダ",
+  "settingsAboutSection": "このアプリについて",
+  "homeFichaSubtitle": "生きたプロフィール: 今日大事なことを、ひとところに。",
+  "homeFichaIdentityHint": "あなたの個人プロフィール",
+  "homeOverviewTitle": "今日の概要",
+  "homeTasksTitle": "タスク",
+  "homeTasksSubtitle": "リマインダーと、自分との約束",
+  "careContactsSectionTitle": "かかわりのある専門家",
+  "careContactsSectionHint": "サポートのつながり",
+  "careContactsEmpty": "まだ誰もいないよ。一緒に歩いてくれる人の連絡先を残しておこう。",
+  "careContactAdd": "専門家を追加",
+  "careContactEditorTitleNew": "新しい専門家",
+  "careContactEditorTitleEdit": "専門家を編集",
+  "careContactNameLabel": "名前",
+  "careContactNameHint": "この人の呼び方",
+  "careContactPhoneLabel": "電話またはWhatsApp",
+  "careContactPhoneHint": "+81 90 1234 5678",
+  "careContactPhoneEmpty": "電話番号なし",
+  "careContactRoleLabel": "役割",
+  "careContactRoleTherapist": "セラピスト",
+  "careContactRolePsychologist": "心理士",
+  "careContactRolePsychiatrist": "精神科医",
+  "careContactRoleOther": "その他",
+  "careContactEmptyError": "名前か電話番号を少なくともひとつ入れてね。",
+  "careContactDeleteButton": "削除",
+  "careContactDeleteConfirmTitle": "{name}を削除する？",
+  "@careContactDeleteConfirmTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "careContactDeleteConfirmBody": "リストから消えるよ。またいつでも追加できる。",
+  "careContactCallTooltip": "電話",
+  "careContactWhatsAppTooltip": "WhatsAppで開く",
+  "careContactEditTooltip": "連絡先を編集",
+  "careContactLaunchFailed": "開けなかった。番号を確認してみて？",
+  "diaUnstuckPrompt": "どこかで止まっちゃった？",
+  "diaUnstuckOpen": "アンスタックを開く",
+  "unstuckModeBadge": "レスキューモード"
 }

@@ -3,12 +3,12 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:noa/l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:timezone/data/latest_all.dart' as tzdata;
 import 'package:timezone/timezone.dart' as tz;
 
+import '../../../core/notifications/local_notification_scheduler.dart';
+import '../../../core/notifications/local_notifications_host.dart';
 import '../data/medication_repository.dart';
 import '../domain/medication.dart';
 import '../domain/medication_log.dart';
@@ -18,35 +18,26 @@ import 'reminder_schedule.dart';
 const _scheduleKey = 'noa_med_reminder_schedule_v1';
 const _exactPromptedKey = 'noa_exact_alarm_prompted';
 const _fullScreenPromptedKey = 'noa_full_screen_intent_prompted';
-const _localePrefKey = 'noa_preferred_locale_code';
-
-/// Ponto de entrada do isolate de fundo. Precisa ser função de topo.
-@pragma('vm:entry-point')
-void medicationReminderBackground(NotificationResponse response) {
-  WidgetsFlutterBinding.ensureInitialized();
-  MedicationReminderService.handleBackgroundResponse(response);
-}
 
 class MedicationReminderService {
   MedicationReminderService(this._prefs);
 
   final SharedPreferences _prefs;
-  final FlutterLocalNotificationsPlugin _plugin =
-      FlutterLocalNotificationsPlugin();
+  FlutterLocalNotificationsPlugin get _plugin => LocalNotificationsHost.plugin;
 
-  Future<void>? _initializing;
-  String? _localeCode;
   AppLocalizations? _l10n;
   Future<void> _queue = Future<void>.value();
-  static bool _timeZoneReady = false;
+  static bool _handlerBound = false;
 
-  static Future<void> consumeLaunch() async {
+  static Future<void> handleResponse(
+    NotificationResponse response, {
+    required bool notifyUi,
+  }) async {
     try {
-      final details = await FlutterLocalNotificationsPlugin()
-          .getNotificationAppLaunchDetails();
-      if (details == null || !details.didNotificationLaunchApp) return;
-      final response = details.notificationResponse;
-      if (response == null) return;
+      final prefs = await SharedPreferences.getInstance();
+      final l10n = lookupAppLocalizations(localeFromSystem());
+      final service = MedicationReminderService(prefs);
+      await service.initialize(l10n);
 
       final intent = reminderLaunchIntent(
         dismissed:
@@ -58,47 +49,31 @@ class MedicationReminderService {
         actionId: response.actionId,
         payload: response.payload,
       );
-      switch (intent) {
-        case ReminderLaunchIntent.ignore:
-          return;
-        case ReminderLaunchIntent.openMedications:
-          MedicationNotificationBus.requestOpenMedications();
-          return;
-        case ReminderLaunchIntent.taken:
-        case ReminderLaunchIntent.snooze:
-          final prefs = await SharedPreferences.getInstance();
-          final l10n = lookupAppLocalizations(localeFromReminderPrefs(prefs));
-          final service = MedicationReminderService(prefs);
-          await service.initialize(l10n);
-          await service.applyResponse(response, l10n, notifyUi: false);
+      if (intent == ReminderLaunchIntent.openMedications) {
+        MedicationNotificationBus.requestOpenMedications();
+        return;
       }
+      await service.applyResponse(response, l10n, notifyUi: notifyUi);
     } catch (e) {
-      debugPrint('[MedicationReminder] abertura: $e');
+      debugPrint('[MedicationReminder] resposta: $e');
     }
   }
 
   static Future<void> handleBackgroundResponse(
     NotificationResponse response,
-  ) async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final l10n = lookupAppLocalizations(localeFromReminderPrefs(prefs));
-      final service = MedicationReminderService(prefs);
-      await service.initialize(l10n);
-      await service.applyResponse(response, l10n, notifyUi: false);
-    } catch (e) {
-      debugPrint('[MedicationReminder] fundo: $e');
-    }
+  ) {
+    return handleResponse(response, notifyUi: false);
   }
 
-  Future<void> initialize(AppLocalizations l10n) {
-    final code = l10n.localeName.split('_').first;
-    if (_initializing != null && _localeCode == code) return _initializing!;
-    _localeCode = code;
+  Future<void> initialize(AppLocalizations l10n) async {
     _l10n = l10n;
-    final future = _configure(l10n, code);
-    _initializing = future;
-    return future;
+    if (!_handlerBound) {
+      LocalNotificationsHost.medicationHandler = (response, {required notifyUi}) {
+        return handleResponse(response, notifyUi: notifyUi);
+      };
+      _handlerBound = true;
+    }
+    await LocalNotificationsHost.ensureInitialized(l10n);
   }
 
   Future<void> syncIfNeeded(List<Medication> meds, AppLocalizations l10n) {
@@ -193,6 +168,7 @@ class MedicationReminderService {
     if (payload == null) return;
 
     final repo = MedicationRepository(_prefs);
+    await repo.reload();
     final log = await _logFor(repo, payload);
     if (log == null) return;
 
@@ -212,51 +188,6 @@ class MedicationReminderService {
     }
 
     if (notifyUi) MedicationNotificationBus.notifyDoseChanged();
-  }
-
-  Future<void> _configure(AppLocalizations l10n, String languageCode) async {
-    const android = AndroidInitializationSettings('@mipmap/ic_launcher');
-    final darwin = DarwinInitializationSettings(
-      requestAlertPermission: false,
-      requestBadgePermission: false,
-      requestSoundPermission: false,
-      notificationCategories: [
-        DarwinNotificationCategory(
-          medicationDoseCategoryId(languageCode),
-          actions: [
-            DarwinNotificationAction.plain(
-              medicationActionTaken,
-              l10n.notificationActionTaken,
-            ),
-            DarwinNotificationAction.plain(
-              medicationActionSnooze,
-              l10n.notificationActionSnooze,
-            ),
-          ],
-        ),
-      ],
-    );
-
-    try {
-      await _plugin.initialize(
-        settings: InitializationSettings(
-          android: android,
-          iOS: darwin,
-          macOS: darwin,
-        ),
-        onDidReceiveNotificationResponse: _onForegroundResponse,
-        onDidReceiveBackgroundNotificationResponse:
-            medicationReminderBackground,
-      );
-    } catch (e) {
-      debugPrint('[MedicationReminder] init: $e');
-    }
-  }
-
-  void _onForegroundResponse(NotificationResponse response) {
-    final l10n = _l10n;
-    if (l10n == null) return;
-    applyResponse(response, l10n, notifyUi: true);
   }
 
   Future<void> _sync(
@@ -386,35 +317,17 @@ class MedicationReminderService {
     required AndroidScheduleMode mode,
     required bool repeating,
     required NotificationDetails details,
-  }) async {
-    Future<void> schedule(AndroidScheduleMode selected) {
-      return _plugin.zonedSchedule(
-        id: id,
-        title: title,
-        body: body,
-        scheduledDate: when,
-        notificationDetails: details,
-        androidScheduleMode: selected,
-        payload: payload,
-        matchDateTimeComponents: repeating
-            ? DateTimeComponents.dayOfWeekAndTime
-            : null,
-      );
-    }
-
-    try {
-      await schedule(mode);
-    } catch (e) {
-      if (mode != AndroidScheduleMode.alarmClock) {
-        debugPrint('[MedicationReminder] agendar: $e');
-        return;
-      }
-      try {
-        await schedule(AndroidScheduleMode.inexactAllowWhileIdle);
-      } catch (fallback) {
-        debugPrint('[MedicationReminder] agendar: $fallback');
-      }
-    }
+  }) {
+    return LocalNotificationScheduler.zonedSchedule(
+      id: id,
+      title: title,
+      body: body,
+      when: when,
+      payload: payload,
+      mode: mode,
+      repeating: repeating,
+      details: details,
+    );
   }
 
   NotificationDetails _details(AppLocalizations l10n) {
@@ -480,26 +393,40 @@ class MedicationReminderService {
     return AndroidScheduleMode.inexactAllowWhileIdle;
   }
 
-  Future<void> _requestPermissions() async {
+  /// Pedido único na 1ª abertura: notificações, full-screen e alarmes exatos.
+  /// Devolve o resultado do pedido de notificação; nulo quando a plataforma
+  /// não informa.
+  Future<bool?> requestLaunchPermissions() async {
+    final l10n = _l10n ?? lookupAppLocalizations(localeFromSystem());
+    await initialize(l10n);
+    final granted = await _requestPermissions();
+    await _androidMode(prompt: true);
+    return granted;
+  }
+
+  Future<bool?> _requestPermissions() async {
+    bool? granted;
     final android = _plugin
         .resolvePlatformSpecificImplementation<
           AndroidFlutterLocalNotificationsPlugin
         >();
-    await android?.requestNotificationsPermission();
+    granted = await android?.requestNotificationsPermission();
     if (!(_prefs.getBool(_fullScreenPromptedKey) ?? false)) {
       await _prefs.setBool(_fullScreenPromptedKey, true);
       await android?.requestFullScreenIntentPermission();
     }
-    await _plugin
+    final ios = await _plugin
         .resolvePlatformSpecificImplementation<
           IOSFlutterLocalNotificationsPlugin
         >()
         ?.requestPermissions(alert: true, badge: true, sound: true);
-    await _plugin
+    granted ??= ios;
+    final macos = await _plugin
         .resolvePlatformSpecificImplementation<
           MacOSFlutterLocalNotificationsPlugin
         >()
         ?.requestPermissions(alert: true, badge: true, sound: true);
+    return granted ?? macos;
   }
 
   Future<MedicationLog?> _logFor(
@@ -518,17 +445,7 @@ class MedicationReminderService {
     );
   }
 
-  Future<void> _ensureTimeZone() async {
-    if (_timeZoneReady) return;
-    tzdata.initializeTimeZones();
-    try {
-      final info = await FlutterTimezone.getLocalTimezone();
-      tz.setLocalLocation(tz.getLocation(info.identifier));
-    } catch (e) {
-      debugPrint('[MedicationReminder] fuso: $e');
-    }
-    _timeZoneReady = true;
-  }
+  Future<void> _ensureTimeZone() => LocalNotificationScheduler.ensureTimeZone();
 
   Future<void> _locked(Future<void> Function() action) {
     final next = _queue.then((_) => action());
@@ -593,11 +510,7 @@ class MedicationReminderService {
   }
 }
 
-Locale localeFromReminderPrefs(SharedPreferences prefs) {
-  final saved = prefs.getString(_localePrefKey);
-  if (saved != null && saved.isNotEmpty && saved != 'system') {
-    return Locale(saved);
-  }
+Locale localeFromSystem() {
   final code = PlatformDispatcher.instance.locale.languageCode.toLowerCase();
   switch (code) {
     case 'en':

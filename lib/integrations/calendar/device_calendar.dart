@@ -12,6 +12,21 @@ const MethodChannel _calendarChannel = MethodChannel(
 
 /// Ponte do calendário do aparelho. A tela não abre o canal.
 class DeviceCalendar {
+  Future<bool> requestAccess(SharedPreferences prefs) async {
+    try {
+      final already = await _channel<bool>('hasAccess');
+      if (already == true) {
+        await prefs.setBool(calendarAccessPromptedKey, true);
+        return true;
+      }
+      await prefs.setBool(calendarAccessPromptedKey, true);
+      return await _channel<bool>('requestAccess') ?? false;
+    } catch (_) {
+      await prefs.setBool(calendarAccessPromptedKey, true);
+      return false;
+    }
+  }
+
   Future<String?> createRoutineEvent({
     required SharedPreferences prefs,
     required String title,
@@ -25,8 +40,7 @@ class DeviceCalendar {
         if (prefs.getBool(calendarAccessPromptedKey) ?? false) {
           return null;
         }
-        await prefs.setBool(calendarAccessPromptedKey, true);
-        granted = await _channel<bool>('requestAccess') ?? false;
+        granted = await requestAccess(prefs);
         if (!granted) return null;
       }
 
@@ -52,6 +66,8 @@ String routineCalendarTitle(AppLocalizations l10n, RoutineSnapshot snapshot) {
   return anchor;
 }
 
+/// Notas do evento no calendário do sistema — sem reflexão/pauta íntimas
+/// (essas só saem no export clínico quando a pessoa libera o toggle).
 String routineCalendarNotes(AppLocalizations l10n, RoutineSnapshot snapshot) {
   final lines = <String>[
     l10n.exportRoutineWater(snapshot.waterGlasses),
@@ -63,13 +79,5 @@ String routineCalendarNotes(AppLocalizations l10n, RoutineSnapshot snapshot) {
         ? l10n.exportRoutineMedYes
         : l10n.exportRoutineMedNo,
   ];
-  final reflection = snapshot.eveningReflection.trim();
-  if (reflection.isNotEmpty) {
-    lines.add(l10n.exportRoutineReflection(reflection));
-  }
-  final notes = snapshot.therapistNotes?.trim() ?? '';
-  if (notes.isNotEmpty) {
-    lines.add(l10n.exportRoutineNotes(notes));
-  }
   return lines.join('\n');
 }

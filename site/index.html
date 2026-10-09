@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="index,follow" />
+  <title>Lumen — Política de Privacidade</title>
+  <meta name="description" content="Política de privacidade do Lumen (dev.prism.lumen): offline-first, sem conta e sem nuvem do app." />
+  <link rel="canonical" href="https://goobinexe.github.io/lumen-privacy/" />
+  <style>
+    :root {
+      --bg: #f6f1de;
+      --ink: #1c1b1a;
+      --muted: #5c5a57;
+      --card: #fffdf8;
+      --line: rgba(28, 27, 26, 0.12);
+      --cta: #1faf8a;
+      --cta-ink: #07362b;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #16161a;
+        --ink: #f4f1ec;
+        --muted: #b0ada6;
+        --card: #1e1e22;
+        --line: rgba(244, 241, 236, 0.12);
+        --cta: #3dceb0;
+        --cta-ink: #04241c;
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.55;
+    }
+    main {
+      max-width: 44rem;
+      margin: 0 auto;
+      padding: 2.5rem 1.25rem 4rem;
+    }
+    header {
+      margin-bottom: 2rem;
+      padding-bottom: 1.25rem;
+      border-bottom: 1px solid var(--line);
+    }
+    .brand {
+      font-size: 0.85rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 0 0 0.35rem;
+    }
+    h1 {
+      font-size: clamp(1.6rem, 4vw, 2rem);
+      line-height: 1.2;
+      margin: 0 0 0.75rem;
+    }
+    .meta {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin: 0;
+    }
+    .meta code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.9em;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 1.1rem 1.15rem;
+      margin: 1.25rem 0;
+    }
+    h2 {
+      font-size: 1.15rem;
+      margin: 2rem 0 0.65rem;
+    }
+    p, li { color: var(--ink); }
+    ul { padding-left: 1.2rem; }
+    li { margin: 0.35rem 0; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.95rem;
+      margin: 0.75rem 0 0.25rem;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 0.55rem 0.65rem;
+      text-align: left;
+      vertical-align: top;
+    }
+    th { background: rgba(31, 175, 138, 0.12); }
+    a { color: var(--cta-ink); }
+    @media (prefers-color-scheme: dark) {
+      a { color: var(--cta); }
+    }
+    .pill {
+      display: inline-block;
+      background: rgba(31, 175, 138, 0.18);
+      color: var(--cta-ink);
+      border-radius: 999px;
+      padding: 0.2rem 0.65rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+    }
+    @media (prefers-color-scheme: dark) {
+      .pill { color: var(--cta); }
+    }
+    footer {
+      margin-top: 3rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <p class="brand">Lumen</p>
+      <h1>Política de Privacidade</h1>
+      <p class="meta">
+        Última atualização: 2026-10-08<br />
+        App: Lumen (<code>dev.prism.lumen</code>)<br />
+        Contato: pelo app, em Configurações → Mandar feedback
+      </p>
+    </header>
+
+    <p>
+      Este texto descreve o que o Lumen faz com dados no aparelho. Vale para iOS e Android.
+      É a base da Nutrition Label (Apple) e do Data safety (Google Play).
+    </p>
+
+    <section class="card" aria-labelledby="resumo">
+      <span class="pill">offline-first · privacy-first</span>
+      <h2 id="resumo" style="margin-top:0">Resumo</h2>
+      <ul>
+        <li>Sem conta obrigatória.</li>
+        <li>Sem login.</li>
+        <li>Sem nuvem do Lumen.</li>
+        <li>Nenhum dado pessoal, de saúde ou biométrico é enviado a servidores do Lumen.</li>
+        <li>Integrações (Health Connect / Apple Health, calendário do aparelho, compartilhar PDF/WhatsApp) acontecem <strong>no aparelho</strong> ou só quando <strong>você</strong> escolhe compartilhar.</li>
+      </ul>
+    </section>
+
+    <h2>Quem controla os dados</h2>
+    <p>
+      Os dados que você registra no Lumen ficam <strong>no seu aparelho</strong>, sob o identificador
+      <code>dev.prism.lumen</code>. Você controla o que fica, o que apaga e o que compartilha.
+    </p>
+    <p>
+      O Lumen <strong>não</strong> opera um backend de conta nem um serviço de sincronização em nuvem nesta versão.
+    </p>
+
+    <h2>Quais dados o app guarda no aparelho</h2>
+    <p>Dependendo do que você usa:</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Tipo</th>
+          <th>Exemplos</th>
+          <th>Onde fica</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Perfil local</td>
+          <td>Nome/apelido, nascimento, altura, peso, sexo biológico, tom de voz</td>
+          <td>Preferências locais do app</td>
+        </tr>
+        <tr>
+          <td>Humor e rotina</td>
+          <td>Check-in (humor, foco, energia), âncora do dia, água, hábitos, reflexão, pauta</td>
+          <td>Preferências locais do app</td>
+        </tr>
+        <tr>
+          <td>Medicação</td>
+          <td>Nome, posologia, horários, tomadas/puladas, estoque</td>
+          <td>Preferências locais do app</td>
+        </tr>
+        <tr>
+          <td>Tarefas</td>
+          <td>Itens, períodos, lembretes, quiet hours</td>
+          <td>Preferências locais do app</td>
+        </tr>
+        <tr>
+          <td>Contatos de cuidado</td>
+          <td>Nome, papel, telefone do profissional (você digita)</td>
+          <td>Preferências locais do app</td>
+        </tr>
+        <tr>
+          <td>Preferências</td>
+          <td>Tema, idioma, sync de saúde/calendário</td>
+          <td>Preferências locais do app</td>
+        </tr>
+        <tr>
+          <td>Export / backup</td>
+          <td>PDF, texto, JSON compartilhados por você</td>
+          <td>Só quando você exporta ou compartilha</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      Chaves locais usam o prefixo <code>noa_*</code> (ex.: <code>noa_mood_entries_v2</code>).
+      Uma atualização da loja <strong>não</strong> apaga esse armazenamento de propósito.
+    </p>
+
+    <h2>Saúde do aparelho (Health Connect / Apple Health)</h2>
+    <p>Com o seu consentimento no sistema:</p>
+    <p>
+      <strong>Leitura (quando disponível e autorizada):</strong> sono, frequência cardíaca, HRV, FC em repouso, passos, exercício, altura, peso, hidratação; no iOS também estado emocional, luz, áudio e agenda de medicação quando o tipo existe.
+    </p>
+    <p>
+      <strong>Escrita (quando o tipo existe nos dois lados e você autorizou):</strong> o que o Lumen puder espelhar de volta (ex.: hidratação). Tipos só de um SDK ficam no domínio local do app na outra plataforma.
+    </p>
+    <p>
+      Sem permissão, o app continua usável com o que você registrou localmente — ou vazio, se não houver registro.
+      O Lumen <strong>não inventa</strong> dado de saúde.
+    </p>
+    <p>
+      HRV: SDNN no iOS e RMSSD no Android; unidades ficam no domínio, sem métrica misturada.
+    </p>
+
+    <h2>Calendário, notificações e alarmes</h2>
+    <ul>
+      <li><strong>Calendário:</strong> leitura/escrita do calendário do aparelho só com permissão, para enriquecer o Raio-X do dia.</li>
+      <li><strong>Notificações locais:</strong> lembretes de dose e de tarefas no próprio aparelho (canais locais). Não passam por servidor do Lumen.</li>
+      <li><strong>Alarmes exatos (Android):</strong> usados para lembretes no horário certo; você pode gerenciar isso nos Ajustes do sistema.</li>
+    </ul>
+
+    <h2>Compartilhamento e terceiros</h2>
+    <p>O Lumen <strong>não vende</strong> dados e <strong>não envia</strong> registros pessoais ou de saúde a servidores próprios.</p>
+    <ul>
+      <li>
+        <strong>Compartilhamento iniciado por você:</strong> PDF clínico, texto para WhatsApp, card semanal e backup local usam a folha de compartilhar do sistema.
+        O destino (terapeuta, WhatsApp, e-mail, arquivo) é <strong>sua escolha</strong>.
+      </li>
+      <li>
+        <strong>Health Connect / Apple Health e calendário:</strong> ficam no aparelho / apps de saúde e agenda do sistema, com as permissões que você concedeu.
+      </li>
+      <li>
+        <strong>Lojas de apps (Google Play / App Store):</strong> processam instalação, atualização e, quando aplicável, dados de diagnóstico da própria loja.
+        Isso <strong>não</strong> inclui o conteúdo clínico que você registra no Lumen.
+      </li>
+      <li>
+        <strong>Formulário de feedback:</strong> se você abrir “Mandar feedback” nas Configurações, o que você digitar no formulário externo segue a política desse provedor de formulário — o Lumen não anexa automaticamente humor, sono, doses ou export clínico.
+      </li>
+    </ul>
+
+    <h2>O que o Lumen não faz</h2>
+    <ul>
+      <li>
+        O Lumen <strong>não é um dispositivo médico</strong> e
+        <strong>não diagnostica, trata, cura ou previne</strong> nenhuma condição médica.
+        É um companion de rotina e organização para o dia a dia (incluindo apoio a quem vive com TDAH).
+        Para aconselhamento, diagnóstico ou tratamento, consulte um profissional de saúde.
+      </li>
+      <li>Não exige conta nem rede social.</li>
+      <li>Não vende dados.</li>
+      <li>Não usa seus dados de saúde para anúncio.</li>
+      <li>Não amostra microfone nem sensor de luz para imitar relógio; luz/áudio no Android, enquanto não houver permissão pedida, são registro local se existirem.</li>
+    </ul>
+
+    <h2>Crianças</h2>
+    <p>
+      O Lumen não é dirigido a crianças menores de 13 anos. Há perfis de tom de voz (incluindo linguagem voltada a meninas/meninos) para quem já usa o app com acompanhamento; isso <strong>não</strong> muda a regra de privacidade local.
+    </p>
+
+    <h2>Seus controles</h2>
+    <ul>
+      <li>Revogar Health Connect / Apple Health e calendário nos Ajustes do sistema.</li>
+      <li>Apagar dados do app (limpar armazenamento / desinstalar).</li>
+      <li>Exportar backup local quando quiser levar os dados consigo.</li>
+      <li>Escolher o que entra no material clínico (ex.: ocultar notas íntimas).</li>
+    </ul>
+
+    <h2>Alterações desta política</h2>
+    <p>
+      Mudanças relevantes aparecem neste documento com nova data. Em builds de teste (TestFlight / Play Internal),
+      a cópia no app e esta política devem dizer a mesma coisa sobre o que o app lê e grava.
+    </p>
+
+    <h2>Contato</h2>
+    <p>
+      Dúvidas de privacidade: abra o Lumen → Configurações → <strong>Mandar feedback</strong>
+      e descreva a dúvida. Assim que houver e-mail de suporte dedicado, ele passa a constar nesta página.
+    </p>
+
+    <footer>
+      Lumen · Prism · Política pública para Google Play e App Store.<br />
+      Fonte canônica no projeto: <code>docs/PRIVACY.md</code>
+    </footer>
+  </main>
+</body>
+</html>

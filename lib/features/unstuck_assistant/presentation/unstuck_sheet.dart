@@ -8,23 +8,15 @@ import 'package:noa/l10n/app_localizations.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/glass_surface.dart';
+import '../../../core/widgets/glass_toast.dart';
 
 class UnstuckSheet extends StatefulWidget {
   const UnstuckSheet({super.key});
 
   static Future<void> show(BuildContext context) {
-    return showModalBottomSheet(
+    return showLumenSheet<void>(
       context: context,
-      useSafeArea: true,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (ctx) {
-        final bottom = MediaQuery.viewInsetsOf(ctx).bottom;
-        return Padding(
-          padding: EdgeInsets.only(bottom: bottom),
-          child: const UnstuckSheet(),
-        );
-      },
+      builder: (ctx) => const LumenKeyboardInset(child: UnstuckSheet()),
     );
   }
 
@@ -83,9 +75,7 @@ class _UnstuckSheetState extends State<UnstuckSheet>
       setState(() => _currentStep++);
     } else {
       Navigator.pop(context);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(l10n.unstuckCongratsSnack)));
+      showGlassToast(context, l10n.unstuckCongratsSnack);
     }
   }
 
@@ -143,6 +133,24 @@ class _UnstuckSheetState extends State<UnstuckSheet>
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          Container(
+                            margin: const EdgeInsets.only(bottom: 6),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.unstuck.withValues(alpha: 0.22),
+                              borderRadius: BorderRadius.circular(AppRadii.pill),
+                            ),
+                            child: Text(
+                              l10n.unstuckModeBadge,
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: AppColors.unstuck,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
                           Text(
                             l10n.unstuckSheetTitle,
                             style: theme.textTheme.titleLarge?.copyWith(

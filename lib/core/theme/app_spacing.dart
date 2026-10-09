@@ -5,6 +5,9 @@ class AppSpacing {
   /// Altura dos ícones e rótulos, no tamanho da barra nativa.
   /// O indicador de Home entra à parte, lido do aparelho.
   static const double navBar = 49;
+
+  /// Folga interna da lente deslizante na [GlassNavBar].
+  static const double navLensInset = 4;
   static const double screenH = 20;
   static const double screenV = 16;
   static const double sheetH = 20;

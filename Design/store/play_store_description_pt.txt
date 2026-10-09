@@ -1,0 +1,31 @@
+=== DESCRIÇÃO CURTA (máx. 80 caracteres) ===
+Companion TDAH: rotina, check-in, remédio, sono e resumo pra consulta.
+
+=== DESCRIÇÃO COMPLETA (colar na Página principal da loja) ===
+Lumen é um app pra quem vive com TDAH e quer um lugar quieto pra organizar o dia — sem conta, sem feed e sem sermão.
+
+O que você faz no app
+• Check-in rápido de humor, foco e energia
+• Rotina do dia: água, pauta, fechamento e o que importa agora
+• Remédios com horário, estoque e lembrete no aparelho
+• Tarefas com aviso (e quiet hours, pra não te bombardear de madrugada)
+• Des-Trava: quando a cabeça trava, três micro-passos e um timer de 60s
+• Calendário e Raio-X do dia, cruzando o que aconteceu com o que você registrou
+• Pasta clínica: PDF e texto pra levar na sessão (você escolhe o que entra)
+
+Sono e saúde do aparelho
+No Android, o Lumen pode ler sono, batimentos e atividade pelo Samsung Health ou Health Connect — só se você liberar. Sem permissão, o resto do app continua usável com o que você anotar na mão.
+
+Privacidade de verdade
+Seus registros ficam no telefone. Não tem login obrigatório nem nuvem do Lumen mandando humor, doses ou sono pra servidor nosso. Compartilhar PDF, WhatsApp ou backup é escolha sua, na hora.
+
+Tom de voz
+Dá pra escolher como o app fala com você: mais casual, mais direto, mais formal, ou com perfil pra mulheres, meninas e meninos. Sem frase engessada de “seu ritmo é seguro e acolhedor”.
+
+Pra quem é
+Feito pra adulto com TDAH em acompanhamento — ou pra quem quer a mesma lógica de rotina sem virar planilha. Não substitui terapia, médico nem farmacêutico.
+
+Aviso importante
+O Lumen não é um dispositivo médico e não diagnostica, trata, cura ou previne nenhuma condição médica. É um companion de rotina e organização para o dia a dia (incluindo apoio a quem vive com TDAH). Para aconselhamento, diagnóstico ou tratamento, consulte um profissional de saúde.
+
+Política de privacidade: https://goobinexe.github.io/lumen-privacy/

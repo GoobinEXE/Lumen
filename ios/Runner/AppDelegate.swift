@@ -22,5 +22,8 @@ import flutter_local_notifications
     if let registrar = engineBridge.pluginRegistry.registrar(forPlugin: "CalendarBridge") {
       CalendarBridge.register(with: registrar.messenger())
     }
+    if let registrar = engineBridge.pluginRegistry.registrar(forPlugin: "SystemSettingsBridge") {
+      SystemSettingsBridge.register(with: registrar.messenger())
+    }
   }
 }

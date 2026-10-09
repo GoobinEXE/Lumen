@@ -1,56 +1,118 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../features/home/presentation/home_screen.dart';
+import '../../features/calendar/presentation/routine_calendar_screen.dart';
+import '../../features/home/presentation/home_ficha_screen.dart';
 import '../../features/medications/presentation/medications_screen.dart';
 import '../../features/medications/presentation/providers/medication_providers.dart';
 import '../../features/medications/service/medication_notification_bus.dart';
+import '../../features/onboarding/presentation/first_launch_onboarding.dart';
+import '../../features/profile/presentation/profile_screen.dart';
 import '../../features/routine_mood/presentation/daily_routine_screen.dart';
-import '../../features/therapist_export/presentation/therapist_export_hub_screen.dart';
+import '../../features/settings/presentation/settings_screen.dart';
+import '../../features/tasks/presentation/task_providers.dart';
+import '../../features/tasks/service/task_notification_bus.dart';
+import '../../features/tasks/presentation/tasks_hub_screen.dart';
+import '../../features/therapist_export/presentation/clinical_folder_screen.dart';
 import '../icons/app_icons.dart';
 import '../localization/locale_provider.dart';
-import '../theme/app_colors.dart';
-import '../theme/app_spacing.dart';
+import 'glass_nav_bar.dart';
 
 const _homeRoute = '/';
 const _routineRoute = '/routine';
 const _medsRoute = '/meds';
-const _clinicRoute = '/clinic';
+const _clinicalFolderRoute = '/clinical-folder';
+
+enum _ShellTab { home, routine, meds, clinicFolder }
 
 void openRoutineScreen(BuildContext context) {
-  Navigator.of(context).push(_routinePage());
+  _LumenShellScope.of(context).showTab(_ShellTab.routine);
 }
 
 void openMedicationsScreen(BuildContext context) {
-  Navigator.of(context).push(_medsPage());
+  _LumenShellScope.of(context).showTab(_ShellTab.meds);
 }
 
-void openTherapistHub(BuildContext context) {
-  Navigator.of(context).push(_clinicPage());
+/// Porta canônica da Pasta clínica. Troca para a aba e garante que ela
+/// mostra a própria raiz (sem resquício de navegação anterior).
+void openClinicalFolderScreen(BuildContext context) {
+  _LumenShellScope.of(context).showTab(_ShellTab.clinicFolder);
 }
 
-MaterialPageRoute<void> _routinePage() {
-  return MaterialPageRoute<void>(
-    settings: const RouteSettings(name: _routineRoute),
-    builder: (_) => const DailyRoutineScreen(),
-  );
+/// Porta canônica de Tarefas: aba Início, raiz, com `TasksHubScreen`
+/// empilhada por cima. Única pilha possível — reusada pela Home e pela Dia.
+void openTasksHub(BuildContext context) {
+  final scope = _LumenShellScope.of(context);
+  scope.showTab(_ShellTab.home);
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    final nav = scope.navigatorFor(_ShellTab.home);
+    if (nav == null) return;
+    nav.push(MaterialPageRoute<void>(builder: (_) => const TasksHubScreen()));
+  });
 }
 
-MaterialPageRoute<void> _medsPage() {
-  return MaterialPageRoute<void>(
-    settings: const RouteSettings(name: _medsRoute),
-    builder: (_) => const MedicationsScreen(),
-  );
+/// Porta canônica de "Meus dias": mesma política de pilha de [openTasksHub]
+/// (aba Início, raiz, calendário empilhado por cima), reusada pela Home e
+/// pela Dia.
+void openRoutineCalendarScreen(BuildContext context) {
+  final scope = _LumenShellScope.of(context);
+  scope.showTab(_ShellTab.home);
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    final nav = scope.navigatorFor(_ShellTab.home);
+    if (nav == null) return;
+    nav.push(
+      MaterialPageRoute<void>(builder: (_) => const RoutineCalendarScreen()),
+    );
+  });
 }
 
-MaterialPageRoute<void> _clinicPage() {
-  return MaterialPageRoute<void>(
-    settings: const RouteSettings(name: _clinicRoute),
-    builder: (_) => const TherapistExportHubScreen(),
-  );
+/// Abre a tela de perfil (feed). Empilha no navegador da aba ativa quando o
+/// shell existe; senão cai no [Navigator] do próprio contexto (ex.: testes).
+void openProfileScreen(BuildContext context) {
+  final scope = context.getInheritedWidgetOfExactType<_LumenShellScope>();
+  final navigator = scope == null
+      ? null
+      : scope.navigatorFor(scope.activeTab());
+  final target = navigator ?? Navigator.of(context);
+  target.push(MaterialPageRoute<void>(builder: (_) => const ProfileScreen()));
 }
 
-enum _ShellTab { home, routine, meds, clinic }
+/// Abre o hub de configurações (empilha no navegador ativo, tipicamente sobre o perfil).
+void openSettingsScreen(BuildContext context) {
+  final scope = context.getInheritedWidgetOfExactType<_LumenShellScope>();
+  final navigator = scope == null
+      ? null
+      : scope.navigatorFor(scope.activeTab());
+  final target = navigator ?? Navigator.of(context);
+  target.push(MaterialPageRoute<void>(builder: (_) => const SettingsScreen()));
+}
+
+class _LumenShellScope extends InheritedWidget {
+  const _LumenShellScope({
+    required this.showTab,
+    required this.navigatorFor,
+    required this.activeTab,
+    required super.child,
+  });
+
+  final ValueChanged<_ShellTab> showTab;
+  final NavigatorState? Function(_ShellTab tab) navigatorFor;
+  final _ShellTab Function() activeTab;
+
+  static _LumenShellScope of(BuildContext context) {
+    final scope = context.getInheritedWidgetOfExactType<_LumenShellScope>();
+    assert(scope != null, 'LumenShell scope missing');
+    return scope!;
+  }
+
+  @override
+  bool updateShouldNotify(_LumenShellScope oldWidget) =>
+      showTab != oldWidget.showTab ||
+      navigatorFor != oldWidget.navigatorFor ||
+      activeTab != oldWidget.activeTab;
+}
 
 class LumenShell extends ConsumerStatefulWidget {
   const LumenShell({super.key});
@@ -61,17 +123,35 @@ class LumenShell extends ConsumerStatefulWidget {
 
 class _LumenShellState extends ConsumerState<LumenShell>
     with WidgetsBindingObserver {
-  final GlobalKey<NavigatorState> _shellNav = GlobalKey<NavigatorState>();
-  late final _ShellTabObserver _tabObserver;
+  final PageController _pageController = PageController();
+  final List<GlobalKey<NavigatorState>> _navKeys =
+      List<GlobalKey<NavigatorState>>.generate(
+        _ShellTab.values.length,
+        (_) => GlobalKey<NavigatorState>(),
+      );
+  late final List<_StackObserver> _observers;
+  final List<int> _tabHistory = <int>[_ShellTab.home.index];
+  final ValueNotifier<bool> _activeCanPopNotifier = ValueNotifier<bool>(false);
+  int _index = _ShellTab.home.index;
+  bool _nestedPopInProgress = false;
+  bool _stackRefreshQueued = false;
   late final VoidCallback _onOpenMedications;
-  _ShellTab _tab = _ShellTab.home;
+  late final VoidCallback _onOpenRoutine;
+  late final VoidCallback _onOpenTasks;
   int _seenOpens = 0;
+  int _seenRoutineOpens = 0;
+  int _seenTasksOpens = 0;
   DateTime? _lastMedsNavigation;
+  DateTime? _lastRoutineNavigation;
+  DateTime? _lastTasksNavigation;
 
   @override
   void initState() {
     super.initState();
-    _tabObserver = _ShellTabObserver(_onShellTop);
+    _observers = List<_StackObserver>.generate(
+      _ShellTab.values.length,
+      (_) => _StackObserver(_onStackChanged),
+    );
     WidgetsBinding.instance.addObserver(this);
     _seenOpens = MedicationNotificationBus.openMedications.value;
     _onOpenMedications = () {
@@ -86,6 +166,36 @@ class _LumenShellState extends ConsumerState<LumenShell>
         if (mounted) _openMedicationsFromAlarm();
       });
     }
+    _seenRoutineOpens = TaskNotificationBus.openRoutine.value;
+    _onOpenRoutine = () {
+      final next = TaskNotificationBus.openRoutine.value;
+      if (next == _seenRoutineOpens) return;
+      _seenRoutineOpens = next;
+      _openRoutineFromAlarm();
+    };
+    TaskNotificationBus.openRoutine.addListener(_onOpenRoutine);
+    if (_seenRoutineOpens > 0) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _openRoutineFromAlarm();
+      });
+    }
+    _seenTasksOpens = TaskNotificationBus.openTasks.value;
+    _onOpenTasks = () {
+      final next = TaskNotificationBus.openTasks.value;
+      if (next == _seenTasksOpens) return;
+      _seenTasksOpens = next;
+      _openTasksFromAlarm();
+    };
+    TaskNotificationBus.openTasks.addListener(_onOpenTasks);
+    if (_seenTasksOpens > 0) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _openTasksFromAlarm();
+      });
+    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      FirstLaunchOnboarding.maybeShow(context, ref);
+    });
   }
 
   @override
@@ -94,6 +204,10 @@ class _LumenShellState extends ConsumerState<LumenShell>
     MedicationNotificationBus.openMedications.removeListener(
       _onOpenMedications,
     );
+    TaskNotificationBus.openRoutine.removeListener(_onOpenRoutine);
+    TaskNotificationBus.openTasks.removeListener(_onOpenTasks);
+    _pageController.dispose();
+    _activeCanPopNotifier.dispose();
     super.dispose();
   }
 
@@ -102,20 +216,120 @@ class _LumenShellState extends ConsumerState<LumenShell>
     if (state != AppLifecycleState.resumed) return;
     ref.invalidate(medicationsListProvider);
     ref.read(todayMedicationLogsProvider.notifier).loadTodayLogs();
+    ref.read(tasksListProvider.notifier).load();
   }
 
-  void _onShellTop(Route<dynamic>? route) {
-    final next = _tabFrom(route);
-    if (next == null || next == _tab || !mounted) return;
-    setState(() => _tab = next);
+  void _onStackChanged() {
+    if (!mounted || _stackRefreshQueued) return;
+    _stackRefreshQueued = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _stackRefreshQueued = false;
+      if (mounted) _syncActiveCanPop();
+    });
   }
 
-  void _goHome() {
-    final navigator = _shellNav.currentState;
-    if (navigator == null) return;
-    if (navigator.canPop()) {
+  void _syncActiveCanPop() {
+    final canPop = _navKeys[_index].currentState?.canPop() ?? false;
+    if (_activeCanPopNotifier.value != canPop) {
+      _activeCanPopNotifier.value = canPop;
+    }
+  }
+
+  void _remember(int index) {
+    if (_tabHistory.last == index) return;
+    _tabHistory.remove(index);
+    _tabHistory.add(index);
+  }
+
+  void _showTab(_ShellTab tab) {
+    if (!mounted) return;
+    final index = tab.index;
+    if (index == _index) {
+      _popToRoot(index);
+      return;
+    }
+    // A aba de origem não pode ficar com uma tela empilhada escondida atrás
+    // da troca de aba (ex.: Configurações aberta a partir da Home).
+    _popToRoot(_index);
+    // A aba de destino sempre mostra a própria raiz ao ser selecionada pela
+    // tab bar ou por um atalho que troca de aba.
+    _popToRoot(index);
+    _remember(index);
+    if (!MediaQuery.disableAnimationsOf(context)) {
+      HapticFeedback.selectionClick();
+    }
+    setState(() => _index = index);
+    _moveTo(index);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _syncActiveCanPop();
+    });
+  }
+
+  void _popToRoot(int index) {
+    final navigator = _navKeys[index].currentState;
+    if (navigator != null && navigator.canPop()) {
       navigator.popUntil((route) => route.isFirst);
     }
+  }
+
+  void _moveTo(int index) {
+    if (!_pageController.hasClients) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && _index == index) _moveTo(index);
+      });
+      return;
+    }
+    // Android: jump evita ~280 ms de animatedBuilder + glass a cada frame
+    // na troca de aba (principal fonte de travamento relatada nos testes).
+    final skipPageAnim = MediaQuery.disableAnimationsOf(context) ||
+        (!kIsWeb && defaultTargetPlatform == TargetPlatform.android);
+    if (skipPageAnim) {
+      _pageController.jumpToPage(index);
+      return;
+    }
+    _pageController.animateToPage(
+      index,
+      duration: const Duration(milliseconds: 280),
+      curve: Curves.easeOutCubic,
+    );
+  }
+
+  void _onPageChanged(int index) {
+    _remember(index);
+    if (!mounted || index == _index) return;
+    setState(() => _index = index);
+    _syncActiveCanPop();
+  }
+
+  void _popVisibleTab() {
+    final navigator = _navKeys[_index].currentState;
+    if (navigator == null || !navigator.canPop()) return;
+    _nestedPopInProgress = true;
+    navigator.pop();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _nestedPopInProgress = false;
+    });
+  }
+
+  void _onSystemBack(bool didPop, Object? _) {
+    if (didPop || _nestedPopInProgress) return;
+    final navigator = _navKeys[_index].currentState;
+    if (navigator != null && navigator.canPop()) return;
+    if (_index == _ShellTab.home.index) return;
+    _selectPreviousTab();
+  }
+
+  void _selectPreviousTab() {
+    if (_tabHistory.length > 1 && _tabHistory.last == _index) {
+      _tabHistory.removeLast();
+    }
+    final previous = _tabHistory.isEmpty
+        ? _ShellTab.home.index
+        : _tabHistory.last;
+    if (previous == _index) return;
+    setState(() => _index = previous);
+    _moveTo(previous);
+    _syncActiveCanPop();
   }
 
   void _openMedicationsFromAlarm() {
@@ -126,172 +340,147 @@ class _LumenShellState extends ConsumerState<LumenShell>
       return;
     }
     _lastMedsNavigation = now;
-    final navigator = _shellNav.currentState;
-    if (navigator == null) return;
-    if (navigator.canPop()) {
-      navigator.popUntil((route) => route.isFirst);
+    _showTab(_ShellTab.meds);
+  }
+
+  void _openRoutineFromAlarm() {
+    if (!mounted) return;
+    final now = DateTime.now();
+    final last = _lastRoutineNavigation;
+    if (last != null && now.difference(last) < const Duration(seconds: 2)) {
+      return;
     }
-    navigator.push(_medsPage());
+    _lastRoutineNavigation = now;
+    _showTab(_ShellTab.routine);
+  }
+
+  void _openTasksFromAlarm() {
+    if (!mounted) return;
+    final now = DateTime.now();
+    final last = _lastTasksNavigation;
+    if (last != null && now.difference(last) < const Duration(seconds: 2)) {
+      return;
+    }
+    _lastTasksNavigation = now;
+    _showTab(_ShellTab.home);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final nav = _navKeys[_ShellTab.home.index].currentState;
+      if (nav == null) return;
+      nav.push(MaterialPageRoute<void>(builder: (_) => const TasksHubScreen()));
+    });
+  }
+
+  ScrollPhysics _pagePhysics(BuildContext context, {required bool canPop}) {
+    final reduceMotion = MediaQuery.disableAnimationsOf(context);
+    if (reduceMotion || canPop) {
+      return const NeverScrollableScrollPhysics();
+    }
+    return const PageScrollPhysics();
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = ref.watch(appLocalizationsProvider);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final media = MediaQuery.of(context);
+    final indicator = media.viewPadding.bottom;
+    final reservedBottom = GlassNavBar.reservedBottom(context);
+    // Full-bleed: o PageView pinta atrás da cápsula. O inset vai só no
+    // MediaQuery.padding (FAB / SafeArea / ensureVisible) — Padding físico
+    // deixava o scaffold sólido atrás do vidro e matava a translucidez.
+    //
+    // Teclado: resizeToAvoidBottomInset false — o shell/tab bar NÃO sobe com
+    // o teclado. Gavetas usam showLumenSheet / LumenKeyboardInset.
 
-    final indicator = MediaQuery.viewPaddingOf(context).bottom;
-
-    return Scaffold(
-      body: NavigatorPopHandler<void>(
-        onPopWithResult: (_) {
-          final navigator = _shellNav.currentState;
-          if (navigator == null) return;
-          navigator.pop();
-        },
-        child: Navigator(
-          key: _shellNav,
-          observers: [_tabObserver],
-          onGenerateRoute: (_) {
-            return MaterialPageRoute<void>(
-              settings: const RouteSettings(name: _homeRoute),
-              builder: (_) => const HomeScreen(),
-            );
-          },
-        ),
-      ),
-      bottomNavigationBar: Material(
-        color: isDark ? AppColors.cardDark : AppColors.cardLight,
-        child: Padding(
-          padding: EdgeInsets.only(bottom: indicator),
-          child: SizedBox(
-            height: AppSpacing.navBar,
-            child: Row(
-              children: [
-                _NavItem(
-                  selected: _tab == _ShellTab.home,
-                  icon: AppIcons.home,
-                  selectedIcon: AppIcons.homeFilled,
-                  label: l10n.navHome,
-                  onTap: _goHome,
-                ),
-                _NavItem(
-                  selected: _tab == _ShellTab.routine,
-                  icon: AppIcons.routine,
-                  selectedIcon: AppIcons.routineFilled,
-                  label: l10n.navRoutine,
-                  onTap: () => _shellNav.currentState?.push(_routinePage()),
-                ),
-                _NavItem(
-                  selected: _tab == _ShellTab.meds,
-                  icon: AppIcons.medication,
-                  selectedIcon: AppIcons.medicationFilled,
-                  label: l10n.navMeds,
-                  onTap: () => _shellNav.currentState?.push(_medsPage()),
-                ),
-                _NavItem(
-                  selected: _tab == _ShellTab.clinic,
-                  icon: AppIcons.clinic,
-                  selectedIcon: AppIcons.clinicFilled,
-                  label: l10n.navClinic,
-                  onTap: () => _shellNav.currentState?.push(_clinicPage()),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-_ShellTab? _tabFrom(Route<dynamic>? route) {
-  switch (route?.settings.name) {
-    case _routineRoute:
-      return _ShellTab.routine;
-    case _medsRoute:
-      return _ShellTab.meds;
-    case _clinicRoute:
-      return _ShellTab.clinic;
-    case _homeRoute:
-      return _ShellTab.home;
-    default:
-      if (route?.isFirst ?? false) return _ShellTab.home;
-      return null;
-  }
-}
-
-class _ShellTabObserver extends NavigatorObserver {
-  _ShellTabObserver(this.onTop);
-
-  final void Function(Route<dynamic>? route) onTop;
-
-  @override
-  void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
-    onTop(route);
-  }
-
-  @override
-  void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
-    onTop(previousRoute);
-  }
-
-  @override
-  void didRemove(Route<dynamic> route, Route<dynamic>? previousRoute) {
-    onTop(previousRoute);
-  }
-
-  @override
-  void didReplace({Route<dynamic>? newRoute, Route<dynamic>? oldRoute}) {
-    onTop(newRoute);
-  }
-}
-
-class _NavItem extends StatelessWidget {
-  const _NavItem({
-    required this.selected,
-    required this.icon,
-    required this.selectedIcon,
-    required this.label,
-    required this.onTap,
-  });
-
-  final bool selected;
-  final IconData icon;
-  final IconData selectedIcon;
-  final String label;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final muted = AppColors.mutedText(
-      Theme.of(context).brightness == Brightness.dark,
-    );
-    final primary = Theme.of(context).colorScheme.primary;
-    final duration = MediaQuery.disableAnimationsOf(context)
-        ? Duration.zero
-        : const Duration(milliseconds: 180);
-    final labelStyle =
-        Theme.of(context).textTheme.labelSmall ?? const TextStyle(fontSize: 11);
-    return Expanded(
-      child: InkWell(
-        onTap: onTap,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+    return _LumenShellScope(
+      showTab: _showTab,
+      navigatorFor: (tab) => _navKeys[tab.index].currentState,
+      activeTab: () => _ShellTab.values[_index],
+      child: Scaffold(
+        extendBody: true,
+        resizeToAvoidBottomInset: false,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        body: Stack(
+          fit: StackFit.expand,
           children: [
-            _NavGlyph(
-              icon: selected ? selectedIcon : icon,
-              color: selected ? primary : muted,
-              duration: duration,
-            ),
-            const SizedBox(height: 2),
-            AnimatedDefaultTextStyle(
-              duration: duration,
-              curve: Curves.easeOut,
-              style: labelStyle.copyWith(
-                fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
-                color: selected ? primary : muted,
+            MediaQuery(
+              data: media.copyWith(
+                padding: media.padding.copyWith(bottom: reservedBottom),
               ),
-              child: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis),
+              // canPop/physics: ValueNotifier — push/pop não rebuilda a nav.
+              child: ValueListenableBuilder<bool>(
+                valueListenable: _activeCanPopNotifier,
+                builder: (context, activeCanPop, _) {
+                  final shellCanPop =
+                      _index == _ShellTab.home.index || activeCanPop;
+                  return PopScope<Object?>(
+                    canPop: shellCanPop,
+                    onPopInvokedWithResult: _onSystemBack,
+                    child: PageView(
+                      controller: _pageController,
+                      physics: _pagePhysics(context, canPop: activeCanPop),
+                      onPageChanged: _onPageChanged,
+                      children: [
+                        for (final tab in _ShellTab.values)
+                          _ShellPage(
+                            key: ValueKey<String>(tab.name),
+                            navigatorKey: _navKeys[tab.index],
+                            observer: _observers[tab.index],
+                            enabled: _index == tab.index,
+                            routeName: _routeName(tab),
+                            onPopNested: _popVisibleTab,
+                            child: _rootFor(tab),
+                          ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+            Positioned(
+              left: GlassNavBar.horizontalInset,
+              right: GlassNavBar.horizontalInset,
+              bottom: indicator + GlassNavBar.bottomGap,
+              child: RepaintBoundary(
+                child: AnimatedBuilder(
+                  animation: _pageController,
+                  builder: (context, _) {
+                    final page = _pageController.hasClients
+                        ? (_pageController.page ?? _index.toDouble())
+                        : _index.toDouble();
+                    return GlassNavBar(
+                      position: page,
+                      onSelected: (i) => _showTab(_ShellTab.values[i]),
+                      destinations: [
+                        GlassNavDestination(
+                          icon: AppIcons.home,
+                          selectedIcon: AppIcons.homeFilled,
+                          label: l10n.navHome,
+                          hint: l10n.navOpensTabHint(l10n.navHome),
+                        ),
+                        GlassNavDestination(
+                          icon: AppIcons.routine,
+                          selectedIcon: AppIcons.routineFilled,
+                          label: l10n.navRoutine,
+                          hint: l10n.navOpensTabHint(l10n.navRoutine),
+                        ),
+                        GlassNavDestination(
+                          icon: AppIcons.medication,
+                          selectedIcon: AppIcons.medicationFilled,
+                          label: l10n.navMeds,
+                          hint: l10n.navOpensTabHint(l10n.navMeds),
+                        ),
+                        GlassNavDestination(
+                          icon: AppIcons.clinic,
+                          selectedIcon: AppIcons.clinicFilled,
+                          label: l10n.navClinicalFolder,
+                          hint: l10n.navOpensTabHint(l10n.navClinicalFolder),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ),
             ),
           ],
         ),
@@ -300,36 +489,118 @@ class _NavItem extends StatelessWidget {
   }
 }
 
-class _NavGlyph extends ImplicitlyAnimatedWidget {
-  const _NavGlyph({
-    required this.icon,
-    required this.color,
-    required super.duration,
-  }) : super(curve: Curves.easeOut);
-
-  final IconData icon;
-  final Color color;
-
-  @override
-  ImplicitlyAnimatedWidgetState<_NavGlyph> createState() => _NavGlyphState();
+String _routeName(_ShellTab tab) {
+  return switch (tab) {
+    _ShellTab.home => _homeRoute,
+    _ShellTab.routine => _routineRoute,
+    _ShellTab.meds => _medsRoute,
+    _ShellTab.clinicFolder => _clinicalFolderRoute,
+  };
 }
 
-class _NavGlyphState extends AnimatedWidgetBaseState<_NavGlyph> {
-  ColorTween? _color;
+Widget _rootFor(_ShellTab tab) {
+  return switch (tab) {
+    _ShellTab.home => const HomeFichaScreen(),
+    _ShellTab.routine => const DailyRoutineScreen(),
+    _ShellTab.meds => const MedicationsScreen(),
+    _ShellTab.clinicFolder => const ClinicalFolderScreen(),
+  };
+}
+
+class _ShellPage extends StatefulWidget {
+  const _ShellPage({
+    super.key,
+    required this.navigatorKey,
+    required this.observer,
+    required this.enabled,
+    required this.routeName,
+    required this.onPopNested,
+    required this.child,
+  });
+
+  final GlobalKey<NavigatorState> navigatorKey;
+  final NavigatorObserver observer;
+  final bool enabled;
+  final String routeName;
+  final VoidCallback onPopNested;
+  final Widget child;
 
   @override
-  void forEachTween(TweenVisitor<dynamic> visitor) {
-    _color =
-        visitor(
-              _color,
-              widget.color,
-              (dynamic value) => ColorTween(begin: value as Color),
-            )
-            as ColorTween?;
+  State<_ShellPage> createState() => _ShellPageState();
+}
+
+class _ShellPageState extends State<_ShellPage>
+    with AutomaticKeepAliveClientMixin {
+  /// Monta o Navigator só na primeira visita; depois mantém vivo.
+  bool _visited = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.enabled) _visited = true;
   }
+
+  @override
+  void didUpdateWidget(covariant _ShellPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.enabled && !_visited) {
+      _visited = true;
+      updateKeepAlive();
+    }
+  }
+
+  @override
+  bool get wantKeepAlive => _visited;
 
   @override
   Widget build(BuildContext context) {
-    return Icon(widget.icon, size: 24, color: _color?.evaluate(animation));
+    super.build(context);
+    if (!_visited) {
+      return const SizedBox.shrink();
+    }
+    return NavigatorPopHandler<void>(
+      enabled: widget.enabled,
+      onPopWithResult: (_) {
+        if (!widget.enabled) return;
+        widget.onPopNested();
+      },
+      child: Navigator(
+        key: widget.navigatorKey,
+        observers: [widget.observer],
+        onGenerateRoute: (_) {
+          return MaterialPageRoute<void>(
+            settings: RouteSettings(name: widget.routeName),
+            builder: (_) => widget.child,
+          );
+        },
+      ),
+    );
   }
 }
+
+class _StackObserver extends NavigatorObserver {
+  _StackObserver(this.onChanged);
+
+  final VoidCallback onChanged;
+
+  @override
+  void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    onChanged();
+  }
+
+  @override
+  void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    onChanged();
+  }
+
+  @override
+  void didRemove(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    onChanged();
+  }
+
+  @override
+  void didReplace({Route<dynamic>? newRoute, Route<dynamic>? oldRoute}) {
+    onChanged();
+  }
+}
+

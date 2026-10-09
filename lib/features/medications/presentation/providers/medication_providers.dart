@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
@@ -44,9 +46,8 @@ List<MedicationLog> mergeDoseEventsIntoLogs({
     if (event.status != 'taken' && event.status != 'skipped') continue;
     final already = result.any(
       (l) =>
-          l.source == MedicationLogSource.appleHealth &&
-          l.scheduledTime.millisecondsSinceEpoch ==
-              event.loggedAt.millisecondsSinceEpoch,
+          l.medicationId == medicationId &&
+          _sameMinute(l.scheduledTime, event.loggedAt),
     );
     if (already) continue;
     result.add(
@@ -62,6 +63,14 @@ List<MedicationLog> mergeDoseEventsIntoLogs({
     );
   }
   return result;
+}
+
+bool _sameMinute(DateTime a, DateTime b) {
+  return a.year == b.year &&
+      a.month == b.month &&
+      a.day == b.day &&
+      a.hour == b.hour &&
+      a.minute == b.minute;
 }
 
 class TodayMedicationLogsNotifier
@@ -111,9 +120,15 @@ class TodayMedicationLogsNotifier
     _checkedSchedule = true;
     try {
       final meds = await _repository.getMedications();
-      await _reminderService.syncIfNeeded(
-        meds,
-        _ref.read(appLocalizationsProvider),
+      // Não aguardar: fuso/plugin podem nunca completar em teste.
+      unawaited(
+        _reminderService.syncIfNeeded(
+          meds,
+          _ref.read(appLocalizationsProvider),
+        ).catchError((Object e) {
+          _checkedSchedule = false;
+          debugPrint('[Medications] lembretes: $e');
+        }),
       );
     } catch (e) {
       _checkedSchedule = false;
@@ -123,6 +138,7 @@ class TodayMedicationLogsNotifier
 
   Future<void> markTaken(String logId) async {
     final now = DateTime.now();
+    await _repository.reload();
     await _repository.markAsTaken(logId, now);
     await _reminderService.cancelSnooze(logId);
     // Plano: doses no Health são read-only — não escrevemos de volta.
@@ -134,6 +150,7 @@ class TodayMedicationLogsNotifier
     String medicationName, {
     int minutes = 15,
   }) async {
+    await _repository.reload();
     await _repository.snoozeLog(logId, minutes);
     final log = await _repository.logById(logId);
     final l10n = _ref.read(appLocalizationsProvider);

@@ -1,3 +1,4 @@
+import '../../state_of_mind/domain/state_of_mind_entry.dart';
 import 'routine_snapshot.dart';
 
 /// Linha que PDF, WhatsApp e card descrevem do mesmo jeito.
@@ -10,6 +11,7 @@ class RoutineExportLine {
     required this.tookPrescribedMedication,
     this.eveningReflection,
     this.therapistNotes,
+    this.stateOfMind,
   });
 
   final DateTime savedAt;
@@ -19,6 +21,7 @@ class RoutineExportLine {
   final bool tookPrescribedMedication;
   final String? eveningReflection;
   final String? therapistNotes;
+  final StateOfMindEntry? stateOfMind;
 }
 
 List<RoutineExportLine> routineExportLines({
@@ -47,6 +50,7 @@ List<RoutineExportLine> routineExportLines({
         therapistNotes: hideIntimateNotes
             ? null
             : _textOrNull(snapshot.therapistNotes),
+        stateOfMind: snapshot.stateOfMind,
       ),
   ];
 }

@@ -33,12 +33,15 @@ class RoutineSnapshot {
 
   RoutineSnapshot copyWith({
     String? calendarEventId,
+    StateOfMindEntry? stateOfMind,
+    bool clearStateOfMind = false,
   }) {
     return RoutineSnapshot(
       id: id,
       savedAt: savedAt,
       mainFocusAnchor: mainFocusAnchor,
-      stateOfMind: stateOfMind,
+      stateOfMind:
+          clearStateOfMind ? null : (stateOfMind ?? this.stateOfMind),
       eveningReflection: eveningReflection,
       microHabits: microHabits,
       completedHabits: completedHabits,

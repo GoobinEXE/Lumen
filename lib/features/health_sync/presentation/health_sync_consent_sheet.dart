@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,31 +10,19 @@ import '../../../core/providers.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/glass_surface.dart';
+import '../../../core/widgets/glass_toast.dart';
+import '../../../integrations/system/system_settings.dart';
 import '../data/health_sync_prefs.dart';
 
-/// Bottom sheet que explica a sincronização mútua com Apple Health
+/// Bottom sheet que explica a sincronização com o app de saúde do aparelho
 /// antes de disparar o diálogo nativo de permissões.
 class HealthSyncConsentSheet extends ConsumerStatefulWidget {
   const HealthSyncConsentSheet({super.key});
 
   static Future<bool?> show(BuildContext context) {
-    return showModalBottomSheet<bool>(
+    return showLumenSheet<bool>(
       context: context,
-      useSafeArea: true,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (ctx) {
-        final bottom = MediaQuery.viewInsetsOf(ctx).bottom;
-        // GlassSheet também lê o inset; zera o de baixo para o teclado não somar duas vezes.
-        return Padding(
-          padding: EdgeInsets.only(bottom: bottom),
-          child: MediaQuery.removeViewInsets(
-            context: ctx,
-            removeBottom: true,
-            child: const HealthSyncConsentSheet(),
-          ),
-        );
-      },
+      builder: (ctx) => const HealthSyncConsentSheet(),
     );
   }
 
@@ -43,6 +34,18 @@ class HealthSyncConsentSheet extends ConsumerStatefulWidget {
 class _HealthSyncConsentSheetState
     extends ConsumerState<HealthSyncConsentSheet> {
   bool _isConnecting = false;
+  bool _ready = false;
+
+  bool get _isAndroid => !kIsWeb && Platform.isAndroid;
+
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() async {
+      await ref.read(healthServiceProvider).initialize();
+      if (mounted) setState(() => _ready = true);
+    });
+  }
 
   Future<void> _confirm() async {
     if (_isConnecting) return;
@@ -63,11 +66,43 @@ class _HealthSyncConsentSheetState
     Navigator.of(context).pop(granted);
   }
 
+  Future<void> _openHealthConnect() async {
+    HapticFeedback.selectionClick();
+    final ok = await SystemSettings().open(SystemSettingsTarget.healthConnect);
+    if (!mounted || ok) return;
+    final l10n = ref.read(appLocalizationsProvider);
+    showGlassToast(context, l10n.settingsOpenSystemFailed);
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final l10n = ref.watch(appLocalizationsProvider);
+    final health = ref.watch(healthServiceProvider);
+    final showOemGuide =
+        _ready && _isAndroid && health.shouldGuideToHealthConnect;
+
+    final title =
+        _isAndroid ? l10n.healthSyncSheetTitleAndroid : l10n.healthSyncSheetTitle;
+    final subtitle = _isAndroid
+        ? l10n.healthSyncSheetSubtitleAndroid
+        : l10n.healthSyncSheetSubtitle;
+    final readTitle =
+        _isAndroid ? l10n.healthSyncReadTitleAndroid : l10n.healthSyncReadTitle;
+    final readBody =
+        _isAndroid ? l10n.healthSyncReadBodyAndroid : l10n.healthSyncReadBody;
+    final writeTitle = _isAndroid
+        ? l10n.healthSyncWriteTitleAndroid
+        : l10n.healthSyncWriteTitle;
+    final writeBody = _isAndroid
+        ? l10n.healthSyncWriteBodyAndroid
+        : l10n.healthSyncWriteBody;
+    final medsNote =
+        _isAndroid ? l10n.healthSyncMedsNoteAndroid : l10n.healthSyncMedsNote;
+    final systemNote = _isAndroid
+        ? l10n.healthSyncSystemNoteAndroid
+        : l10n.healthSyncSystemNote;
 
     return GlassSheet(
       child: Column(
@@ -93,7 +128,7 @@ class _HealthSyncConsentSheetState
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  l10n.healthSyncSheetTitle,
+                  title,
                   style: theme.textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.w800,
                   ),
@@ -103,7 +138,7 @@ class _HealthSyncConsentSheetState
           ),
           const SizedBox(height: 10),
           Text(
-            l10n.healthSyncSheetSubtitle,
+            subtitle,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: AppColors.mutedText(isDark),
               height: 1.4,
@@ -112,20 +147,37 @@ class _HealthSyncConsentSheetState
           const SizedBox(height: 20),
           _InfoBlock(
             icon: AppIcons.download,
-            title: l10n.healthSyncReadTitle,
-            body: l10n.healthSyncReadBody,
+            title: readTitle,
+            body: readBody,
             isDark: isDark,
           ),
           const SizedBox(height: 12),
           _InfoBlock(
             icon: AppIcons.upload,
-            title: l10n.healthSyncWriteTitle,
-            body: l10n.healthSyncWriteBody,
+            title: writeTitle,
+            body: writeBody,
             isDark: isDark,
           ),
+          if (showOemGuide) ...[
+            const SizedBox(height: 12),
+            _InfoBlock(
+              icon: AppIcons.health,
+              title: l10n.healthSyncOemGuideTitle,
+              body: l10n.healthSyncOemGuideBody,
+              isDark: isDark,
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton(
+                onPressed: _isConnecting ? null : _openHealthConnect,
+                child: Text(l10n.healthSyncOpenHealthConnectButton),
+              ),
+            ),
+          ],
           const SizedBox(height: 16),
           Text(
-            l10n.healthSyncMedsNote,
+            medsNote,
             style: theme.textTheme.bodySmall?.copyWith(
               color: AppColors.mutedText(isDark),
               height: 1.35,
@@ -133,7 +185,7 @@ class _HealthSyncConsentSheetState
           ),
           const SizedBox(height: 8),
           Text(
-            l10n.healthSyncSystemNote,
+            systemNote,
             style: theme.textTheme.bodySmall?.copyWith(
               color: AppColors.mutedText(isDark),
               height: 1.35,
@@ -150,8 +202,7 @@ class _HealthSyncConsentSheetState
                       width: 20,
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
-                        color:
-                            Theme.of(context)
+                        color: Theme.of(context)
                                 .elevatedButtonTheme
                                 .style
                                 ?.foregroundColor

@@ -43,6 +43,75 @@ void main() {
       expect(second, hasLength(2));
     });
 
+    test('dose adiada sobrevive à mudança de horário do slot', () async {
+      final day = DateTime(2026, 10, 1, 12);
+      await repo.saveMedication(
+        const Medication(
+          id: 'a',
+          name: 'Venvanse',
+          dosage: '30mg',
+          scheduledTimes: ['08:00'],
+        ),
+      );
+      final created = await repo.getLogsForDate(day);
+      expect(created, hasLength(1));
+
+      await repo.snoozeLog(created.single.id, 15);
+
+      // Pessoa muda o horário do slot: o log adiado deve ser realocado,
+      // mantendo o mesmo id e o snoozedUntil, sem virar uma nova pendente.
+      await repo.saveMedication(
+        const Medication(
+          id: 'a',
+          name: 'Venvanse',
+          dosage: '30mg',
+          scheduledTimes: ['09:00'],
+        ),
+      );
+      final after = await repo.getLogsForDate(day);
+      expect(after, hasLength(1));
+      expect(after.single.id, created.single.id);
+      expect(after.single.snoozedUntil, isNotNull);
+      expect(after.single.scheduledTime.hour, 9);
+    });
+
+    test('dose tomada sobrevive à mudança de horário do slot', () async {
+      final day = DateTime(2026, 10, 1, 12);
+      await repo.saveMedication(
+        const Medication(
+          id: 'a',
+          name: 'Venvanse',
+          dosage: '30mg',
+          scheduledTimes: ['08:00'],
+        ),
+      );
+      final created = await repo.getLogsForDate(day);
+      expect(created, hasLength(1));
+
+      final takenAt = DateTime(2026, 10, 1, 8, 5);
+      await repo.markAsTaken(created.single.id, takenAt);
+      final afterTaken = await repo.getLogsForDate(day);
+      expect(afterTaken.single.isTaken, isTrue);
+      expect(afterTaken.single.takenAt, takenAt);
+
+      // Pessoa muda o horário do slot depois de já ter tomado a dose:
+      // o realinhamento (`_alignDayLogs`) não pode voltar o log para pending.
+      await repo.saveMedication(
+        const Medication(
+          id: 'a',
+          name: 'Venvanse',
+          dosage: '30mg',
+          scheduledTimes: ['09:30'],
+        ),
+      );
+      final afterRealign = await repo.getLogsForDate(day);
+
+      expect(afterRealign, hasLength(1));
+      expect(afterRealign.single.id, created.single.id);
+      expect(afterRealign.single.isTaken, isTrue);
+      expect(afterRealign.single.takenAt, takenAt);
+    });
+
     test('apagar o remédio tira o log do dia', () async {
       final day = DateTime(2026, 10, 1, 9);
       await repo.saveMedication(

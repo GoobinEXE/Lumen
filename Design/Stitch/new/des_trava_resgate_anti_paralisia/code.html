@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_stack" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "tertiary-container": "#ec7c4f", "on-error": "#ffffff", "error-container": "#ffdad6", "surface-container-highest": "#e4e1e7", "secondary-container": "#bfadff", "primary-container": "#1faf8a", "primary": "#006c53", "on-tertiary-container": "#5f1d00", "tertiary-fixed-dim": "#ffb59a", "surface-variant": "#e4e1e7", "surface-container-low": "#f6f2f8", "surface-bright": "#fbf8fe", "secondary": "#63539d", "tertiary-fixed": "#ffdbce", "inverse-primary": "#5cdcb4", "surface-container-high": "#eae7ed", "on-secondary": "#ffffff", "error": "#ba1a1a", "secondary-fixed": "#e7deff", "on-secondary-fixed-variant": "#4a3b83", "background": "#fbf8fe", "tertiary": "#9f4119", "on-error-container": "#93000a", "outline": "#6d7a74", "surface-container": "#f0edf2", "on-secondary-fixed": "#1e0856", "on-primary-fixed-variant": "#00513e", "on-tertiary": "#ffffff", "on-secondary-container": "#4d3d86", "on-surface-variant": "#3d4a44", "on-tertiary-fixed": "#380d00", "primary-fixed": "#7bf9cf", "secondary-fixed-dim": "#ccbeff", "surface-dim": "#dcd9de", "on-background": "#1b1b1f", "on-primary-fixed": "#002117", "inverse-on-surface": "#f3f0f5", "surface-container-lowest": "#ffffff", "on-primary-container": "#003b2c", "on-primary": "#ffffff", "surface": "#fbf8fe", "on-surface": "#1b1b1f", "primary-fixed-dim": "#5cdcb4", "inverse-surface": "#303034", "outline-variant": "#bccac2", "surface-tint": "#006c53", "on-tertiary-fixed-variant": "#7f2b02" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "margin-desktop": "3rem", "space-sm": "0.5rem", "gutter-tablet": "1.5rem", "margin": "1.25rem", "margin-tablet": "2rem", "space-md": "1rem", "space-lg": "1.5rem", "gutter": "1rem", "space-xs": "0.25rem", "space-xl": "2.5rem", "gutter-desktop": "2rem" }, "fontFamily": { "body-md": ["Plus Jakarta Sans"], "body-sm": ["Plus Jakarta Sans"], "label-lg": ["Plus Jakarta Sans"], "display-lg": ["Plus Jakarta Sans"], "label-sm": ["Plus Jakarta Sans"], "headline-lg": ["Plus Jakarta Sans"], "headline-sm": ["Plus Jakarta Sans"], "headline-md": ["Plus Jakarta Sans"], "label-md": ["Plus Jakarta Sans"], "display-lg-mobile": ["Plus Jakarta Sans"], "body-lg": ["Plus Jakarta Sans"] }, "fontSize": { "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }], "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }], "label-lg": ["15px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }], "display-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "label-sm": ["11px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500" }], "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }], "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "label-md": ["13px", { "lineHeight": "18px", "letterSpacing": "0.01em", "fontWeight": "600" }], "display-lg-mobile": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }] } } } };</script></head><body class="bg-surface text-on-surface font-body-md text-body-md min-h-screen flex flex-col selection:bg-primary-container selection:text-on-primary-container"><header class="fixed top-0 inset-x-0 z-50 bg-surface/80 backdrop-blur-xl pt-safe shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-sm"><button aria-label="Voltar" class="w-11 h-11 flex items-center justify-center rounded-full text-on-surface hover:bg-surface-container transition-colors" onclick="history.back()"><span class="material-symbols-outlined text-[22px]">arrow_back_ios_new</span></button><h1 class="text-headline-sm font-headline-sm text-on-surface tracking-tight truncate">Modo Descongelar</h1></div><div class="flex items-center gap-space-sm"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col flex-1 relative w-full px-margin pt-16 pb-safe bg-surface"><div class="flex flex-col w-full relative">
+<!-- Fundo translúcido que simula a tela do dia sob o backdrop -->
+<div class="fixed inset-0 bg-inverse-surface/40 backdrop-blur-md pointer-events-none z-10"></div>
+<!-- Bottom Sheet Fluida iOS -->
+<div class="relative z-20 flex flex-col w-full bg-surface-container-lowest rounded-t-[32px] shadow-2xl overflow-hidden mt-4 pb-space-xl">
+<!-- Top Header do Modal & Handle -->
+<div class="w-full flex flex-col items-center pt-space-md px-margin">
+<!-- Handle iOS -->
+<div class="w-12 h-1.5 rounded-full bg-surface-variant mb-space-md opacity-80"></div>
+<!-- Top Bar com ação de saída serena -->
+<div class="w-full flex items-center justify-between mb-space-sm">
+<div class="flex items-center gap-space-xs px-3 py-1.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed">
+<span class="material-symbols-outlined text-[18px]">self_improvement</span>
+<span class="font-label-sm text-label-sm">Modo Resgate</span>
+</div>
+<button aria-label="Voltar para a rotina" class="w-9 h-9 rounded-full bg-surface-container-low text-on-surface-variant flex items-center justify-center hover:bg-surface-container transition-transform active:scale-95" onclick="history.back()" type="button">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<!-- Título & Subtítulo Acolhedor -->
+<div class="w-full text-left mt-space-xs">
+<h2 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Des-Trava</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1 leading-relaxed">
+          Paralisou na tarefa? Vamos dividir em algo tão pequeno que seu cérebro não vai rejeitar.
+        </p>
+</div>
+</div>
+<!-- Foto Ambientadora Inspiradora de Foco Calmo -->
+<div class="px-margin mt-space-md">
+<div class="w-full h-28 rounded-2xl overflow-hidden relative shadow-sm">
+<img class="w-full h-full object-cover" data-alt="A minimal warm desk in soft morning sunlight with a steaming cup of tea, a clean notebook with a single written phrase, warm peach and gentle teal undertones, cozy airy space with zero clutter, peaceful atmospheric light, ultra clean Scandinavian interior aesthetics." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCKum5sZ1OIoqntuFeb-X1gBFS1ItHmbD3Iv1azqY-750mExGyhSe4_4rcWSG6f0c8dr0D8nzXsqmwcrivpZqaQuuCJsSGsR_vUjRdD6WmC9A_6yhZMzZxMd_-kM6zlzb0g9cxzbGH2SrD3t9p-S_8oetwR5FwquW4r_qUq_TMZMmu0RwLdzwtV_9KmhyFDoF6DoVIn-jDHUoKlPU-kZS-hjjamyJPe8Kgzz5lQ51B9"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-lowest via-surface-container-lowest/20 to-transparent"></div>
+<div class="absolute bottom-2 left-3 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container-lowest/80 backdrop-blur-md">
+<span class="material-symbols-outlined text-primary text-[16px]">eco</span>
+<span class="font-label-sm text-label-sm text-on-surface">Sem pressão, no seu ritmo</span>
+</div>
+</div>
+</div>
+<!-- Indicador de 3 Micro-Passos Sequenciais -->
+<div class="px-margin mt-space-lg flex flex-col gap-space-md">
+<!-- Passo 1 (Ativo / Em Foco Agora) -->
+<div class="p-space-md rounded-2xl bg-tertiary-fixed/30 shadow-sm flex flex-col gap-space-sm relative overflow-hidden transition-all">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="w-6 h-6 rounded-full bg-tertiary-container text-on-tertiary-container font-label-md text-label-md flex items-center justify-center">1</span>
+<span class="font-label-lg text-label-lg text-on-surface">Reduza a tarefa ao ridículo</span>
+</div>
+<span class="font-label-sm text-label-sm text-tertiary font-semibold uppercase tracking-wider bg-surface-container-lowest px-2 py-0.5 rounded-full">Agora</span>
+</div>
+<div class="bg-surface-container-lowest rounded-xl p-3 shadow-inner">
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-1 flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-tertiary">edit_note</span>
+            Seu micro-alvo instantâneo:
+          </p>
+<div class="font-body-md text-body-md text-on-surface bg-transparent font-medium">
+            Não pense em terminar o relatório. Apenas abra o documento e leia o primeiro parágrafo.
+          </div>
+</div>
+<button class="self-start flex items-center gap-1 text-tertiary font-label-sm text-label-sm hover:underline py-0.5" id="breakdown-btn" type="button">
+<span class="material-symbols-outlined text-[16px]">call_split</span>
+          Dividir em algo ainda mais simples
+        </button>
+</div>
+<!-- Passo 2 (Próximo) -->
+<div class="p-space-md rounded-2xl bg-surface-container-low flex items-start gap-space-sm opacity-90">
+<span class="w-6 h-6 rounded-full bg-surface-variant text-on-surface-variant font-label-md text-label-md flex items-center justify-center shrink-0 mt-0.5">2</span>
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg text-on-surface">Remova a fricção do ambiente</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
+            Pegue um copo d'água e afaste o celular por 10 minutos.
+          </p>
+</div>
+</div>
+<!-- Passo 3 (Final) -->
+<div class="p-space-md rounded-2xl bg-surface-container-low flex items-start gap-space-sm opacity-90">
+<span class="w-6 h-6 rounded-full bg-surface-variant text-on-surface-variant font-label-md text-label-md flex items-center justify-center shrink-0 mt-0.5">3</span>
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg text-on-surface">O compromisso dos primeiros 60 segundos</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
+            Se após 1 minuto você ainda quiser parar, pode parar sem culpa nenhuma.
+          </p>
+</div>
+</div>
+</div>
+<!-- Temporizador Gentil de 60 Segundos com Orbe Pulsante -->
+<div class="px-margin mt-space-xl flex flex-col items-center text-center">
+<!-- Orbe Suave e Contador -->
+<div class="relative w-44 h-44 flex items-center justify-center my-space-xs">
+<!-- Glow suave de fundo -->
+<div class="absolute inset-0 rounded-full bg-primary-fixed opacity-40 blur-xl transition-all duration-1000 animate-pulse" id="orb-glow"></div>
+<!-- Orbe Líquido Glass -->
+<div class="relative w-36 h-36 rounded-full bg-surface-container-lowest/80 shadow-md backdrop-blur-xl flex flex-col items-center justify-center p-space-sm transition-transform duration-500">
+<span class="material-symbols-outlined text-primary text-[28px] mb-1">hourglass_top</span>
+<span class="font-display-lg-mobile text-display-lg-mobile text-on-surface font-bold tracking-tight" id="timer-display">00:60</span>
+</div>
+</div>
+<p class="font-label-lg text-label-lg text-on-surface mt-2">Apenas 1 minuto para dar a partida</p>
+<!-- Indicador Acessibilidade: Movimento Reduzido -->
+<div class="flex items-center gap-1.5 mt-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[14px]">tune</span>
+<span class="font-label-sm text-label-sm">Modo movimento reduzido: orbe estático suave disponível</span>
+</div>
+</div>
+<!-- Painel de Botões de Apoio & Escapes Sem Culpa -->
+<div class="px-margin mt-space-lg flex flex-col gap-space-sm w-full">
+<!-- Botão Primário: Iniciar 60 Segundos -->
+<button class="w-full h-[52px] rounded-xl bg-primary text-on-primary font-label-lg text-label-lg flex items-center justify-center gap-2 shadow-md transition-all active:scale-[0.98] hover:bg-primary/95" id="start-btn" type="button">
+<span class="material-symbols-outlined text-[20px]">play_arrow</span>
+<span id="btn-label">Iniciar 60 segundos de partida</span>
+</button>
+<!-- Opção de Escape Sem Culpa -->
+<button class="w-full py-3.5 px-4 rounded-xl bg-tertiary-fixed text-on-tertiary-fixed font-label-md text-label-md flex items-center justify-center gap-2 transition-transform active:scale-95 shadow-sm" id="smaller-step-btn" type="button">
+<span class="material-symbols-outlined text-[18px]">spa</span>
+<span>Ainda está muito pesado? Me sugira um passo menor</span>
+</button>
+<!-- Link Sutil: Exercício de Respiração -->
+<button class="w-full py-2 flex items-center justify-center gap-1.5 text-on-surface-variant hover:text-primary transition-colors mt-1" id="breathing-trigger" type="button">
+<span class="material-symbols-outlined text-[18px] text-primary">air</span>
+<span class="font-label-md text-label-md">Respirar fundo antes (exercício 4-7-8)</span>
+</button>
+<!-- Caixa Expansível de Respiração Curta (Opcional/Interativo) -->
+<div class="hidden p-space-md rounded-2xl bg-secondary-fixed/40 text-on-secondary-fixed-variant flex flex-col gap-1 text-left mt-1" id="breathing-box">
+<div class="flex items-center justify-between">
+<span class="font-label-lg text-label-lg font-semibold text-secondary">Ritmo 4-7-8</span>
+<button class="text-on-secondary-fixed-variant p-1" id="close-breathing" type="button">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+<p class="font-body-sm text-body-sm text-on-secondary-fixed-variant">
+          Puxe o ar pelo nariz por 4s • Segure por 7s • Solte suavemente pela boca por 8s. Faça duas vezes para desacelerar o corpo.
+        </p>
+</div>
+</div>
+<!-- Mini Banner Ilustrativo de Apoio Emocional -->
+<div class="px-margin mt-space-lg">
+<div class="p-space-md rounded-2xl bg-surface-container flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-primary-fixed text-[22px]">favorite</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+          Lembre-se: Dar a partida não significa que você precisa terminar hoje. Você já é incrível só de tentar.
+        </p>
+</div>
+</div>
+</div>
+</div>
+<script>
+  (function() {
+    let timeLeft = 60;
+    let timerId = null;
+    let isRunning = false;
+
+    const display = document.getElementById('timer-display');
+    const startBtn = document.getElementById('start-btn');
+    const btnLabel = document.getElementById('btn-label');
+    const orbGlow = document.getElementById('orb-glow');
+    const breathingTrigger = document.getElementById('breathing-trigger');
+    const breathingBox = document.getElementById('breathing-box');
+    const closeBreathing = document.getElementById('close-breathing');
+    const smallerStepBtn = document.getElementById('smaller-step-btn');
+    const breakdownBtn = document.getElementById('breakdown-btn');
+
+    const microSteps = [
+      "Apenas encoste os dedos no teclado e respire uma vez.",
+      "Apenas abra a aba do documento e não digite nada.",
+      "Olhe o título da tarefa e dê uma nota de 1 a 5 de quão cansado você está.",
+      "Não pense em terminar o relatório. Apenas abra o documento e leia o primeiro parágrafo."
+    ];
+    let stepIndex = 0;
+
+    function updateDisplay(seconds) {
+      const s = seconds < 10 ? '0' + seconds : seconds;
+      display.textContent = '00:' + s;
+    }
+
+    startBtn.addEventListener('click', function() {
+      if (!isRunning) {
+        isRunning = true;
+        btnLabel.textContent = "Pausar o minuto tranquilo";
+        startBtn.classList.remove('bg-primary');
+        startBtn.classList.add('bg-tertiary-container');
+        orbGlow.classList.add('scale-110');
+        orbGlow.classList.remove('opacity-40');
+        orbGlow.classList.add('opacity-75');
+
+        timerId = setInterval(function() {
+          if (timeLeft > 0) {
+            timeLeft--;
+            updateDisplay(timeLeft);
+          } else {
+            clearInterval(timerId);
+            isRunning = false;
+            btnLabel.textContent = "1 minuto cumprido! Quer parar ou continuar?";
+            startBtn.classList.remove('bg-tertiary-container');
+            startBtn.classList.add('bg-primary');
+          }
+        }, 1000);
+      } else {
+        clearInterval(timerId);
+        isRunning = false;
+        btnLabel.textContent = "Retomar 60 segundos";
+        startBtn.classList.add('bg-primary');
+        startBtn.classList.remove('bg-tertiary-container');
+        orbGlow.classList.remove('scale-110');
+        orbGlow.classList.remove('opacity-75');
+        orbGlow.classList.add('opacity-40');
+      }
+    });
+
+    function cycleSmallerStep() {
+      stepIndex = (stepIndex + 1) % microSteps.length;
+      const targetText = document.querySelector('.font-body-md.text-body-md.text-on-surface.bg-transparent.font-medium');
+      if (targetText) {
+        targetText.textContent = microSteps[stepIndex];
+      }
+    }
+
+    smallerStepBtn.addEventListener('click', cycleSmallerStep);
+    breakdownBtn.addEventListener('click', cycleSmallerStep);
+
+    breathingTrigger.addEventListener('click', function() {
+      breathingBox.classList.toggle('hidden');
+    });
+
+    closeBreathing.addEventListener('click', function() {
+      breathingBox.classList.add('hidden');
+    });
+  })();
+</script></main></body></html>

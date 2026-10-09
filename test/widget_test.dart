@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:noa/core/localization/correlation_copy.dart';
 import 'package:noa/core/localization/locale_provider.dart';
@@ -23,6 +22,8 @@ import 'package:noa/l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   group('TDAH NeuroSync Logic Tests', () {
     test('SleepRecord detects sleep and REM deficit accurately', () {
       final deficitNight = SleepRecord(
@@ -526,11 +527,8 @@ void main() {
         final l10n = lookupAppLocalizations(locale);
         expect(l10n.appTitle.isNotEmpty, isTrue);
         expect(l10n.quickCheckinTitle.isNotEmpty, isTrue);
-        expect(l10n.unstuckButton.isNotEmpty, isTrue);
         expect(l10n.medicationsCardTitle.isNotEmpty, isTrue);
-        expect(l10n.therapistHubTitle.isNotEmpty, isTrue);
         expect(l10n.focusParalyzed.isNotEmpty, isTrue);
-        expect(l10n.languageSelectorTitle.isNotEmpty, isTrue);
         expect(
           l10n.healthSyncReadBody.contains('HRV') ||
               l10n.healthSyncReadBody.contains('心拍'),
@@ -539,58 +537,12 @@ void main() {
       }
     });
 
-    test('Locale resolution dynamically switches strings based on override', () {
-      final containerJa = ProviderContainer(
-        overrides: [
-          userLocalePreferenceProvider
-              .overrideWith((ref) => _MockLocaleNotifier(const Locale('ja'))),
-        ],
-      );
-      expect(containerJa.read(activeLocaleProvider).languageCode, equals('ja'));
-      expect(containerJa.read(appLocalizationsProvider).localeName, equals('ja'));
-      expect(containerJa.read(appLocalizationsProvider).unstuckButton, equals('ほどく'));
-      containerJa.dispose();
-
-      final containerEs = ProviderContainer(
-        overrides: [
-          userLocalePreferenceProvider
-              .overrideWith((ref) => _MockLocaleNotifier(const Locale('es'))),
-        ],
-      );
-      expect(containerEs.read(activeLocaleProvider).languageCode, equals('es'));
-      expect(containerEs.read(appLocalizationsProvider).unstuckButton, equals('Destraba'));
-      containerEs.dispose();
-
-      final containerEn = ProviderContainer(
-        overrides: [
-          userLocalePreferenceProvider
-              .overrideWith((ref) => _MockLocaleNotifier(const Locale('en'))),
-        ],
-      );
-      expect(containerEn.read(activeLocaleProvider).languageCode, equals('en'));
-      expect(containerEn.read(appLocalizationsProvider).unstuckButton, equals('Unstuck'));
-      containerEn.dispose();
-
-      final containerPt = ProviderContainer(
-        overrides: [
-          userLocalePreferenceProvider
-              .overrideWith((ref) => _MockLocaleNotifier(const Locale('pt'))),
-        ],
-      );
-      expect(containerPt.read(activeLocaleProvider).languageCode, equals('pt'));
-      expect(containerPt.read(appLocalizationsProvider).unstuckButton, equals('Des-Trava'));
-      containerPt.dispose();
+    test('resolveSupportedLocale maps system language codes', () {
+      expect(resolveSupportedLocale(const Locale('ja')).languageCode, 'ja');
+      expect(resolveSupportedLocale(const Locale('es')).languageCode, 'es');
+      expect(resolveSupportedLocale(const Locale('en')).languageCode, 'en');
+      expect(resolveSupportedLocale(const Locale('pt')).languageCode, 'pt');
+      expect(resolveSupportedLocale(const Locale('fr')).languageCode, 'pt');
     });
   });
-}
-
-class _MockLocaleNotifier extends StateNotifier<Locale?> implements LocaleNotifier {
-  _MockLocaleNotifier(super.state);
-
-  @override
-  Future<void> setLocale(String? languageCode) async {
-    state = languageCode == null || languageCode == 'system'
-        ? null
-        : Locale(languageCode);
-  }
 }

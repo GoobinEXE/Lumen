@@ -30,10 +30,23 @@ class _PulseSkeletonBarState extends State<PulseSkeletonBar>
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 900),
-    )..repeat(reverse: true);
+    );
     _opacity = Tween<double>(begin: 0.35, end: 0.7).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
     );
+    // Não inicia repeat aqui — [didChangeDependencies] respeita reduce motion.
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final reduce = MediaQuery.disableAnimationsOf(context);
+    if (reduce) {
+      _controller.stop();
+      _controller.value = 0.5;
+    } else if (!_controller.isAnimating) {
+      _controller.repeat(reverse: true);
+    }
   }
 
   @override
@@ -113,19 +126,23 @@ class FormSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
-      children: const [
-        PulseSkeletonBar(width: 180, height: 22),
-        SizedBox(height: 8),
-        PulseSkeletonBar(width: 240, height: 12),
-        SizedBox(height: 24),
-        _BlockSkeleton(),
-        SizedBox(height: 16),
-        _BlockSkeleton(),
-        SizedBox(height: 16),
-        _BlockSkeleton(),
-      ],
+    // Column — não ListView — para caber dentro de scroll/pai sem altura limitada.
+    return const Padding(
+      padding: EdgeInsets.fromLTRB(20, 8, 20, 32),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          PulseSkeletonBar(width: 180, height: 22),
+          SizedBox(height: 8),
+          PulseSkeletonBar(width: 240, height: 12),
+          SizedBox(height: 24),
+          _BlockSkeleton(),
+          SizedBox(height: 16),
+          _BlockSkeleton(),
+          SizedBox(height: 16),
+          _BlockSkeleton(),
+        ],
+      ),
     );
   }
 }

@@ -1,17 +1,24 @@
 import 'package:noa/l10n/app_localizations.dart';
 import '../../features/state_of_mind/domain/state_of_mind_entry.dart';
 import '../healthkit_bridge/healthkit_bridge.dart';
+import 'health_app_source.dart';
 import 'models/daily_environment_snapshot.dart';
 import 'models/daily_recovery_snapshot.dart';
+import 'models/health_demographics.dart';
 import 'models/sleep_record.dart';
 
 /// Contrato agnóstico de integração com saúde.
-/// Permite plugar Apple HealthKit no iOS e Health Connect no Android
-/// sem acoplar a UI.
+/// A UI fala só com este facade; connectors (HealthKit / Samsung / HC) ficam atrás.
 abstract class HealthService {
+  /// Fonte ativa após [initialize].
+  HealthAppSource get activeSource;
+
+  /// True quando a UI deve explicar o caminho OEM → Health Connect.
+  bool get shouldGuideToHealthConnect;
+
   Future<void> initialize();
 
-  /// Permissões do plugin `health` e, no iOS, autorizações extras da ponte.
+  /// Permissões do connector ativo (e fallback, se houver).
   Future<bool> requestPermissions();
 
   Future<bool> hasPermissions();
@@ -38,6 +45,10 @@ abstract class HealthService {
 
   /// Histórico de ambiente (luz do dia + áudio). iOS via bridge; Android vazio.
   Future<List<DailyEnvironmentSnapshot>> getEnvironmentHistory({int days = 14});
+
+  /// Altura, peso, sexo biológico e data de nascimento do app de saúde.
+  /// Campo sem permissão ou sem registro volta nulo.
+  Future<HealthDemographics> readDemographics();
 
   /// Espelha State of Mind no Apple Health (iOS 18+). No-op no Android.
   Future<bool> writeStateOfMind(StateOfMindEntry entry);

@@ -38,6 +38,8 @@ class AppIcons {
   static const IconData homeFilled = Icons.schedule_rounded;
   static const IconData clinic = Icons.monitor_heart_outlined;
   static const IconData clinicFilled = Icons.monitor_heart_rounded;
+  static const IconData person = Icons.person_outline_rounded;
+  static const IconData personFilled = Icons.person_rounded;
   static const IconData add = Icons.add_rounded;
   static const IconData delete = Icons.delete_outline;
   static const IconData edit = Icons.edit_outlined;
@@ -53,8 +55,12 @@ class AppIcons {
   static const IconData copy = Icons.copy_rounded;
   static const IconData image = Icons.image_outlined;
   static const IconData pdf = Icons.picture_as_pdf_outlined;
+  static const IconData share = Icons.ios_share_rounded;
   static const IconData health = Icons.health_and_safety_outlined;
   static const IconData language = Icons.language_rounded;
+  static const IconData lock = Icons.lock_outline_rounded;
+  static const IconData notifications = Icons.notifications_outlined;
+  static const IconData check = Icons.check_rounded;
 
   // Idiomas (sem bandeira emoji)
   static const IconData langSystem = Icons.smartphone_rounded;

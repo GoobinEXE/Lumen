@@ -4,11 +4,11 @@ import android.Manifest
 import android.content.pm.PackageManager
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
-import io.flutter.embedding.android.FlutterActivity
+import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 
-class MainActivity : FlutterActivity() {
+class MainActivity : FlutterFragmentActivity() {
     private var pendingCalendarResult: MethodChannel.Result? = null
 
     private val calendarPermissionLauncher = registerForActivityResult(
@@ -45,5 +45,7 @@ class MainActivity : FlutterActivity() {
                 )
             }
         }.register(flutterEngine.dartExecutor.binaryMessenger)
+        SystemSettingsBridge(this).register(flutterEngine.dartExecutor.binaryMessenger)
+        SamsungHealthBridge(this).register(flutterEngine.dartExecutor.binaryMessenger)
     }
 }

@@ -5,8 +5,10 @@ import 'package:intl/intl.dart';
 import '../../../core/localization/locale_provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
-import '../../routine_mood/presentation/routine_providers.dart';
-import '../../routine_mood/presentation/routine_snapshot_card.dart';
+import 'day_digest_providers.dart';
+import 'day_digest_sheet.dart';
+import '../../../core/widgets/glass_app_bar.dart';
+import '../../../core/widgets/glass_nav_bar.dart';
 
 class RoutineCalendarScreen extends ConsumerStatefulWidget {
   const RoutineCalendarScreen({super.key});
@@ -32,20 +34,13 @@ class _RoutineCalendarScreenState extends ConsumerState<RoutineCalendarScreen> {
     });
   }
 
-  Future<void> _openDay(DateTime day) async {
-    await showModalBottomSheet<void>(
-      context: context,
-      useSafeArea: true,
-      isScrollControlled: true,
-      builder: (context) => _DaySheet(day: day),
-    );
-  }
+  Future<void> _openDay(DateTime day) => showDayDigestSheet(context, day);
 
   @override
   Widget build(BuildContext context) {
     final l10n = ref.watch(appLocalizationsProvider);
     final locale = l10n.localeName;
-    final marked = ref.watch(markedRoutineDaysProvider).value ?? const {};
+    final marked = ref.watch(markedHistoryDaysProvider).value ?? const {};
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final monthLabel = DateFormat.yMMMM(locale).format(_month);
@@ -55,14 +50,14 @@ class _RoutineCalendarScreenState extends ConsumerState<RoutineCalendarScreen> {
 
     return PopScope(
       canPop: true,
-      child: Scaffold(
-        appBar: AppBar(title: Text(l10n.routineCalendarTitle)),
+      child: GlassScaffold(
+        appBar: GlassAppBar(title: Text(l10n.routineCalendarTitle)),
         body: ListView(
-          padding: const EdgeInsets.fromLTRB(
+          padding: EdgeInsets.fromLTRB(
             AppSpacing.screenH,
             AppSpacing.screenV,
             AppSpacing.screenH,
-            28,
+            GlassNavBar.reservedBottom(context),
           ),
           children: [
             Row(
@@ -101,45 +96,76 @@ class _RoutineCalendarScreenState extends ConsumerState<RoutineCalendarScreen> {
   }
 }
 
-class _DaySheet extends ConsumerWidget {
-  const _DaySheet({required this.day});
-
-  final DateTime day;
+/// Grade mensal reutilizável (Ficha embute sem AppBar própria).
+class RoutineMonthCalendar extends ConsumerStatefulWidget {
+  const RoutineMonthCalendar({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = ref.watch(appLocalizationsProvider);
-    final snapshots = ref.watch(routineRepositoryProvider).getSnapshotsForDate(day);
-    final bottom = MediaQuery.viewInsetsOf(context).bottom;
-    final locale = l10n.localeName;
-    final label = DateFormat.yMMMMEEEEd(locale).format(day);
+  ConsumerState<RoutineMonthCalendar> createState() =>
+      _RoutineMonthCalendarState();
+}
 
-    return Padding(
-      padding: EdgeInsets.only(bottom: bottom),
-      child: ListView(
-        shrinkWrap: true,
-        padding: const EdgeInsets.fromLTRB(
-          AppSpacing.screenH,
-          AppSpacing.sheetTop,
-          AppSpacing.screenH,
-          AppSpacing.sheetBottom,
-        ),
-        children: [
-          Text(label, style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: 12),
-          if (snapshots.isEmpty)
-            Text(l10n.routineCalendarDayEmpty)
-          else
-            for (final snapshot in snapshots)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: RoutineSnapshotCard(
-                  snapshot: snapshot,
-                  showDate: true,
-                ),
+class _RoutineMonthCalendarState extends ConsumerState<RoutineMonthCalendar> {
+  late DateTime _month;
+
+  @override
+  void initState() {
+    super.initState();
+    final now = DateTime.now();
+    _month = DateTime(now.year, now.month);
+  }
+
+  void _shiftMonth(int delta) {
+    setState(() {
+      _month = DateTime(_month.year, _month.month + delta);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = ref.watch(appLocalizationsProvider);
+    final locale = l10n.localeName;
+    final marked = ref.watch(markedHistoryDaysProvider).value ?? const {};
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final monthLabel = DateFormat.yMMMM(locale).format(_month);
+    final title = monthLabel.isEmpty
+        ? monthLabel
+        : monthLabel[0].toUpperCase() + monthLabel.substring(1);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Row(
+          children: [
+            IconButton(
+              tooltip: l10n.routineCalendarPrevious,
+              onPressed: () => _shiftMonth(-1),
+              icon: const Icon(Icons.chevron_left),
+            ),
+            Expanded(
+              child: Text(
+                title,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.titleMedium,
               ),
-        ],
-      ),
+            ),
+            IconButton(
+              tooltip: l10n.routineCalendarNext,
+              onPressed: () => _shiftMonth(1),
+              icon: const Icon(Icons.chevron_right),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        _MonthGrid(
+          month: _month,
+          marked: marked,
+          localeName: locale,
+          isDark: isDark,
+          onDay: (day) => showDayDigestSheet(context, day),
+        ),
+      ],
     );
   }
 }

@@ -8,6 +8,8 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../routine_mood/domain/mood_entry.dart';
 import '../../../routine_mood/domain/routine_export.dart';
 import '../../../sleep_analytics/domain/correlation_engine.dart';
+import '../../domain/period_export_stats.dart';
+import '../../../../integrations/health/models/daily_recovery_snapshot.dart';
 import '../../../../integrations/health/models/sleep_record.dart';
 
 class WeeklySummaryCardPreview extends StatelessWidget {
@@ -15,7 +17,9 @@ class WeeklySummaryCardPreview extends StatelessWidget {
   final String patientName;
   final List<SleepRecord> sleepRecords;
   final List<MoodEntry> moodEntries;
+  final List<DailyRecoverySnapshot> recoverySnapshots;
   final List<RoutineExportLine> routineLines;
+  final int periodDays;
 
   const WeeklySummaryCardPreview({
     super.key,
@@ -23,7 +27,9 @@ class WeeklySummaryCardPreview extends StatelessWidget {
     required this.patientName,
     required this.sleepRecords,
     required this.moodEntries,
+    this.recoverySnapshots = const [],
     this.routineLines = const [],
+    this.periodDays = 7,
   });
 
   @override
@@ -37,22 +43,24 @@ class WeeklySummaryCardPreview extends StatelessWidget {
         : AppColors.cardBorderLight;
     final card = isDark ? AppColors.cardDark : AppColors.cardLight;
 
-    final totalHoursList = sleepRecords.map((s) => s.totalHours).toList();
-    final avgSleep = totalHoursList.isNotEmpty
-        ? totalHoursList.reduce((a, b) => a + b) / totalHoursList.length
-        : 0.0;
-    final deficitNights = sleepRecords.where((s) => s.hasSleepDeficit).length;
-
-    final paralyzedCount = moodEntries
-        .where((m) => m.focus == FocusState.paralyzed)
-        .length;
-    final focusedCount = moodEntries
-        .where((m) => m.focus == FocusState.focused)
-        .length;
+    final stats = PeriodExportStats.from(
+      sleepRecords: sleepRecords,
+      moodEntries: moodEntries,
+      recoverySnapshots: recoverySnapshots,
+      routineLines: routineLines,
+    );
+    final avgSleep = stats.avgSleepHours;
+    final deficitNights = stats.deficitNights;
+    final paralyzedCount = stats.paralyzedCount;
+    final focusedCount = stats.focusedCount;
+    final sensoryCount = stats.sensoryCount;
+    final medCount = stats.medCount;
+    final avgHrv = stats.avgHrv;
 
     final insights = CorrelationEngine.analyze(
       sleepRecords: sleepRecords,
       moodEntries: moodEntries,
+      recoverySnapshots: recoverySnapshots,
       copy: L10nCorrelationCopy(l10n),
     );
     final topInsight = insights.isNotEmpty ? insights.first : null;
@@ -116,7 +124,7 @@ class WeeklySummaryCardPreview extends StatelessWidget {
                     borderRadius: BorderRadius.circular(AppRadii.chip),
                   ),
                   child: Text(
-                    l10n.weeklyCardLast7Days,
+                    l10n.weeklyCardLastNDays(periodDays),
                     style: TextStyle(
                       color: isDark
                           ? AppColors.primaryLight
@@ -173,6 +181,19 @@ class WeeklySummaryCardPreview extends StatelessWidget {
                     SizedBox(
                       width: tileWidth,
                       child: _MetricTile(
+                        label: l10n.weeklyCardCheckins,
+                        value: '${moodEntries.length}',
+                        subtitle: l10n.weeklyCardLastNDays(periodDays),
+                        icon: AppIcons.checkin,
+                        isDark: isDark,
+                        ink: ink,
+                        muted: muted,
+                        border: border,
+                      ),
+                    ),
+                    SizedBox(
+                      width: tileWidth,
+                      child: _MetricTile(
                         label: l10n.weeklyCardParalysis,
                         value: l10n.weeklyCardReportsCount(paralyzedCount),
                         subtitle: l10n.weeklyCardStuckMoments,
@@ -196,6 +217,50 @@ class WeeklySummaryCardPreview extends StatelessWidget {
                         border: border,
                       ),
                     ),
+                    if (sensoryCount > 0)
+                      SizedBox(
+                        width: tileWidth,
+                        child: _MetricTile(
+                          label: l10n.weeklyCardSensory,
+                          value: l10n.weeklyCardReportsCount(sensoryCount),
+                          subtitle: l10n.weeklyCardLastNDays(periodDays),
+                          icon: AppIcons.headphones,
+                          isDark: isDark,
+                          ink: ink,
+                          muted: muted,
+                          border: border,
+                        ),
+                      ),
+                    if (medCount > 0)
+                      SizedBox(
+                        width: tileWidth,
+                        child: _MetricTile(
+                          label: l10n.weeklyCardMedToggle,
+                          value: l10n.weeklyCardReportsCount(medCount),
+                          subtitle: l10n.weeklyCardLastNDays(periodDays),
+                          icon: AppIcons.medication,
+                          isDark: isDark,
+                          ink: ink,
+                          muted: muted,
+                          border: border,
+                        ),
+                      ),
+                    if (avgHrv != null)
+                      SizedBox(
+                        width: tileWidth,
+                        child: _MetricTile(
+                          label: l10n.weeklyCardRecoveryHrv,
+                          value: l10n.unitMilliseconds(
+                            avgHrv.toStringAsFixed(0),
+                          ),
+                          subtitle: l10n.weeklyCardLastNDays(periodDays),
+                          icon: AppIcons.health,
+                          isDark: isDark,
+                          ink: ink,
+                          muted: muted,
+                          border: border,
+                        ),
+                      ),
                   ],
                 );
               },
@@ -268,7 +333,7 @@ class WeeklySummaryCardPreview extends StatelessWidget {
                 style: TextStyle(color: muted, fontSize: 12),
               ),
               const SizedBox(height: 6),
-              for (final line in routineLines.take(4))
+              for (final line in routineLines.take(8))
                 Padding(
                   padding: const EdgeInsets.only(bottom: 4),
                   child: Text(

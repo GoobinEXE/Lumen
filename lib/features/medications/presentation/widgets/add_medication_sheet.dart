@@ -13,6 +13,8 @@ import '../../../../core/widgets/async_placeholders.dart';
 import '../../domain/medication.dart';
 import '../providers/medication_providers.dart';
 import 'system_time_picker.dart';
+import '../../../../core/widgets/glass_chip.dart';
+import '../../../../core/widgets/glass_toast.dart';
 
 class AddMedicationSheet extends ConsumerStatefulWidget {
   const AddMedicationSheet({super.key, this.existing});
@@ -20,22 +22,9 @@ class AddMedicationSheet extends ConsumerStatefulWidget {
   final Medication? existing;
 
   static Future<void> show(BuildContext context, {Medication? existing}) {
-    return showModalBottomSheet<void>(
+    return showLumenSheet<void>(
       context: context,
-      useSafeArea: true,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) {
-        final bottom = MediaQuery.viewInsetsOf(context).bottom;
-        return Padding(
-          padding: EdgeInsets.only(bottom: bottom),
-          child: MediaQuery.removeViewInsets(
-            context: context,
-            removeBottom: true,
-            child: AddMedicationSheet(existing: existing),
-          ),
-        );
-      },
+      builder: (context) => AddMedicationSheet(existing: existing),
     );
   }
 
@@ -46,6 +35,9 @@ class AddMedicationSheet extends ConsumerStatefulWidget {
 class _AddMedicationSheetState extends ConsumerState<AddMedicationSheet> {
   final _formKey = GlobalKey<FormState>();
   final _nameFocus = FocusNode();
+  final _dosageFocus = FocusNode();
+  final _stockFocus = FocusNode();
+  final _instructionsFocus = FocusNode();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _dosageController = TextEditingController();
   final TextEditingController _stockController = TextEditingController();
@@ -98,9 +90,25 @@ class _AddMedicationSheetState extends ConsumerState<AddMedicationSheet> {
     },
   ];
 
+  void _onFieldFocus() {
+    final focused = FocusManager.instance.primaryFocus?.context;
+    if (focused == null) return;
+    lumenEnsureSheetFieldVisible(focused);
+  }
+
   @override
   void initState() {
     super.initState();
+    for (final node in [
+      _nameFocus,
+      _dosageFocus,
+      _stockFocus,
+      _instructionsFocus,
+    ]) {
+      node.addListener(() {
+        if (node.hasFocus) _onFieldFocus();
+      });
+    }
     final existing = widget.existing;
     final l10n = ref.read(appLocalizationsProvider);
     if (existing == null) {
@@ -122,6 +130,7 @@ class _AddMedicationSheetState extends ConsumerState<AddMedicationSheet> {
     if (_times.isEmpty) {
       _times = [const TimeOfDay(hour: 8, minute: 0)];
     }
+    _sortTimes();
     _instructionsController = TextEditingController(
       text: existing.instructions,
     );
@@ -140,9 +149,41 @@ class _AddMedicationSheetState extends ConsumerState<AddMedicationSheet> {
     return '$hour:$minute';
   }
 
+  void _sortTimes() {
+    _times.sort(
+      (a, b) => (a.hour * 60 + a.minute).compareTo(b.hour * 60 + b.minute),
+    );
+  }
+
+  Future<void> _editTime(int index, AppLocalizations l10n) async {
+    final picked = await showSystemTimePicker(
+      context: context,
+      initialTime: _times[index],
+    );
+    if (picked == null || !mounted) return;
+    final formatted = _formatTime(picked);
+    final isDuplicate = _times.asMap().entries.any(
+      (entry) => entry.key != index && _formatTime(entry.value) == formatted,
+    );
+    if (isDuplicate) {
+      showGlassToast(
+        context,
+        l10n.medDuplicateTimeWarning(picked.format(context)),
+      );
+      return;
+    }
+    setState(() {
+      _times[index] = picked;
+      _sortTimes();
+    });
+  }
+
   @override
   void dispose() {
     _nameFocus.dispose();
+    _dosageFocus.dispose();
+    _stockFocus.dispose();
+    _instructionsFocus.dispose();
     _nameController.dispose();
     _dosageController.dispose();
     _stockController.dispose();
@@ -166,14 +207,30 @@ class _AddMedicationSheetState extends ConsumerState<AddMedicationSheet> {
       return;
     }
 
+    final sortedTimes = List<TimeOfDay>.from(_times)
+      ..sort(
+        (a, b) => (a.hour * 60 + a.minute).compareTo(b.hour * 60 + b.minute),
+      );
+    final seenTimes = <String>{};
+    TimeOfDay? duplicateTime;
+    for (final time in sortedTimes) {
+      if (!seenTimes.add(_formatTime(time))) {
+        duplicateTime = time;
+        break;
+      }
+    }
+    if (duplicateTime != null) {
+      showGlassToast(
+        context,
+        l10n.medDuplicateTimeWarning(duplicateTime.format(context)),
+      );
+      return;
+    }
+
     HapticFeedback.lightImpact();
     setState(() => _isSaving = true);
     final name = _nameController.text.trim();
-    final times = <String>[];
-    for (final time in _times) {
-      final formatted = _formatTime(time);
-      if (!times.contains(formatted)) times.add(formatted);
-    }
+    final times = sortedTimes.map(_formatTime).toList();
     final stock = int.tryParse(_stockController.text.trim()) ?? 30;
     final existing = widget.existing;
     final totalStock = existing == null
@@ -212,9 +269,7 @@ class _AddMedicationSheetState extends ConsumerState<AddMedicationSheet> {
         final message = existing == null
             ? l10n.medRegisteredSuccess(name)
             : l10n.medUpdatedSuccess(name);
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(message)));
+        showGlassToast(context, message);
       }
     } finally {
       if (mounted) setState(() => _isSaving = false);
@@ -228,9 +283,14 @@ class _AddMedicationSheetState extends ConsumerState<AddMedicationSheet> {
     final isDark = theme.brightness == Brightness.dark;
     final narrow = isNarrow(context);
 
+    final fieldFill = isDark
+        ? Colors.white.withValues(alpha: 0.12)
+        : Colors.black.withValues(alpha: 0.04);
+
     final nameField = TextFormField(
       controller: _nameController,
       focusNode: _nameFocus,
+      scrollPadding: lumenSheetFieldScrollPadding,
       autovalidateMode: AutovalidateMode.onUserInteraction,
       validator: (value) {
         if (value == null || value.trim().isEmpty) {
@@ -241,6 +301,8 @@ class _AddMedicationSheetState extends ConsumerState<AddMedicationSheet> {
       decoration: InputDecoration(
         labelText: l10n.medNameLabel,
         hintText: l10n.medNameHint,
+        filled: true,
+        fillColor: fieldFill,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadii.input),
         ),
@@ -248,9 +310,13 @@ class _AddMedicationSheetState extends ConsumerState<AddMedicationSheet> {
     );
     final dosageField = TextField(
       controller: _dosageController,
+      focusNode: _dosageFocus,
+      scrollPadding: lumenSheetFieldScrollPadding,
       decoration: InputDecoration(
         labelText: l10n.medDosageLabel,
         hintText: l10n.medDosageHint,
+        filled: true,
+        fillColor: fieldFill,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadii.input),
         ),
@@ -259,39 +325,47 @@ class _AddMedicationSheetState extends ConsumerState<AddMedicationSheet> {
     final timesEditor = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        Text(
+          l10n.medTimesSectionLabel,
+          style: TextStyle(
+            fontSize: kMinBodySecondary,
+            fontWeight: FontWeight.w600,
+            color: AppColors.mutedText(isDark),
+          ),
+        ),
+        const SizedBox(height: 6),
         for (var i = 0; i < _times.length; i++) ...[
           Row(
             children: [
               Expanded(
-                child: OutlinedButton.icon(
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    minimumSize: const Size(0, kMinTapTarget),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(AppRadii.input),
+                child: Semantics(
+                  button: true,
+                  label: l10n.medEditTimeTooltip(_times[i].format(context)),
+                  child: OutlinedButton.icon(
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      minimumSize: const Size(0, kMinTapTarget),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(AppRadii.input),
+                      ),
                     ),
-                  ),
-                  onPressed: () async {
-                    final picked = await showSystemTimePicker(
-                      context: context,
-                      initialTime: _times[i],
-                    );
-                    if (picked == null) return;
-                    setState(() => _times[i] = picked);
-                  },
-                  icon: const Icon(Icons.alarm_rounded, size: 18),
-                  label: Text(
-                    l10n.medReminderLabel(_times[i].format(context)),
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 13,
+                    onPressed: () => _editTime(i, l10n),
+                    icon: const Icon(Icons.alarm_rounded, size: 18),
+                    label: Text(
+                      l10n.medReminderLabel(_times[i].format(context)),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13,
+                      ),
                     ),
                   ),
                 ),
               ),
               if (_times.length > 1)
                 IconButton(
-                  tooltip: l10n.medRemoveTimeTooltip,
+                  tooltip: l10n.medRemoveTimeTooltip(
+                    _times[i].format(context),
+                  ),
                   onPressed: () => setState(() => _times.removeAt(i)),
                   icon: const Icon(Icons.close_rounded),
                 ),
@@ -309,6 +383,7 @@ class _AddMedicationSheetState extends ConsumerState<AddMedicationSheet> {
                   ..._times,
                   TimeOfDay(hour: (last.hour + 1) % 24, minute: last.minute),
                 ];
+                _sortTimes();
               });
             },
             icon: const Icon(AppIcons.add, size: 18),
@@ -342,9 +417,13 @@ class _AddMedicationSheetState extends ConsumerState<AddMedicationSheet> {
     );
     final stockField = TextField(
       controller: _stockController,
+      focusNode: _stockFocus,
+      scrollPadding: lumenSheetFieldScrollPadding,
       keyboardType: TextInputType.number,
       decoration: InputDecoration(
         labelText: l10n.medCapsulesInBottleLabel,
+        filled: true,
+        fillColor: fieldFill,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadii.input),
         ),
@@ -352,11 +431,9 @@ class _AddMedicationSheetState extends ConsumerState<AddMedicationSheet> {
     );
 
     return GlassSheet(
-      expandChild: true,
       child: Form(
         key: _formKey,
-        child: SingleChildScrollView(
-          child: Column(
+        child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -392,14 +469,10 @@ class _AddMedicationSheetState extends ConsumerState<AddMedicationSheet> {
                 spacing: 6,
                 runSpacing: 6,
                 children: _presetsFor(l10n).map((p) {
-                  return ActionChip(
-                    materialTapTargetSize: MaterialTapTargetSize.padded,
-                    avatar: Icon(
-                      AppIcons.forMedicationShape(p['icon'] as String),
-                      size: 16,
-                    ),
-                    label: Text(p['name'] as String),
-                    onPressed: () => _applyPreset(p),
+                  return GlassActionChip(
+                    icon: AppIcons.forMedicationShape(p['icon'] as String),
+                    label: p['name'] as String,
+                    onTap: () => _applyPreset(p),
                   );
                 }).toList(),
               ),
@@ -449,9 +522,13 @@ class _AddMedicationSheetState extends ConsumerState<AddMedicationSheet> {
 
               TextField(
                 controller: _instructionsController,
+                focusNode: _instructionsFocus,
+                scrollPadding: lumenSheetFieldScrollPadding,
                 decoration: InputDecoration(
                   labelText: l10n.medInstructionsLabel,
                   hintText: l10n.medInstructionsHint,
+                  filled: true,
+                  fillColor: fieldFill,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(AppRadii.input),
                   ),
@@ -471,7 +548,6 @@ class _AddMedicationSheetState extends ConsumerState<AddMedicationSheet> {
                 ),
               ),
             ],
-          ),
         ),
       ),
     );

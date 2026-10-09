@@ -4,12 +4,17 @@ import '../../../core/icons/app_icons.dart';
 import '../../../core/localization/locale_provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
+import '../../../core/theme/glass_surface.dart';
 import '../../../core/widgets/async_placeholders.dart';
 import '../domain/medication.dart';
 import '../domain/medication_log.dart';
 import 'providers/medication_providers.dart';
 import 'widgets/add_medication_sheet.dart';
 import 'widgets/medication_card.dart';
+import '../../../core/widgets/glass_icon_button.dart';
+import '../../../core/widgets/glass_nav_bar.dart';
+import '../../../core/widgets/glass_toast.dart';
+import '../../../core/widgets/lumen_fab.dart';
 
 class MedicationsScreen extends ConsumerStatefulWidget {
   const MedicationsScreen({super.key});
@@ -37,21 +42,16 @@ class _MedicationsScreenState extends ConsumerState<MedicationsScreen> {
       final available = await ref.read(appleHealthMedsAvailableProvider.future);
       if (!mounted) return;
       if (!available) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(l10n.importHealthUnavailable)));
+        showGlassToast(context, l10n.importHealthUnavailable);
         return;
       }
       final count = await ref
           .read(todayMedicationLogsProvider.notifier)
           .importFromAppleHealth();
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            count > 0 ? l10n.importHealthCount(count) : l10n.importHealthNone,
-          ),
-        ),
+      showGlassToast(
+        context,
+        count > 0 ? l10n.importHealthCount(count) : l10n.importHealthNone,
       );
     } finally {
       if (mounted) setState(() => _importing = false);
@@ -69,40 +69,61 @@ class _MedicationsScreenState extends ConsumerState<MedicationsScreen> {
     return PopScope(
       canPop: true,
       child: Scaffold(
-        appBar: AppBar(
-          title: Text(l10n.medicationsAppBarTitle),
-          actions: [
-            IconButton(
-              tooltip: l10n.importFromHealthTooltip,
-              onPressed: _importing ? null : _importFromHealth,
-              icon: _importing
-                  ? const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Icon(AppIcons.health),
-            ),
-            IconButton(
-              tooltip: l10n.registerMedicationTooltip,
-              icon: const Icon(AppIcons.add),
-              onPressed: () => AddMedicationSheet.show(context),
-            ),
-          ],
+        extendBody: true,
+        resizeToAvoidBottomInset: false,
+        floatingActionButton: Padding(
+          // Scaffold só limpa o home indicator; a cápsula da nav precisa
+          // desta folga extra para o CTA não ficar atrás do vidro.
+          padding: EdgeInsets.only(bottom: GlassNavBar.fabClearance(context)),
+          child: LumenFab(
+            onPressed: () => AddMedicationSheet.show(context),
+            icon: AppIcons.add,
+            label: l10n.newMedicationButton,
+          ),
         ),
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.screenH,
-            vertical: AppSpacing.screenV,
+        body: SafeArea(
+          bottom: false,
+          child: SingleChildScrollView(
+          padding: EdgeInsets.fromLTRB(
+            AppSpacing.screenH,
+            12,
+            AppSpacing.screenH,
+            GlassNavBar.reservedBottom(context) + 72,
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                l10n.medsGuiltFreeTitle,
-                style: theme.textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Text(
+                      l10n.medsGuiltFreeTitle,
+                      style: theme.textTheme.headlineMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  GlassIconButton(
+                    tooltip: l10n.importFromHealthTooltip,
+                    icon: AppIcons.health,
+                    onPressed: _importing ? null : _importFromHealth,
+                    child: _importing
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : null,
+                  ),
+                  const SizedBox(width: 8),
+                  GlassIconButton(
+                    tooltip: l10n.registerMedicationTooltip,
+                    icon: AppIcons.add,
+                    onPressed: () => AddMedicationSheet.show(context),
+                  ),
+                ],
               ),
               const SizedBox(height: 4),
               Text(
@@ -146,43 +167,38 @@ class _MedicationsScreenState extends ConsumerState<MedicationsScreen> {
                   }
                   final logs = logsAsync.value ?? [];
                   final meds = medsAsync.value ?? [];
-                  final doses = <({Medication med, MedicationLog log})>[];
-                  for (final log in logs) {
-                    for (final med in meds) {
-                      if (med.id == log.medicationId) {
-                        doses.add((med: med, log: log));
-                        break;
-                      }
-                    }
-                  }
+                  final medsById = {for (final med in meds) med.id: med};
+                  final doses = <({Medication med, MedicationLog log})>[
+                    for (final log in logs)
+                      if (medsById[log.medicationId] != null)
+                        (med: medsById[log.medicationId]!, log: log),
+                  ];
                   if (doses.isEmpty || meds.isEmpty) {
-                    return Card(
+                    return GlassSurface(
                       key: const ValueKey('doses-empty'),
-                      child: Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: Column(
-                          children: [
-                            Icon(
-                              AppIcons.medicationFilled,
-                              size: 36,
-                              color: isDark
-                                  ? AppColors.primaryLight
-                                  : AppColors.primary,
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        children: [
+                          Icon(
+                            AppIcons.medicationFilled,
+                            size: 36,
+                            color: isDark
+                                ? AppColors.primaryLight
+                                : AppColors.primary,
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            l10n.noMedsScheduledToday,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
                             ),
-                            const SizedBox(height: 8),
-                            Text(
-                              l10n.noMedsScheduledToday,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            ElevatedButton(
-                              onPressed: () => AddMedicationSheet.show(context),
-                              child: Text(l10n.registerFirstMedButton),
-                            ),
-                          ],
-                        ),
+                          ),
+                          const SizedBox(height: 12),
+                          ElevatedButton(
+                            onPressed: () => AddMedicationSheet.show(context),
+                            child: Text(l10n.registerFirstMedButton),
+                          ),
+                        ],
                       ),
                     );
                   }
@@ -340,11 +356,7 @@ class _MedicationsScreenState extends ConsumerState<MedicationsScreen> {
               const SizedBox(height: 32),
             ],
           ),
-        ),
-        floatingActionButton: FloatingActionButton.extended(
-          onPressed: () => AddMedicationSheet.show(context),
-          icon: const Icon(AppIcons.add),
-          label: Text(l10n.newMedicationButton),
+          ),
         ),
       ),
     );
@@ -359,9 +371,29 @@ class _TodayCurve extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final taken = logs.where((l) => l.isTaken).toList();
+    final taken = logs.where((l) => l.isTaken).toList()
+      ..sort((a, b) => a.takenAt!.compareTo(b.takenAt!));
     if (taken.isEmpty) return const SizedBox.shrink();
-    final log = taken.first;
+
+    return Column(
+      children: [
+        for (var i = 0; i < taken.length; i++) ...[
+          if (i > 0) const SizedBox(height: 12),
+          _DoseCurveCard(log: taken[i], meds: meds),
+        ],
+      ],
+    );
+  }
+}
+
+class _DoseCurveCard extends StatelessWidget {
+  const _DoseCurveCard({required this.log, required this.meds});
+
+  final MedicationLog log;
+  final List<Medication> meds;
+
+  @override
+  Widget build(BuildContext context) {
     Medication? med;
     for (final candidate in meds) {
       if (candidate.id == log.medicationId) {

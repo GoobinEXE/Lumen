@@ -6,10 +6,15 @@ import 'package:noa/features/routine_mood/domain/mood_entry.dart';
 import 'package:noa/features/sleep_analytics/domain/correlation_engine.dart';
 import 'package:noa/features/state_of_mind/domain/state_of_mind_labels.dart';
 import 'package:noa/features/routine_mood/domain/routine_export.dart';
+import 'package:noa/features/therapist_export/domain/export_tasks.dart';
+import 'package:noa/features/therapist_export/domain/period_export_stats.dart';
 import 'package:noa/integrations/health/models/daily_recovery_snapshot.dart';
 import 'package:noa/integrations/health/models/sleep_record.dart';
 import 'package:noa/features/therapist_export/service/routine_export_copy.dart';
 import 'package:noa/l10n/app_localizations.dart';
+
+/// Limite prático de texto no deep link do WhatsApp (~URL longa).
+const int kWhatsAppMessageMaxChars = 3500;
 
 class WhatsappTextFormatter {
   /// Gera a mensagem estruturada pronta para envio no WhatsApp
@@ -22,6 +27,11 @@ class WhatsappTextFormatter {
     int periodDays = 7,
     int appleHealthSomCount = 0,
     List<RoutineExportLine> routineLines = const [],
+    List<TaskExportLine> taskLines = const [],
+    String? tasksHeading,
+    String? tasksNone,
+    String? tasksCompletedMarker,
+    String? tasksOpenMarker,
   }) {
     final locale = l10n.localeName;
     final languageCode = locale.split('_').first;
@@ -29,24 +39,28 @@ class WhatsappTextFormatter {
     final startDate = DateTime.now().subtract(Duration(days: periodDays));
     final endDate = DateTime.now();
 
-    final totalSleepHours = sleepRecords.map((s) => s.totalHours).toList();
-    final avgSleep = totalSleepHours.isNotEmpty
-        ? totalSleepHours.reduce((a, b) => a + b) / totalSleepHours.length
-        : 0.0;
-
-    final remHours = sleepRecords.map((s) => s.remHours).toList();
-    final avgRem = remHours.isNotEmpty
-        ? remHours.reduce((a, b) => a + b) / remHours.length
-        : 0.0;
-
-    final deficitNights = sleepRecords.where((s) => s.hasSleepDeficit).length;
-
-    final paralyzedCount = moodEntries.where((m) => m.focus == FocusState.paralyzed).length;
-    final hyperfocusCount = moodEntries.where((m) => m.focus == FocusState.hyperfocus).length;
-    final scatteredCount = moodEntries.where((m) => m.focus == FocusState.scattered).length;
-    final focusedCount = moodEntries.where((m) => m.focus == FocusState.focused).length;
-    final sensoryCount = moodEntries.where((m) => m.sensoryOverload).length;
-    final medCount = moodEntries.where((m) => m.tookMedication).length;
+    final stats = PeriodExportStats.from(
+      sleepRecords: sleepRecords,
+      moodEntries: moodEntries,
+      recoverySnapshots: recoverySnapshots,
+      routineLines: routineLines,
+      appleHealthSomCount: appleHealthSomCount,
+    );
+    final avgSleep = stats.avgSleepHours;
+    final avgRem = stats.avgRemHours;
+    final deficitNights = stats.deficitNights;
+    final paralyzedCount = stats.paralyzedCount;
+    final hyperfocusCount = stats.hyperfocusCount;
+    final scatteredCount = stats.scatteredCount;
+    final focusedCount = stats.focusedCount;
+    final sensoryCount = stats.sensoryCount;
+    final medCount = stats.medCount;
+    final topLabels = stats.topEmotionLabels;
+    final avgHrv = stats.avgHrv;
+    final avgResting = stats.avgRestingHeartRate;
+    final avgSteps = stats.avgSteps;
+    final avgExercise = stats.avgExerciseMinutes;
+    final avgDaylight = stats.avgDaylightMinutes;
 
     final insights = CorrelationEngine.analyze(
       sleepRecords: sleepRecords,
@@ -55,31 +69,8 @@ class WhatsappTextFormatter {
       copy: L10nCorrelationCopy(l10n),
     );
 
-    final labelCounts = <String, int>{};
-    for (final m in moodEntries) {
-      for (final id in m.emotionLabels) {
-        labelCounts[id] = (labelCounts[id] ?? 0) + 1;
-      }
-    }
-    final topLabels = labelCounts.entries.toList()
-      ..sort((a, b) => b.value.compareTo(a.value));
-
-    final avgHrv = _avgNullable(recoverySnapshots.map((r) => r.hrvMs));
-    final avgResting =
-        _avgNullable(recoverySnapshots.map((r) => r.restingHeartRate));
-    final avgSteps = _avgNullable(recoverySnapshots.map((r) => r.steps?.toDouble()));
-    final avgExercise =
-        _avgNullable(recoverySnapshots.map((r) => r.exerciseMinutes?.toDouble()));
-    final avgDaylight =
-        _avgNullable(recoverySnapshots.map((r) => r.timeInDaylightMinutes));
-    final avgNoise =
-        _avgNullable(recoverySnapshots.map((r) => r.avgEnvironmentalDb));
-    final somFromApple = appleHealthSomCount +
-        moodEntries
-            .where((m) =>
-                m.emotionSource.name == 'appleHealth' &&
-                m.emotionLabels.isNotEmpty)
-            .length;
+    final avgNoise = stats.avgNoiseDb;
+    final somFromApple = stats.somFromAppleCount;
 
     final buffer = StringBuffer();
 
@@ -156,7 +147,10 @@ class WhatsappTextFormatter {
       buffer.writeln();
     }
 
-    final notes = moodEntries.where((m) => m.note != null && m.note!.isNotEmpty).take(3).toList();
+    final notes = moodEntries
+        .where((m) => m.note != null && m.note!.isNotEmpty)
+        .take(3)
+        .toList();
     if (notes.isNotEmpty) {
       buffer.writeln(l10n.waSectionHighlights);
       for (final n in notes) {
@@ -181,9 +175,23 @@ class WhatsappTextFormatter {
           line: line,
           dateFormat: dateFormat,
           timeFormat: _dateFormat('HH:mm', locale),
+          languageCode: languageCode,
         )) {
           buffer.writeln(row);
         }
+      }
+      buffer.writeln();
+    }
+
+    if (tasksHeading != null) {
+      for (final row in describeTaskExportLines(
+        lines: taskLines,
+        heading: tasksHeading,
+        none: tasksNone ?? '',
+        completedMarker: tasksCompletedMarker ?? '☑',
+        openMarker: tasksOpenMarker ?? '☐',
+      )) {
+        buffer.writeln(row);
       }
       buffer.writeln();
     }
@@ -198,7 +206,10 @@ class WhatsappTextFormatter {
     String? phoneNumber,
   }) async {
     final cleanPhone = phoneNumber?.replaceAll(RegExp(r'[^0-9]'), '') ?? '';
-    final encoded = Uri.encodeComponent(messageText);
+    final text = messageText.length > kWhatsAppMessageMaxChars
+        ? '${messageText.substring(0, kWhatsAppMessageMaxChars - 1)}…'
+        : messageText;
+    final encoded = Uri.encodeComponent(text);
 
     final nativeUri = cleanPhone.isNotEmpty
         ? Uri.parse('whatsapp://send?phone=$cleanPhone&text=$encoded')
@@ -219,12 +230,6 @@ class WhatsappTextFormatter {
     }
 
     return false;
-  }
-
-  static double? _avgNullable(Iterable<double?> values) {
-    final nums = values.whereType<double>().toList();
-    if (nums.isEmpty) return null;
-    return nums.reduce((a, b) => a + b) / nums.length;
   }
 
   static DateFormat _dateFormat(String pattern, String locale) {

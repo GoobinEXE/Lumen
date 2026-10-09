@@ -1,3 +1,4 @@
+import 'package:noa/core/time/civil_day.dart';
 import 'package:noa/features/routine_mood/domain/mood_entry.dart';
 import 'package:noa/integrations/health/models/daily_recovery_snapshot.dart';
 import 'package:noa/integrations/health/models/sleep_record.dart';
@@ -70,19 +71,22 @@ class CorrelationEngine {
       return insights;
     }
 
+    final recoveryByDay = <String, DailyRecoverySnapshot>{
+      for (final snap in recoverySnapshots) civilDayKey(snap.date): snap,
+    };
+
     if (sleepRecords.isNotEmpty && moodEntries.isNotEmpty) {
-      int remDeficitAndParalyzedCount = 0;
-      int totalParalyzedCount = 0;
+      final sleepSorted = List<SleepRecord>.from(sleepRecords)
+        ..sort((a, b) => a.date.compareTo(b.date));
+
+      var remDeficitAndParalyzedCount = 0;
+      var totalParalyzedCount = 0;
 
       for (final mood in moodEntries) {
         if (mood.focus == FocusState.paralyzed ||
             mood.energy == EnergyLevel.drained) {
           totalParalyzedCount++;
-          final matchingSleep = sleepRecords.where((s) {
-            final diff = mood.timestamp.difference(s.date).inHours;
-            return diff >= 0 && diff <= 30;
-          }).firstOrNull;
-
+          final matchingSleep = _sleepWithinHours(sleepSorted, mood.timestamp);
           if (matchingSleep != null && matchingSleep.hasRemDeficit) {
             remDeficitAndParalyzedCount++;
           }
@@ -104,16 +108,17 @@ class CorrelationEngine {
         );
       }
 
-      final goodDays = moodEntries
-          .where((m) => m.focus == FocusState.focused || m.valence >= 4)
-          .toList();
-      if (goodDays.isNotEmpty) {
+      final hasGoodDay = moodEntries.any(
+        (m) => m.focus == FocusState.focused || m.valence >= 4,
+      );
+      if (hasGoodDay) {
         insights.add(
           CorrelationInsight(
             title: copy.insightMentalFlowTitle,
             description: copy.insightMentalFlowDesc,
             actionableAdvice: copy.insightMentalFlowAdvice,
-            correlationPercentage: 85.0,
+            // Percentual omitido de propósito — não inventamos correlação.
+            correlationPercentage: 0.0,
             iconKey: 'sparkle',
           ),
         );
@@ -132,99 +137,35 @@ class CorrelationEngine {
       );
     }
 
-    // HRV baixa × travamento / esgotamento / overwhelmed / stressed
     if (recoverySnapshots.isNotEmpty && moodEntries.isNotEmpty) {
-      int lowHrvHardDays = 0;
-      int hardDays = 0;
+      var lowHrvHardDays = 0;
+      var hardDays = 0;
+      var lowStepsHard = 0;
+      var movementHardDays = 0;
+      var lowLightHard = 0;
+      var lightHardDays = 0;
+      var noiseSensory = 0;
+      var sensoryDaysWithEnv = 0;
+
       for (final mood in moodEntries) {
-        final hard = mood.focus == FocusState.paralyzed ||
+        final snap = recoveryByDay[civilDayKey(mood.timestamp)];
+
+        final hardHrv = mood.focus == FocusState.paralyzed ||
             mood.energy == EnergyLevel.drained ||
             mood.emotionLabels.contains('overwhelmed') ||
             mood.emotionLabels.contains('stressed');
-        if (!hard) continue;
-        hardDays++;
-        final day = DateTime(
-          mood.timestamp.year,
-          mood.timestamp.month,
-          mood.timestamp.day,
-        );
-        final snap = recoverySnapshots.where((r) {
-          return r.date.year == day.year &&
-              r.date.month == day.month &&
-              r.date.day == day.day;
-        }).firstOrNull;
-        if (snap != null && snap.hasLowHrv) {
-          lowHrvHardDays++;
+        if (hardHrv) {
+          hardDays++;
+          if (snap != null && snap.hasLowHrv) lowHrvHardDays++;
         }
-      }
 
-      if (hardDays > 0 && lowHrvHardDays > 0) {
-        final pct = (lowHrvHardDays / hardDays) * 100;
-        final percent = pct.toStringAsFixed(0);
-        insights.add(
-          CorrelationInsight(
-            title: copy.insightHrvTitle,
-            description: copy.insightHrvDesc(percent),
-            actionableAdvice: copy.insightHrvAdvice,
-            correlationPercentage: pct,
-            iconKey: 'brain',
-          ),
-        );
-      }
-
-      int lowStepsHard = 0;
-      int movementHardDays = 0;
-      for (final mood in moodEntries) {
-        final hard = mood.focus == FocusState.paralyzed ||
+        final hardMove = mood.focus == FocusState.paralyzed ||
             mood.focus == FocusState.scattered ||
             mood.energy == EnergyLevel.drained;
-        if (!hard) continue;
-        movementHardDays++;
-        final day = DateTime(
-          mood.timestamp.year,
-          mood.timestamp.month,
-          mood.timestamp.day,
-        );
-        final snap = recoverySnapshots.where((r) {
-          return r.date.year == day.year &&
-              r.date.month == day.month &&
-              r.date.day == day.day;
-        }).firstOrNull;
-        if (snap != null && snap.hasLowSteps) {
-          lowStepsHard++;
+        if (hardMove) {
+          movementHardDays++;
+          if (snap != null && snap.hasLowSteps) lowStepsHard++;
         }
-      }
-
-      if (movementHardDays > 0 && lowStepsHard > 0) {
-        final pct = (lowStepsHard / movementHardDays) * 100;
-        final percent = pct.toStringAsFixed(0);
-        insights.add(
-          CorrelationInsight(
-            title: copy.insightMovementTitle,
-            description: copy.insightMovementDesc(percent),
-            actionableAdvice: copy.insightMovementAdvice,
-            correlationPercentage: pct,
-            iconKey: 'sparkle',
-          ),
-        );
-      }
-
-      int lowLightHard = 0;
-      int lightHardDays = 0;
-      int noiseSensory = 0;
-      int sensoryDaysWithEnv = 0;
-
-      for (final mood in moodEntries) {
-        final day = DateTime(
-          mood.timestamp.year,
-          mood.timestamp.month,
-          mood.timestamp.day,
-        );
-        final snap = recoverySnapshots.where((r) {
-          return r.date.year == day.year &&
-              r.date.month == day.month &&
-              r.date.day == day.day;
-        }).firstOrNull;
 
         final lowMood = mood.valence <= 2 ||
             mood.emotionLabels.contains('sad') ||
@@ -239,13 +180,38 @@ class CorrelationEngine {
         }
       }
 
+      if (hardDays > 0 && lowHrvHardDays > 0) {
+        final pct = (lowHrvHardDays / hardDays) * 100;
+        insights.add(
+          CorrelationInsight(
+            title: copy.insightHrvTitle,
+            description: copy.insightHrvDesc(pct.toStringAsFixed(0)),
+            actionableAdvice: copy.insightHrvAdvice,
+            correlationPercentage: pct,
+            iconKey: 'brain',
+          ),
+        );
+      }
+
+      if (movementHardDays > 0 && lowStepsHard > 0) {
+        final pct = (lowStepsHard / movementHardDays) * 100;
+        insights.add(
+          CorrelationInsight(
+            title: copy.insightMovementTitle,
+            description: copy.insightMovementDesc(pct.toStringAsFixed(0)),
+            actionableAdvice: copy.insightMovementAdvice,
+            correlationPercentage: pct,
+            iconKey: 'sparkle',
+          ),
+        );
+      }
+
       if (lightHardDays > 0 && lowLightHard > 0) {
         final pct = (lowLightHard / lightHardDays) * 100;
-        final percent = pct.toStringAsFixed(0);
         insights.add(
           CorrelationInsight(
             title: copy.insightDaylightTitle,
-            description: copy.insightDaylightDesc(percent),
+            description: copy.insightDaylightDesc(pct.toStringAsFixed(0)),
             actionableAdvice: copy.insightDaylightAdvice,
             correlationPercentage: pct,
             iconKey: 'sparkle',
@@ -255,11 +221,10 @@ class CorrelationEngine {
 
       if (sensoryDaysWithEnv > 0 && noiseSensory > 0) {
         final pct = (noiseSensory / sensoryDaysWithEnv) * 100;
-        final percent = pct.toStringAsFixed(0);
         insights.add(
           CorrelationInsight(
             title: copy.insightNoiseTitle,
-            description: copy.insightNoiseDesc(percent),
+            description: copy.insightNoiseDesc(pct.toStringAsFixed(0)),
             actionableAdvice: copy.insightNoiseAdvice,
             correlationPercentage: pct,
             iconKey: 'headphones',
@@ -280,5 +245,19 @@ class CorrelationEngine {
     }
 
     return insights;
+  }
+
+  /// Sono cuja data está entre 0 e 30h antes do humor (lista já ordenada).
+  static SleepRecord? _sleepWithinHours(
+    List<SleepRecord> sleepSorted,
+    DateTime moodTime,
+  ) {
+    SleepRecord? match;
+    for (final sleep in sleepSorted) {
+      final diff = moodTime.difference(sleep.date).inHours;
+      if (diff < 0) break;
+      if (diff <= 30) match = sleep;
+    }
+    return match;
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:noa/l10n/app_localizations.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/responsive.dart';
+import '../../../core/widgets/glass_chip.dart';
 import '../domain/state_of_mind_associations.dart';
 import '../domain/state_of_mind_entry.dart';
 import '../domain/state_of_mind_labels.dart';
@@ -102,32 +103,18 @@ class _StateOfMindEditorState extends State<StateOfMindEditor> {
         Wrap(
           spacing: 8,
           children: [
-            ChoiceChip(
-              materialTapTargetSize: MaterialTapTargetSize.padded,
-              label: Text(
-                l10n.somKindMomentary,
-                style: const TextStyle(fontSize: kMinBodySecondary),
-              ),
+            GlassChip(
+              label: l10n.somKindMomentary,
               selected: _kind == StateOfMindKind.momentary,
-              selectedColor: isDark
-                  ? AppColors.primary.withValues(alpha: 0.35)
-                  : AppColors.primarySoft,
-              onSelected: (_) {
+              onTap: () {
                 setState(() => _kind = StateOfMindKind.momentary);
                 _emit();
               },
             ),
-            ChoiceChip(
-              materialTapTargetSize: MaterialTapTargetSize.padded,
-              label: Text(
-                l10n.somKindDaily,
-                style: const TextStyle(fontSize: kMinBodySecondary),
-              ),
+            GlassChip(
+              label: l10n.somKindDaily,
               selected: _kind == StateOfMindKind.dailyMood,
-              selectedColor: isDark
-                  ? AppColors.primary.withValues(alpha: 0.35)
-                  : AppColors.primarySoft,
-              onSelected: (_) {
+              onTap: () {
                 setState(() => _kind = StateOfMindKind.dailyMood);
                 _emit();
               },
@@ -215,22 +202,16 @@ class _StateOfMindEditorState extends State<StateOfMindEditor> {
           runSpacing: 6,
           children: visibleLabels.map((id) {
             final selected = _labels.contains(id);
-            return FilterChip(
-              materialTapTargetSize: MaterialTapTargetSize.padded,
-              label: Text(
-                StateOfMindLabels.label(id, lang),
-                style: const TextStyle(fontSize: kMinBodySecondary),
-              ),
+            return GlassChip(
+              label: StateOfMindLabels.label(id, lang),
               selected: selected,
-              selectedColor: isDark
-                  ? AppColors.accent.withValues(alpha: 0.35)
-                  : AppColors.accentSoft,
-              onSelected: (val) {
+              selectedColor: AppColors.accent,
+              onTap: () {
                 setState(() {
-                  if (val) {
-                    _labels.add(id);
-                  } else {
+                  if (selected) {
                     _labels.remove(id);
+                  } else {
+                    _labels.add(id);
                   }
                 });
                 _emit();
@@ -268,22 +249,16 @@ class _StateOfMindEditorState extends State<StateOfMindEditor> {
             runSpacing: 6,
             children: StateOfMindAssociations.ids.map((id) {
               final selected = _associations.contains(id);
-              return FilterChip(
-                materialTapTargetSize: MaterialTapTargetSize.padded,
-                label: Text(
-                  StateOfMindAssociations.label(id, lang),
-                  style: const TextStyle(fontSize: kMinBodySecondary),
-                ),
+              return GlassChip(
+                label: StateOfMindAssociations.label(id, lang),
                 selected: selected,
-                selectedColor: isDark
-                    ? AppColors.accent.withValues(alpha: 0.35)
-                    : AppColors.accent.withValues(alpha: 0.15),
-                onSelected: (val) {
+                selectedColor: AppColors.accent,
+                onTap: () {
                   setState(() {
-                    if (val) {
-                      _associations.add(id);
-                    } else {
+                    if (selected) {
                       _associations.remove(id);
+                    } else {
+                      _associations.add(id);
                     }
                   });
                   _emit();

@@ -9,6 +9,7 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/glass_surface.dart';
 import '../../../../core/theme/responsive.dart';
 import '../../../../core/widgets/async_placeholders.dart';
+import '../../../../core/widgets/glass_toast.dart';
 import '../../domain/medication.dart';
 import '../../domain/medication_log.dart';
 import '../providers/medication_providers.dart';
@@ -44,16 +45,13 @@ class _MedicationCardState extends ConsumerState<MedicationCard> {
     try {
       await ref.read(todayMedicationLogsProvider.notifier).markTaken(log.id);
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            l10n.medTakenRegisteredSnack(
-              medication.name,
-              timeFormat.format(DateTime.now()),
-            ),
-          ),
-          duration: const Duration(seconds: 2),
+      showGlassToast(
+        context,
+        l10n.medTakenRegisteredSnack(
+          medication.name,
+          timeFormat.format(DateTime.now()),
         ),
+        duration: const Duration(seconds: 2),
       );
     } finally {
       if (mounted) setState(() => _busyTaken = false);
@@ -70,11 +68,10 @@ class _MedicationCardState extends ConsumerState<MedicationCard> {
           .read(todayMedicationLogsProvider.notifier)
           .snooze(log.id, medication.name, minutes: 15);
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l10n.snooze15mSnack),
-          duration: const Duration(seconds: 2),
-        ),
+      showGlassToast(
+        context,
+        l10n.snooze15mSnack,
+        duration: const Duration(seconds: 2),
       );
     } finally {
       if (mounted) setState(() => _busySnooze = false);
@@ -147,11 +144,12 @@ class _MedicationCardState extends ConsumerState<MedicationCard> {
       ),
     );
 
+    final scheduledTimeLabel = timeFormat.format(log.scheduledTime);
     final skipButton = Semantics(
       button: true,
-      label: l10n.skipDoseTooltip,
+      label: l10n.skipDoseTooltip(scheduledTimeLabel),
       child: IconButton(
-        tooltip: l10n.skipDoseTooltip,
+        tooltip: l10n.skipDoseTooltip(scheduledTimeLabel),
         constraints: const BoxConstraints(
           minWidth: kMinTapTarget,
           minHeight: kMinTapTarget,
@@ -161,13 +159,16 @@ class _MedicationCardState extends ConsumerState<MedicationCard> {
           size: 20,
           color: AppColors.textMuted,
         ),
-        onPressed: actionsBusy ? null : () => _showSkipDialog(context, ref),
+        onPressed: actionsBusy
+            ? null
+            : () => _showSkipDialog(context, ref, scheduledTimeLabel),
       ),
     );
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 14),
       child: GlassSurface(
+        lite: true,
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -418,12 +419,16 @@ class _MedicationCardState extends ConsumerState<MedicationCard> {
     );
   }
 
-  void _showSkipDialog(BuildContext context, WidgetRef ref) {
+  void _showSkipDialog(
+    BuildContext context,
+    WidgetRef ref,
+    String scheduledTimeLabel,
+  ) {
     final l10n = ref.read(appLocalizationsProvider);
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text(l10n.skipDoseDialogTitle),
+        title: Text(l10n.skipDoseDialogTitle(scheduledTimeLabel)),
         content: Text(l10n.skipDoseDialogBody),
         actions: [
           TextButton(
@@ -438,7 +443,7 @@ class _MedicationCardState extends ConsumerState<MedicationCard> {
                   .skip(log.id, l10n.skipReasonVoluntary);
               Navigator.pop(ctx);
             },
-            child: Text(l10n.confirmButton),
+            child: Text(l10n.skipDoseConfirmButton),
           ),
         ],
       ),

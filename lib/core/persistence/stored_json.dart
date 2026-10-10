@@ -37,6 +37,19 @@ bool storedJsonListIsReadable(String? raw) {
   }
 }
 
+/// Blob inteiro que não pode ser regravado.
+///
+/// Lista com um item podre continua gravável (o item é pulado na leitura).
+/// JSON quebrado ou que não é lista fica intacto.
+bool storedJsonListBlobIsUnreadable(String? raw) {
+  if (raw == null || raw.isEmpty) return false;
+  try {
+    return jsonDecode(raw) is! List;
+  } catch (_) {
+    return true;
+  }
+}
+
 /// Decodifica uma lista JSON numa passada: valida, parseia item a item.
 ///
 /// - Blob ilegível → `unreadable: true`, `items: []` (não gravar por cima).

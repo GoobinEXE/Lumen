@@ -33,5 +33,14 @@ void main() {
     expect(storedJsonListIsReadable(null), isTrue);
     expect(storedJsonListIsReadable(''), isTrue);
     expect(storedJsonListIsReadable('[]'), isTrue);
+    expect(storedJsonListBlobIsUnreadable(null), isFalse);
+    expect(storedJsonListBlobIsUnreadable(''), isFalse);
+    expect(storedJsonListBlobIsUnreadable('[]'), isFalse);
+  });
+
+  test('blob ilegível bloqueia gravação e item podre não', () {
+    expect(storedJsonListBlobIsUnreadable('{not-json'), isTrue);
+    expect(storedJsonListBlobIsUnreadable('{"not":"a list"}'), isTrue);
+    expect(storedJsonListBlobIsUnreadable('[{"id":"a"},"broken"]'), isFalse);
   });
 }

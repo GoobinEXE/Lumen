@@ -16,7 +16,8 @@ class MedicationRepository {
   var _preserveUnreadableMeds = false;
   var _preserveUnreadableLogs = false;
 
-  /// Cache process-wide — UI e handler de notificação compartilham a mesma visão.
+  /// Cache deste isolate. A gravação recarrega o disco antes: o handler da
+  /// notificação escreve noutro isolate e não enxerga este cache.
   static List<Medication>? _medsCache;
   static List<MedicationLog>? _logsCache;
   static String? _medsRawFingerprint;
@@ -24,8 +25,18 @@ class MedicationRepository {
 
   MedicationRepository(this._prefs);
 
-  Future<T> _synchronized<T>(Future<T> Function() action) =>
-      PersistenceLocks.medications.synchronized(action);
+  Future<T> _synchronized<T>(Future<T> Function() action) {
+    return PersistenceLocks.medications.synchronized(() async {
+      // A ação da notificação grava noutro isolate. Sem reload, o cache
+      // deste processo relê o log antigo e a próxima gravação apaga a dose.
+      await _prefs.reload();
+      _medsCache = null;
+      _logsCache = null;
+      _medsRawFingerprint = null;
+      _logsRawFingerprint = null;
+      return action();
+    });
+  }
 
   bool _hasStatus(MedicationLog log) =>
       log.isTaken || log.skipped || log.snoozedUntil != null;
@@ -430,7 +441,9 @@ class MedicationRepository {
   }
 
   Future<void> _saveMedications(List<Medication> list) async {
-    if (_preserveUnreadableMeds) return;
+    final blocked = storedJsonListBlobIsUnreadable(_prefs.getString(_medsKey));
+    _preserveUnreadableMeds = blocked;
+    if (blocked) return;
     final encoded = encodeStoredJsonList(list.map((m) => m.toMap()));
     await _prefs.setString(_medsKey, encoded);
     _medsCache = List<Medication>.from(list);
@@ -438,7 +451,9 @@ class MedicationRepository {
   }
 
   Future<void> _saveLogs(List<MedicationLog> list) async {
-    if (_preserveUnreadableLogs) return;
+    final blocked = storedJsonListBlobIsUnreadable(_prefs.getString(_logsKey));
+    _preserveUnreadableLogs = blocked;
+    if (blocked) return;
     final encoded = encodeStoredJsonList(list.map((l) => l.toMap()));
     await _prefs.setString(_logsKey, encoded);
     _logsCache = List<MedicationLog>.from(list);

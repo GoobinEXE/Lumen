@@ -18,15 +18,21 @@ class TaskRepository {
   final SharedPreferences _prefs;
   static const _uuid = Uuid();
 
-  /// Blob inteiro ilegível: nunca gravar `[]` por cima.
-  var _preserveUnreadablePayload = false;
-
-  /// Cache process-wide — UI e handler de notificação compartilham a mesma visão.
+  /// Cache deste isolate. A gravação recarrega o disco antes: o handler da
+  /// notificação escreve noutro isolate e não enxerga este cache.
   static List<TaskItem>? _cache;
   static String? _rawFingerprint;
 
-  Future<T> _synchronized<T>(Future<T> Function() action) =>
-      PersistenceLocks.tasks.synchronized(action);
+  Future<T> _synchronized<T>(Future<T> Function() action) {
+    return PersistenceLocks.tasks.synchronized(() async {
+      // O handler da notificação grava noutro isolate. Sem reload, o cache
+      // deste processo relê o JSON antigo e a próxima edição apaga a conclusão.
+      await _prefs.reload();
+      _cache = null;
+      _rawFingerprint = null;
+      return action();
+    });
+  }
 
   Future<void> reload() async {
     await _prefs.reload();
@@ -185,19 +191,19 @@ class TaskRepository {
       },
     );
     if (read.unreadable) {
-      _preserveUnreadablePayload = true;
       _cache = const [];
       _rawFingerprint = fingerprint;
       return _cache!;
     }
-    _preserveUnreadablePayload = false;
     _cache = read.items;
     _rawFingerprint = fingerprint;
     return read.items;
   }
 
   Future<void> _saveAll(List<TaskItem> tasks) async {
-    if (_preserveUnreadablePayload) return;
+    if (storedJsonListBlobIsUnreadable(_prefs.getString(tasksStorageKey))) {
+      return;
+    }
     final encoded = encodeStoredJsonList(tasks.map((t) => t.toMap()));
     await _prefs.setString(tasksStorageKey, encoded);
     _cache = List<TaskItem>.from(tasks);

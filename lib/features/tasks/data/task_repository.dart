@@ -93,7 +93,11 @@ class TaskRepository {
     });
   }
 
-  Future<TaskItem> markComplete(String id, DateTime now) {
+  Future<TaskItem> markComplete(
+    String id,
+    DateTime now, {
+    String? periodKey,
+  }) {
     return _synchronized(() async {
       final all = List<TaskItem>.from(_read());
       final index = all.indexWhere((t) => t.id == id);
@@ -101,13 +105,18 @@ class TaskRepository {
         throw StateError('task missing: $id');
       }
       final task = all[index];
-      final period = TaskPeriod.window(
-        recurrence: task.recurrence,
-        now: now,
-        onceDate: task.onceDate,
-      );
+      final requested = periodKey?.trim() ?? '';
+      // A notificação carrega a janela em que o aviso foi armado. O toque
+      // pode chegar depois da meia-noite; usar `now` marcaria o dia novo.
+      final key = requested.isNotEmpty
+          ? requested
+          : TaskPeriod.window(
+              recurrence: task.recurrence,
+              now: now,
+              onceDate: task.onceDate,
+            ).periodKey;
       final updated = task.copyWith(
-        completedPeriodKey: period.periodKey,
+        completedPeriodKey: key,
         clearSnoozedUntil: true,
       );
       all[index] = updated;

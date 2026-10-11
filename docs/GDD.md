@@ -85,7 +85,7 @@ Dois pilares complementares no mesmo app:
 | Cores-chave | Teal `#1FAF8A` (primária), lavanda `#8B7BC8` (acento), coral `#FF8A5C` (Des-Trava) |
 | Ícone | Arte em `lumen.ai`. iOS é o `ios/Runner/Lumen.icon` do Icon Composer, com vidro e luz, sem raster chapado por cima. Android usa essa arte no adaptive icon: fundo `#F6F1DE` no claro e `#16161A` no escuro; o L fica `#3A3A40` no claro e `#F4F1EC` no escuro |
 | Locales | `pt` (fonte), `en`, `es`, `ja` |
-| Versão do app | [SemVer](https://semver.org/lang/pt-BR/) em `pubspec.yaml`: `MAJOR.MINOR.PATCH`. Atual: `0.2.2` (série 0, antes do lançamento). `1.0.0` é o primeiro lançamento público. O `+N` do Flutter é só o build da loja e sobe a cada envio |
+| Versão do app | [SemVer](https://semver.org/lang/pt-BR/) em `pubspec.yaml`: `MAJOR.MINOR.PATCH`. Atual: `0.2.3` (série 0, antes do lançamento). `1.0.0` é o primeiro lançamento público. O `+N` do Flutter é só o build da loja e sobe a cada envio |
 
 ### Perfis de tom de voz (humanizados, zero dialeto de IA)
 
@@ -478,7 +478,7 @@ Entrada só na aba Dia (linha discreta). Protótipo: `Design/Stitch/new/des_trav
 | ID | Feature | Status | Notas |
 |----|---------|--------|-------|
 | TSK01 | Pacote único integrado de tarefas | ✅ | Central de Tarefas na Ficha via `openTasksHub` (pilha da aba Início: Hoje / Recorrentes / Pontuais); Dia só checklist do período vigente, com o mesmo helper. Avisos locais do app; sem ponte com o app Lembretes nativo (`EKReminder` fora) |
-| TSK02 | Alarme Persistente (Nagging) | ✅ | toca no horário; repete no intervalo escolhido (padrão 5 min) até concluir ou adiar. Estilos (`TaskAlertStyle`): notificação; `alarm` (rótulo de UI: **Em destaque** — Android: canal/volume de alarme, sem som próprio; iPhone: igual à notificação); insistente (Android: pode abrir em tela cheia; iOS: `.timeSensitive`, sem entitlement Time Sensitive nem alerta crítico). Horário silencioso (padrão 22:00–07:00) vale **só para tarefas** — remédios ficam no canal próprio. Permissão negada / exact alarm ausente: CTA via `SystemSettings` (notificações / ficha do app). App fechado: o SO entrega o aviso já agendado; Foco, DND e bateria podem segurar ou atrasar |
+| TSK02 | Alarme Persistente (Nagging) | ✅ | toca no horário; repete no intervalo escolhido (padrão 5 min) até concluir ou adiar. Concluir na notificação fecha a janela do aviso (`periodKey` do payload), mesmo se o toque chegar depois da meia-noite. Estilos (`TaskAlertStyle`): notificação; `alarm` (rótulo de UI: **Em destaque** — Android: canal/volume de alarme, sem som próprio; iPhone: igual à notificação); insistente (Android: pode abrir em tela cheia; iOS: `.timeSensitive`, sem entitlement Time Sensitive nem alerta crítico). Horário silencioso (padrão 22:00–07:00) vale **só para tarefas** — remédios ficam no canal próprio. Permissão negada / exact alarm ausente: CTA via `SystemSettings` (notificações / ficha do app). App fechado: o SO entrega o aviso já agendado; Foco, DND e bateria podem segurar ou atrasar |
 | TSK03 | Recorrência flexível | ✅ | pontual, diária, semanal, quinzenal ou mensal — só a janela vigente, sem empilhar períodos |
 | TSK04 | Modo Foco ("Uma Coisa Só") | 🟡 | Isola a tarefa ativa na tela, ocultando a lista |
 | TSK05 | Fatiador de Tarefas em micro-passos | 🟡 | Quebra em até 3 ações de 2 minutos (extensão do Des-Trava) |

@@ -6,6 +6,8 @@ import 'package:noa/features/routine_mood/data/routine_repository.dart';
 import 'package:noa/features/routine_mood/domain/mood_entry.dart';
 import 'package:noa/features/routine_mood/domain/routine_snapshot.dart';
 import 'package:noa/features/state_of_mind/domain/state_of_mind_entry.dart';
+import 'package:noa/features/tasks/domain/task_item.dart';
+import 'package:noa/features/tasks/domain/task_period.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
@@ -239,5 +241,105 @@ void main() {
         expect(digest.latestStateOfMind?.valence, 1.0);
       },
     );
+  });
+
+  group('tarefas concluídas no Raio-X', () {
+    final day = DateTime(2026, 10, 6, 18);
+
+    RoutineSnapshot snapshotWith(Set<String> habits) {
+      return RoutineSnapshot(id: 's', savedAt: day, completedHabits: habits);
+    }
+
+    test(
+      'chave do dia entra; pausada, vazia e de outra data ficam de fora',
+      () {
+        final titles = completedTaskTitlesForDay(
+          day: day,
+          tasks: const [
+            TaskItem(
+              id: 'hoje',
+              title: 'Beber água',
+              completedPeriodKey: '2026-10-06',
+            ),
+            TaskItem(
+              id: 'ontem',
+              title: 'Alongar',
+              completedPeriodKey: '2026-10-05',
+            ),
+            TaskItem(
+              id: 'pausada',
+              title: 'Ler',
+              active: false,
+              completedPeriodKey: '2026-10-06',
+            ),
+            TaskItem(
+              id: 'sem-chave',
+              title: 'Caminhar',
+              completedPeriodKey: '',
+            ),
+            TaskItem(id: 'aberta', title: 'Responder e-mail'),
+          ],
+          snapshots: const [],
+        );
+
+        expect(titles, ['Beber água']);
+      },
+    );
+
+    test('chave da semana não casa com o dia civil', () {
+      final week = TaskPeriod.window(
+        recurrence: TaskRecurrence.weekly,
+        now: day,
+      );
+      expect(week.periodKey, '2026-W41');
+
+      final titles = completedTaskTitlesForDay(
+        day: day,
+        tasks: [
+          TaskItem(
+            id: 'semana',
+            title: 'Relatório',
+            recurrence: TaskRecurrence.weekly,
+            completedPeriodKey: week.periodKey,
+          ),
+        ],
+        snapshots: const [],
+      );
+
+      expect(titles, isEmpty);
+    });
+
+    test('hábito no snapshot puxa a conclusão, mesmo de outro período', () {
+      final week = TaskPeriod.window(
+        recurrence: TaskRecurrence.weekly,
+        now: day,
+      );
+      final titles = completedTaskTitlesForDay(
+        day: day,
+        tasks: [
+          TaskItem(
+            id: 'semana',
+            title: 'Relatório',
+            recurrence: TaskRecurrence.weekly,
+            completedPeriodKey: week.periodKey,
+          ),
+          TaskItem(
+            id: 'mes-passado',
+            title: 'Alongar',
+            completedPeriodKey: '2026-09-01',
+          ),
+          TaskItem(
+            id: 'outro',
+            title: 'Caminhar',
+            completedPeriodKey: '2026-09-01',
+          ),
+        ],
+        snapshots: [
+          snapshotWith(const {'Relatório', 'Alongar'}),
+        ],
+      );
+
+      expect(titles, ['Alongar', 'Relatório']);
+    });
   });
 }

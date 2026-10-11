@@ -1,14 +1,15 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/providers.dart';
-import '../../../core/time/civil_day.dart';
 import '../../medications/presentation/providers/medication_providers.dart';
 import '../../routine_mood/presentation/routine_providers.dart';
 import '../../tasks/presentation/task_providers.dart';
 import '../domain/day_digest.dart';
 
-final dayDigestProvider =
-    FutureProvider.family<DayDigest, DateTime>((ref, day) async {
+final dayDigestProvider = FutureProvider.family<DayDigest, DateTime>((
+  ref,
+  day,
+) async {
   final civil = DayDigest.civilDay(day);
   final moodRepo = ref.watch(moodRepositoryProvider);
   final routineRepo = ref.watch(routineRepositoryProvider);
@@ -20,26 +21,16 @@ final dayDigestProvider =
   // Digest só lê — reconcile/write fica na aba Remédios / ações de dose.
   final logs = await medRepo.getLogsForDateReadOnly(civil);
 
-  final dayKey = civilDayKey(civil);
-  final completed = <String>{};
-  for (final task in tasks) {
-    if (!task.active) continue;
-    final key = task.completedPeriodKey;
-    if (key == null || key.isEmpty) continue;
-    final fromSnapshot = snapshots.any(
-      (s) => s.completedHabits.contains(task.title),
-    );
-    if (key == dayKey || fromSnapshot) {
-      completed.add(task.title);
-    }
-  }
-
   return DayDigest(
     day: civil,
     checkIns: checkIns,
     snapshots: snapshots,
     medicationLogs: logs,
-    completedTaskTitles: completed.toList()..sort(),
+    completedTaskTitles: completedTaskTitlesForDay(
+      day: civil,
+      tasks: tasks,
+      snapshots: snapshots,
+    ),
   );
 });
 

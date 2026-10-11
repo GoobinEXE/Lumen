@@ -171,7 +171,11 @@ class TaskReminderService {
     final now = DateTime.now();
 
     if (intent == TaskReminderLaunchIntent.complete) {
-      await repo.markComplete(payload.taskId, now);
+      await repo.markComplete(
+        payload.taskId,
+        now,
+        periodKey: payload.periodKey,
+      );
     } else if (intent == TaskReminderLaunchIntent.snooze) {
       final task = await repo.getById(payload.taskId);
       final minutes = task?.naggingIntervalMinutes ?? payload.minutes ?? 5;

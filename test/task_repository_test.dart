@@ -52,5 +52,30 @@ void main() {
       );
       expect(updated!.completedPeriodKey, period.periodKey);
     });
+
+    test(
+      'concluir pela notificação grava a janela do aviso, não o dia do toque',
+      () async {
+        SharedPreferences.setMockInitialValues({});
+        final prefs = await SharedPreferences.getInstance();
+        final repo = TaskRepository(prefs);
+        final tasks = await repo.loadOrSeed(const ['Banho']);
+        final lateTap = DateTime(2026, 10, 4, 0, 10);
+
+        await repo.markComplete(
+          tasks.single.id,
+          lateTap,
+          periodKey: '2026-10-03',
+        );
+
+        final updated = await repo.getById(tasks.single.id);
+        expect(updated!.completedPeriodKey, '2026-10-03');
+        expect(
+          TaskPeriod.isCompletedInCurrentPeriod(updated, lateTap),
+          isFalse,
+        );
+        expect(updated.snoozedUntil, isNull);
+      },
+    );
   });
 }

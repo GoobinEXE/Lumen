@@ -5,6 +5,7 @@ import 'package:noa/l10n/app_localizations.dart';
 
 import '../../../features/state_of_mind/domain/state_of_mind_entry.dart';
 import '../../healthkit_bridge/healthkit_bridge.dart';
+import '../environment_recovery_merge.dart';
 import '../health_app_connector.dart';
 import '../health_app_source.dart';
 import '../health_capability.dart';
@@ -189,25 +190,6 @@ class AppleHealthKitConnector implements HealthAppConnector {
     if (!HealthKitBridge.isSupported) return base;
 
     final env = await getEnvironmentHistory(days: days);
-    if (env.isEmpty) return base;
-
-    String dayKey(DateTime d) =>
-        '${d.year.toString().padLeft(4, '0')}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
-
-    final byKey = {for (final s in base) dayKey(s.date): s};
-
-    for (final e in env) {
-      final key = dayKey(e.date);
-      final existing = byKey[key];
-      byKey[key] = (existing ?? DailyRecoverySnapshot(date: e.date)).copyWith(
-        timeInDaylightMinutes: e.daylightMinutes,
-        avgEnvironmentalDb: e.envAudioDb,
-        avgHeadphoneDb: e.headphoneAudioDb,
-      );
-    }
-
-    final merged = byKey.values.toList()
-      ..sort((a, b) => b.date.compareTo(a.date));
-    return merged;
+    return mergeEnvironmentIntoRecovery(base, env);
   }
 }

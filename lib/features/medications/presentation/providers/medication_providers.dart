@@ -8,6 +8,7 @@ import '../../../../integrations/healthkit_bridge/healthkit_bridge.dart';
 import '../../data/medication_repository.dart';
 import '../../domain/medication.dart';
 import '../../domain/medication_log.dart';
+import '../../service/apple_medication_link.dart';
 import '../../service/medication_notification_bus.dart';
 import '../../service/medication_reminder_service.dart';
 import '../../../../core/providers.dart';
@@ -209,49 +210,20 @@ class TodayMedicationLogsNotifier
 
     final existing = await _repository.getMedications();
     var imported = 0;
+    final l10n = _ref.read(appLocalizationsProvider);
     for (final info in remote) {
-      if (!info.isActive) continue;
-
-      final byConcept = existing.where(
-        (m) => m.appleConceptId == info.appleConceptId,
+      final link = linkAppleMedication(
+        info: info,
+        existing: existing,
+        newId: () => const Uuid().v4(),
+        fallbackDosage: l10n.defaultDoseFallback,
+        fallbackInstructions: l10n.defaultMedInstructions,
       );
-      final byName = existing.where(
-        (m) =>
-            m.name.toLowerCase() == info.name.toLowerCase() ||
-            (info.nickname != null &&
-                m.name.toLowerCase() == info.nickname!.toLowerCase()),
-      );
+      if (link == null) continue;
 
-      Medication med;
-      if (byConcept.isNotEmpty) {
-        med = byConcept.first.copyWith(
-          rxNormCode: info.rxNormCode ?? byConcept.first.rxNormCode,
-          source: MedicationSource.linked,
-        );
-        await _repository.saveMedication(med);
-      } else if (byName.isNotEmpty) {
-        med = byName.first.copyWith(
-          appleConceptId: info.appleConceptId,
-          rxNormCode: info.rxNormCode,
-          source: MedicationSource.linked,
-        );
-        await _repository.saveMedication(med);
-        imported++;
-      } else {
-        final l10n = _ref.read(appLocalizationsProvider);
-        med = Medication(
-          id: const Uuid().v4(),
-          name: info.nickname?.isNotEmpty == true ? info.nickname! : info.name,
-          dosage: info.form ?? l10n.defaultDoseFallback,
-          scheduledTimes: const ['08:00'],
-          instructions: l10n.defaultMedInstructions,
-          appleConceptId: info.appleConceptId,
-          rxNormCode: info.rxNormCode,
-          source: MedicationSource.appleHealth,
-        );
-        await _repository.saveMedication(med);
-        imported++;
-      }
+      final med = link.medication;
+      await _repository.saveMedication(med);
+      if (link.countsAsImported) imported++;
 
       final start = DateTime.now().subtract(const Duration(days: 7));
       final events = await health.readDoseEvents(

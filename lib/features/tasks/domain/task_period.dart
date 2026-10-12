@@ -199,7 +199,15 @@ class TaskPeriod {
       var candidate = quietHours.contains(cursor)
           ? quietHours.nextAllowed(cursor)
           : cursor;
-      if (!candidate.isBefore(period.end)) break;
+      if (!candidate.isBefore(period.end)) {
+        // Quiet hours atravessou a meia-noite da janela (tarefa diária às 22h
+        // ou depois, silêncio padrão até 07:00). Sem este toque, o aviso
+        // nunca é agendado. Não abre a janela seguinte: um só, e para.
+        if (results.isEmpty && candidate.isAfter(now)) {
+          results.add(candidate);
+        }
+        break;
+      }
       if (quietHours.contains(candidate)) {
         cursor = candidate.add(interval);
         continue;

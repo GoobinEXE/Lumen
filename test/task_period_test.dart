@@ -85,6 +85,22 @@ void main() {
       ]);
     });
 
+    test('tarefa diária dentro do silêncio noturno toca às 7h', () {
+      final task = TaskItem(
+        id: 'night',
+        title: 'Fechar o dia',
+        timeOfDay: '23:00',
+        naggingIntervalMinutes: 5,
+      );
+      final fires = TaskPeriod.upcomingFires(
+        task: task,
+        now: DateTime(2026, 10, 3, 15),
+        quietHours: quiet,
+        maxCount: 5,
+      );
+      expect(fires, [DateTime(2026, 10, 4, 7)]);
+    });
+
     test('não agenda dentro do quiet hours', () {
       // Semanal: o silêncio empurra pro sábado 07:00, ainda na janela.
       final task = const TaskItem(

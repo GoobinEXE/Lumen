@@ -7,6 +7,7 @@ import 'models/daily_recovery_snapshot.dart';
 import 'models/health_demographics.dart';
 import 'models/sleep_night.dart';
 import 'models/sleep_record.dart';
+import 'recovery_sample_aggregate.dart';
 
 /// Cliente compartilhado do plugin `health` (HealthKit no iOS, Health Connect no Android).
 class PluginHealthStore {
@@ -245,76 +246,15 @@ class PluginHealthStore {
         endTime: now,
       );
 
-      final snapshots = <DailyRecoverySnapshot>[];
-      if (healthData.isNotEmpty) {
-        final byDay = <String, List<HealthDataPoint>>{};
-        for (final point in healthData) {
-          final dayKey =
-              '${point.dateFrom.year}-${point.dateFrom.month}-${point.dateFrom.day}';
-          byDay.putIfAbsent(dayKey, () => []).add(point);
-        }
-
-        for (final entry in byDay.entries) {
-          final points = entry.value;
-          final first = points.first.dateFrom;
-          final day = DateTime(first.year, first.month, first.day);
-
-          final hrvSamples = <double>[];
-          final restingSamples = <double>[];
-          var stepsTotal = 0.0;
-          var exerciseTotal = 0.0;
-          var hasSteps = false;
-          var hasExercise = false;
-
-          for (final p in points) {
-            if (p.type == HealthDataType.HEART_RATE_VARIABILITY_SDNN ||
-                p.type == HealthDataType.HEART_RATE_VARIABILITY_RMSSD) {
-              final hrv = _numericOf(p);
-              if (hrv != null) hrvSamples.add(hrv.toDouble());
-            } else if (p.type == HealthDataType.RESTING_HEART_RATE) {
-              final rhr = _numericOf(p);
-              if (rhr != null) restingSamples.add(rhr.toDouble());
-            } else if (p.type == HealthDataType.STEPS) {
-              final steps = _numericOf(p);
-              if (steps != null) {
-                stepsTotal += steps.toDouble();
-                hasSteps = true;
-              }
-            } else if (p.type == HealthDataType.EXERCISE_TIME) {
-              final exercise = _numericOf(p);
-              if (exercise != null) {
-                exerciseTotal += exercise.toDouble();
-                hasExercise = true;
-              }
-            } else if (p.type == HealthDataType.WORKOUT) {
-              final minutes =
-                  p.dateTo.difference(p.dateFrom).inSeconds / 60.0;
-              if (minutes > 0) {
-                exerciseTotal += minutes;
-                hasExercise = true;
-              }
-            }
-          }
-
-          snapshots.add(
-            DailyRecoverySnapshot(
-              date: day,
-              hrvMs: hrvSamples.isEmpty
-                  ? null
-                  : hrvSamples.reduce((a, b) => a + b) / hrvSamples.length,
-              restingHeartRate: restingSamples.isEmpty
-                  ? null
-                  : restingSamples.reduce((a, b) => a + b) /
-                      restingSamples.length,
-              steps: hasSteps ? stepsTotal.round() : null,
-              exerciseMinutes: hasExercise ? exerciseTotal : null,
-            ),
-          );
-        }
-      }
-
-      snapshots.sort((a, b) => b.date.compareTo(a.date));
-      return snapshots;
+      return aggregateRecoverySamples([
+        for (final point in healthData)
+          RecoverySample(
+            type: point.type,
+            start: point.dateFrom,
+            end: point.dateTo,
+            value: _numericOf(point),
+          ),
+      ]);
     } catch (e) {
       debugPrint('[PluginHealthStore] Erro ao consultar recuperação: $e');
       return [];

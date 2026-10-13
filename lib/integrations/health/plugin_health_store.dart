@@ -215,12 +215,18 @@ class PluginHealthStore {
             remSleep: night.remSleep,
             lightSleep: night.lightSleep,
             awakeDuration: night.awakeDuration,
-            averageHeartRate: _averageNumericInRange(
-              healthData,
-              HealthDataType.HEART_RATE,
-              night.bedtime,
-              night.wakeTime,
-            )?.round(),
+            averageHeartRate: SleepRecord.averageHeartRateBpm(
+              samples: [
+                for (final point in healthData)
+                  if (point.type == HealthDataType.HEART_RATE)
+                    HeartRateSample(
+                      at: point.dateFrom,
+                      bpm: _numericOf(point)?.toDouble(),
+                    ),
+              ],
+              start: night.bedtime,
+              end: night.wakeTime,
+            ),
           ),
       ];
     } catch (e) {
@@ -401,22 +407,4 @@ class PluginHealthStore {
     }
   }
 
-  double? _averageNumericInRange(
-    List<HealthDataPoint> allPoints,
-    HealthDataType type,
-    DateTime start,
-    DateTime end,
-  ) {
-    final samples = <double>[];
-    for (final p in allPoints) {
-      if (p.type != type) continue;
-      if (p.dateFrom.isBefore(start) || p.dateFrom.isAfter(end)) continue;
-      final value = p.value;
-      if (value is NumericHealthValue) {
-        samples.add(value.numericValue.toDouble());
-      }
-    }
-    if (samples.isEmpty) return null;
-    return samples.reduce((a, b) => a + b) / samples.length;
-  }
 }

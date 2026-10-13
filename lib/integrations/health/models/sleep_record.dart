@@ -1,3 +1,11 @@
+/// Uma amostra de frequência cardíaca. [bpm] nulo é leitura sem número.
+class HeartRateSample {
+  const HeartRateSample({required this.at, this.bpm});
+
+  final DateTime at;
+  final double? bpm;
+}
+
 /// Representa uma sessão de sono consolidada (normalmente da noite anterior)
 /// lida a partir do Apple Health (HealthKit) ou Health Connect.
 class SleepRecord {
@@ -61,6 +69,28 @@ class SleepRecord {
     }
 
     return score.clamp(10, 100).toInt();
+  }
+
+  /// Média arredondada dos batimentos cuja amostra começa em [start, end].
+  ///
+  /// Amostra fora da noite ou sem número fica de fora. Sem amostra válida
+  /// devolve nulo — a noite não ganha um batimento inventado.
+  static int? averageHeartRateBpm({
+    required List<HeartRateSample> samples,
+    required DateTime start,
+    required DateTime end,
+  }) {
+    var sum = 0.0;
+    var count = 0;
+    for (final sample in samples) {
+      final bpm = sample.bpm;
+      if (bpm == null) continue;
+      if (sample.at.isBefore(start) || sample.at.isAfter(end)) continue;
+      sum += bpm;
+      count++;
+    }
+    if (count == 0) return null;
+    return (sum / count).round();
   }
 
   /// Formatação legível de duração (ex: "7h 25m")

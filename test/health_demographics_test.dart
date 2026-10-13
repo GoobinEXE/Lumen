@@ -39,6 +39,21 @@ void main() {
     expect(HealthDemographics.weightToKg(160, 'POUND'), closeTo(72.575, 0.001));
   });
 
+  test('jarda, onça e stone convertem; epoch negativo não vira data', () {
+    expect(HealthDemographics.heightToCm(2, 'YARD'), closeTo(182.88, 0.001));
+    expect(HealthDemographics.heightToCm(-5, 'CENTIMETER'), isNull);
+    expect(
+      HealthDemographics.weightToKg(16, 'OUNCE'),
+      closeTo(0.45359237, 0.0001),
+    );
+    expect(
+      HealthDemographics.weightToKg(10, 'STONE'),
+      closeTo(63.5029318, 0.001),
+    );
+    expect(HealthDemographics.birthDateFromEpochSeconds(-1), isNull);
+    expect(HealthDemographics.birthDateFromEpochSeconds(-0.5), isNull);
+  });
+
   test('valor zerado ou unidade desconhecida não vira medida', () {
     expect(HealthDemographics.heightToCm(0, 'METER'), isNull);
     expect(HealthDemographics.heightToCm(null, 'METER'), isNull);

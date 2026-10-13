@@ -23,6 +23,25 @@ class MedicationReminderService {
   MedicationReminderService(this._prefs);
 
   final SharedPreferences _prefs;
+
+  /// Avisos de dose e de adiamento já gravados na agenda local.
+  /// Cada um ocupa um lugar na fila de 64 do iOS.
+  static int occupiedNotificationSlots(SharedPreferences prefs) {
+    final raw = prefs.getString(_scheduleKey);
+    if (raw == null || raw.isEmpty) return 0;
+    try {
+      final map = jsonDecode(raw);
+      if (map is! Map) return 0;
+      final ids = map['ids'];
+      final snoozes = map['snoozes'];
+      final idCount = ids is List ? ids.length : 0;
+      final snoozeCount = snoozes is List ? snoozes.length : 0;
+      return idCount + snoozeCount;
+    } catch (_) {
+      return 0;
+    }
+  }
+
   FlutterLocalNotificationsPlugin get _plugin => LocalNotificationsHost.plugin;
 
   AppLocalizations? _l10n;
@@ -59,18 +78,17 @@ class MedicationReminderService {
     }
   }
 
-  static Future<void> handleBackgroundResponse(
-    NotificationResponse response,
-  ) {
+  static Future<void> handleBackgroundResponse(NotificationResponse response) {
     return handleResponse(response, notifyUi: false);
   }
 
   Future<void> initialize(AppLocalizations l10n) async {
     _l10n = l10n;
     if (!_handlerBound) {
-      LocalNotificationsHost.medicationHandler = (response, {required notifyUi}) {
-        return handleResponse(response, notifyUi: notifyUi);
-      };
+      LocalNotificationsHost.medicationHandler =
+          (response, {required notifyUi}) {
+            return handleResponse(response, notifyUi: notifyUi);
+          };
       _handlerBound = true;
     }
     await LocalNotificationsHost.ensureInitialized(l10n);

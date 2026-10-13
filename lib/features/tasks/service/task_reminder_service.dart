@@ -8,8 +8,8 @@ import 'package:timezone/timezone.dart' as tz;
 
 import '../../../core/notifications/local_notification_scheduler.dart';
 import '../../../core/notifications/local_notifications_host.dart';
-import '../../medications/service/medication_reminder_service.dart'
-    show localeFromSystem;
+import '../../medications/data/medication_repository.dart';
+import '../../medications/service/medication_reminder_service.dart';
 import '../data/task_quiet_hours_prefs.dart';
 import '../data/task_repository.dart';
 import '../domain/task_item.dart';
@@ -60,9 +60,7 @@ class TaskReminderService {
     }
   }
 
-  static Future<void> handleBackgroundResponse(
-    NotificationResponse response,
-  ) {
+  static Future<void> handleBackgroundResponse(NotificationResponse response) {
     return handleResponse(response, notifyUi: false);
   }
 
@@ -202,7 +200,12 @@ class TaskReminderService {
     final quiet = getTaskQuietHours(_prefs);
     final expected = _occurrences(tasks, l10n, quiet);
     final peeked = await _androidMode(prompt: false);
-    final peekedSignature = _signature(expected, peeked, l10n.localeName, quiet);
+    final peekedSignature = _signature(
+      expected,
+      peeked,
+      l10n.localeName,
+      quiet,
+    );
     final stored = _read();
     if (!force && stored.signature == peekedSignature) return;
 
@@ -210,7 +213,52 @@ class TaskReminderService {
       await _requestPermissions();
     }
     final mode = await _androidMode(prompt: expected.isNotEmpty);
-    await _apply(expected: expected, mode: mode, stored: stored, quiet: quiet, locale: l10n.localeName);
+    await _apply(
+      expected: expected,
+      mode: mode,
+      stored: stored,
+      quiet: quiet,
+      locale: l10n.localeName,
+    );
+    await _reassertMedicationAlarms(l10n);
+
+    final medsAfter = MedicationReminderService.occupiedNotificationSlots(
+      _prefs,
+    );
+    if (expected.length + medsAfter <= iosPendingNotificationLimit) return;
+
+    final tighter = _occurrences(tasks, l10n, quiet);
+    if (_samePlan(tighter, expected)) return;
+    final storedAfter = _read();
+    await _apply(
+      expected: tighter,
+      mode: mode,
+      stored: storedAfter,
+      quiet: quiet,
+      locale: l10n.localeName,
+    );
+    await _reassertMedicationAlarms(l10n);
+  }
+
+  /// A agenda de dose foi gravada mesmo quando o iOS já tinha descartado o
+  /// aviso. Depois de soltar os lugares do nagging, registra de novo.
+  Future<void> _reassertMedicationAlarms(AppLocalizations l10n) async {
+    try {
+      final repo = MedicationRepository(_prefs);
+      await repo.reload();
+      final meds = await repo.getMedications();
+      await MedicationReminderService(_prefs).syncAll(meds, l10n);
+    } catch (e) {
+      debugPrint('[TaskReminder] repor alarmes de remédio: $e');
+    }
+  }
+
+  bool _samePlan(List<_PlannedTask> a, List<_PlannedTask> b) {
+    if (a.length != b.length) return false;
+    for (var i = 0; i < a.length; i++) {
+      if (a[i].id != b[i].id || a[i].when != b[i].when) return false;
+    }
+    return true;
   }
 
   Future<void> _apply({
@@ -253,7 +301,7 @@ class TaskReminderService {
     TaskQuietHours quiet,
   ) {
     final now = DateTime.now();
-    final planned = <_PlannedTask>[];
+    final groups = <List<_PlannedTask>>[];
     for (final task in tasks) {
       if (!task.hasReminder) continue;
       final period = TaskPeriod.window(
@@ -266,9 +314,10 @@ class TaskReminderService {
         now: now,
         quietHours: quiet,
       );
+      final group = <_PlannedTask>[];
       for (var i = 0; i < fires.length; i++) {
         final at = fires[i];
-        planned.add(
+        group.add(
           _PlannedTask(
             id: taskNotificationId(
               taskId: task.id,
@@ -297,8 +346,14 @@ class TaskReminderService {
           ),
         );
       }
+      if (group.isNotEmpty) groups.add(group);
     }
-    return planned;
+    final budget = taskNotificationBudget(
+      medicationPending: MedicationReminderService.occupiedNotificationSlots(
+        _prefs,
+      ),
+    );
+    return takeRoundRobin(groups, budget);
   }
 
   Future<void> _zoned({
@@ -428,8 +483,11 @@ class TaskReminderService {
     String locale,
     TaskQuietHours quiet,
   ) {
-    final ids = items.map((item) => '${item.id}@${item.when.toIso8601String()}').toList()
-      ..sort();
+    final ids =
+        items
+            .map((item) => '${item.id}@${item.when.toIso8601String()}')
+            .toList()
+          ..sort();
     return '${mode.name}|$locale|${quiet.startHour}:${quiet.startMinute}-${quiet.endHour}:${quiet.endMinute}|${ids.join(',')}';
   }
 
@@ -454,10 +512,7 @@ class TaskReminderService {
   Future<void> _write(_StoredSchedule stored) {
     return _prefs.setString(
       _scheduleKey,
-      jsonEncode({
-        'ids': stored.ids,
-        'signature': stored.signature,
-      }),
+      jsonEncode({'ids': stored.ids, 'signature': stored.signature}),
     );
   }
 }
@@ -481,14 +536,9 @@ class _PlannedTask {
 }
 
 class _StoredSchedule {
-  const _StoredSchedule({
-    required this.ids,
-    required this.signature,
-  });
+  const _StoredSchedule({required this.ids, required this.signature});
 
-  const _StoredSchedule.empty()
-      : ids = const [],
-        signature = '';
+  const _StoredSchedule.empty() : ids = const [], signature = '';
 
   final List<int> ids;
   final String signature;

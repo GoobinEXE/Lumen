@@ -121,11 +121,7 @@ void main() {
         completedPeriodKey: period.periodKey,
       );
       expect(
-        TaskPeriod.upcomingFires(
-          task: task,
-          now: now,
-          quietHours: quiet,
-        ),
+        TaskPeriod.upcomingFires(task: task, now: now, quietHours: quiet),
         isEmpty,
       );
     });
@@ -207,7 +203,11 @@ void main() {
 
   group('TaskPeriod.appliesOn', () {
     test('daily vale todo dia', () {
-      final task = TaskItem(id: 'd', title: 'Água', recurrence: TaskRecurrence.daily);
+      final task = TaskItem(
+        id: 'd',
+        title: 'Água',
+        recurrence: TaskRecurrence.daily,
+      );
       expect(TaskPeriod.appliesOn(task, DateTime(2026, 10, 6)), isTrue);
     });
 
@@ -231,6 +231,50 @@ void main() {
       );
       expect(TaskPeriod.appliesOn(task, DateTime(2026, 10, 5)), isTrue); // seg
       expect(TaskPeriod.appliesOn(task, DateTime(2026, 10, 6)), isFalse); // ter
+    });
+  });
+
+  group('orçamento de avisos pendentes', () {
+    test('duas tarefas com nagging de 5 min não enchem a fila sozinhas', () {
+      const perTask = 36;
+      final groups = [
+        List<int>.generate(perTask, (i) => i),
+        List<int>.generate(perTask, (i) => 100 + i),
+      ];
+      final budget = taskNotificationBudget(medicationPending: 0);
+      final picked = takeRoundRobin(groups, budget);
+
+      expect(
+        groups[0].length + groups[1].length,
+        greaterThan(iosPendingNotificationLimit),
+      );
+      expect(picked.length, budget);
+      expect(
+        picked.length + medicationNotificationReserve,
+        iosPendingNotificationLimit,
+      );
+      expect(picked, contains(0));
+      expect(picked, contains(100));
+    });
+
+    test('agenda de dose já gravada reduz o nagging', () {
+      expect(taskNotificationBudget(medicationPending: 20), 44);
+      expect(
+        taskNotificationBudget(medicationPending: 20) + 20,
+        iosPendingNotificationLimit,
+      );
+      expect(taskNotificationBudget(medicationPending: 80), 0);
+    });
+
+    test('rodízio prioriza o primeiro toque de cada tarefa', () {
+      expect(
+        takeRoundRobin([
+          [1, 2, 3, 4],
+          [10, 20],
+          [7],
+        ], 5),
+        [1, 10, 7, 2, 20],
+      );
     });
   });
 }

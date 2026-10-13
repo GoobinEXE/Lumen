@@ -7,6 +7,47 @@ const taskSnoozeKind = 'task_snooze';
 const taskActionComplete = 'task_complete';
 const taskActionSnooze = 'task_snooze';
 
+/// Teto de avisos pendentes do iOS. O sistema fica com os 64 que disparam
+/// primeiro e descarta o resto, sem avisar o app.
+const iosPendingNotificationLimit = 64;
+
+/// Lugares guardados para a dose quando a agenda de remédio ainda não foi
+/// gravada — os dois syncs sobem juntos na abertura.
+const medicationNotificationReserve = 16;
+
+/// Quantos avisos de tarefa ainda cabem sem empurrar o alarme do remédio
+/// para fora da fila do aparelho.
+int taskNotificationBudget({required int medicationPending}) {
+  final pending = medicationPending < 0 ? 0 : medicationPending;
+  final reserved = pending < medicationNotificationReserve
+      ? medicationNotificationReserve
+      : pending;
+  final room = iosPendingNotificationLimit - reserved;
+  if (room < 0) return 0;
+  return room;
+}
+
+/// Reparte [budget] em rodízio. O primeiro toque de cada tarefa entra antes
+/// do nagging seguinte, para o aviso das 9h não engolir o das 21h.
+List<T> takeRoundRobin<T>(List<List<T>> groups, int budget) {
+  if (budget <= 0 || groups.isEmpty) return <T>[];
+  final picked = <T>[];
+  var depth = 0;
+  while (picked.length < budget) {
+    var grew = false;
+    for (final group in groups) {
+      if (picked.length >= budget) break;
+      if (depth < group.length) {
+        picked.add(group[depth]);
+        grew = true;
+      }
+    }
+    if (!grew) break;
+    depth++;
+  }
+  return picked;
+}
+
 enum TaskReminderLaunchIntent { ignore, openRoutine, complete, snooze }
 
 String taskReminderCategoryId(String languageCode) =>

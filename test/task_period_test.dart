@@ -130,6 +130,32 @@ void main() {
       );
     });
 
+    test('quinzena não agenda toque no bloco seguinte', () {
+      final task = const TaskItem(
+        id: 'therapy',
+        title: 'Terapia',
+        timeOfDay: '09:00',
+        recurrence: TaskRecurrence.biweekly,
+        naggingIntervalMinutes: 5,
+      );
+      final lastNight = DateTime(2024, 1, 14, 23, 50);
+      final period = TaskPeriod.window(
+        recurrence: TaskRecurrence.biweekly,
+        now: lastNight,
+      );
+      expect(period.start, DateTime(2024, 1, 1));
+      expect(period.end, DateTime(2024, 1, 15));
+
+      final fires = TaskPeriod.upcomingFires(
+        task: task,
+        now: lastNight,
+        quietHours: quiet,
+        maxCount: 8,
+      );
+
+      expect(fires, isEmpty);
+    });
+
     test('weekly não carrega a semana seguinte', () {
       final task = const TaskItem(
         id: 'book',
@@ -220,6 +246,22 @@ void main() {
       );
       expect(TaskPeriod.appliesOn(task, DateTime(2026, 10, 6)), isFalse);
       expect(TaskPeriod.appliesOn(task, DateTime(2026, 10, 8, 15)), isTrue);
+    });
+
+    test('weekdays vazio vale todos os dias e ancora na segunda', () {
+      final task = TaskItem(
+        id: 'w',
+        title: 'Treino',
+        recurrence: TaskRecurrence.weekly,
+        weekdays: const [],
+        timeOfDay: '08:30',
+      );
+      final tuesday = DateTime(2026, 10, 6, 12);
+      expect(TaskPeriod.appliesOn(task, tuesday), isTrue);
+      expect(
+        TaskPeriod.anchorFireAt(task, tuesday),
+        DateTime(2026, 10, 5, 8, 30),
+      );
     });
 
     test('weekly só nos weekdays escolhidos', () {

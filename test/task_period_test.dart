@@ -85,6 +85,30 @@ void main() {
       ]);
     });
 
+    test('no minuto exato o primeiro toque é o intervalo seguinte', () {
+      final task = TaskItem(
+        id: 't1',
+        title: 'Ler o livro',
+        timeOfDay: '09:00',
+        naggingIntervalMinutes: 5,
+      );
+      final exact = TaskPeriod.upcomingFires(
+        task: task,
+        now: DateTime(2026, 10, 3, 9),
+        quietHours: quiet,
+        maxCount: 1,
+      );
+      final justBefore = TaskPeriod.upcomingFires(
+        task: task,
+        now: DateTime(2026, 10, 3, 8, 59),
+        quietHours: quiet,
+        maxCount: 1,
+      );
+
+      expect(exact, [DateTime(2026, 10, 3, 9, 5)]);
+      expect(justBefore, [DateTime(2026, 10, 3, 9)]);
+    });
+
     test('não agenda dentro do quiet hours', () {
       // Semanal: o silêncio empurra pro sábado 07:00, ainda na janela.
       final task = const TaskItem(
@@ -121,11 +145,7 @@ void main() {
         completedPeriodKey: period.periodKey,
       );
       expect(
-        TaskPeriod.upcomingFires(
-          task: task,
-          now: now,
-          quietHours: quiet,
-        ),
+        TaskPeriod.upcomingFires(task: task, now: now, quietHours: quiet),
         isEmpty,
       );
     });
@@ -207,7 +227,11 @@ void main() {
 
   group('TaskPeriod.appliesOn', () {
     test('daily vale todo dia', () {
-      final task = TaskItem(id: 'd', title: 'Água', recurrence: TaskRecurrence.daily);
+      final task = TaskItem(
+        id: 'd',
+        title: 'Água',
+        recurrence: TaskRecurrence.daily,
+      );
       expect(TaskPeriod.appliesOn(task, DateTime(2026, 10, 6)), isTrue);
     });
 
@@ -231,6 +255,36 @@ void main() {
       );
       expect(TaskPeriod.appliesOn(task, DateTime(2026, 10, 5)), isTrue); // seg
       expect(TaskPeriod.appliesOn(task, DateTime(2026, 10, 6)), isFalse); // ter
+    });
+
+    test('dia do mês 0 ou acima de 31 ancora na borda do mês', () {
+      final first = TaskItem(
+        id: 'z',
+        title: 'Abrir o mês',
+        timeOfDay: '09:30',
+        recurrence: TaskRecurrence.monthly,
+        dayOfMonth: 0,
+      );
+      final last = TaskItem(
+        id: 'h',
+        title: 'Fechar o mês',
+        timeOfDay: '18:00',
+        recurrence: TaskRecurrence.monthly,
+        dayOfMonth: 40,
+      );
+
+      expect(TaskPeriod.appliesOn(first, DateTime(2026, 10, 1)), isTrue);
+      expect(TaskPeriod.appliesOn(first, DateTime(2026, 10, 2)), isFalse);
+      expect(
+        TaskPeriod.anchorFireAt(first, DateTime(2026, 10, 15, 12)),
+        DateTime(2026, 10, 1, 9, 30),
+      );
+      expect(TaskPeriod.appliesOn(last, DateTime(2026, 2, 28)), isTrue);
+      expect(TaskPeriod.appliesOn(last, DateTime(2026, 2, 27)), isFalse);
+      expect(
+        TaskPeriod.anchorFireAt(last, DateTime(2026, 2, 10)),
+        DateTime(2026, 2, 28, 18),
+      );
     });
   });
 }

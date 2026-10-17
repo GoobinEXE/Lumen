@@ -50,11 +50,11 @@ class SleepNight {
     final records = <SleepRecord>[];
     for (final entry in byDay.entries) {
       final points = entry.value;
-      var deep = Duration.zero;
-      var rem = Duration.zero;
-      var light = Duration.zero;
-      var asleep = Duration.zero;
-      var awake = Duration.zero;
+      final deepSamples = <SleepInterval>[];
+      final remSamples = <SleepInterval>[];
+      final lightSamples = <SleepInterval>[];
+      final asleepSamples = <SleepInterval>[];
+      final awakeSamples = <SleepInterval>[];
       var earliest = points.first.start;
       var latest = points.first.end;
 
@@ -63,26 +63,38 @@ class SleepNight {
         if (sample.end.isAfter(latest)) latest = sample.end;
         switch (sample.kind) {
           case SleepIntervalKind.deep:
-            deep += sample.duration;
+            deepSamples.add(sample);
             break;
           case SleepIntervalKind.rem:
-            rem += sample.duration;
+            remSamples.add(sample);
             break;
           case SleepIntervalKind.light:
-            light += sample.duration;
+            lightSamples.add(sample);
             break;
           case SleepIntervalKind.asleep:
-            asleep += sample.duration;
+            asleepSamples.add(sample);
             break;
           case SleepIntervalKind.awake:
-            awake += sample.duration;
+            awakeSamples.add(sample);
             break;
         }
       }
 
-      final hasStages =
-          deep > Duration.zero || rem > Duration.zero || light > Duration.zero;
-      final total = hasStages ? deep + rem + light : asleep;
+      // Relógio e telefone mandam a mesma noite. Somar as duas infla o total
+      // e esconde déficit. A união conta cada minuto uma vez.
+      final deep = _union(deepSamples);
+      final rem = _union(remSamples);
+      final light = _union(lightSamples);
+      final asleep = _union(asleepSamples);
+      final awake = _union(awakeSamples);
+      final stageSamples = <SleepInterval>[
+        ...deepSamples,
+        ...remSamples,
+        ...lightSamples,
+      ];
+      final total = stageSamples.isNotEmpty
+          ? _union(stageSamples)
+          : asleep;
       if (total <= Duration.zero) continue;
 
       records.add(
@@ -101,5 +113,31 @@ class SleepNight {
 
     records.sort((a, b) => b.date.compareTo(a.date));
     return records;
+  }
+
+  /// Duração coberta pelos intervalos, sem contar de novo o trecho repetido.
+  static Duration _union(List<SleepInterval> samples) {
+    if (samples.isEmpty) return Duration.zero;
+    final sorted = [...samples]..sort((a, b) {
+      final byStart = a.start.compareTo(b.start);
+      if (byStart != 0) return byStart;
+      return a.end.compareTo(b.end);
+    });
+    var start = sorted.first.start;
+    var end = sorted.first.end;
+    var total = Duration.zero;
+    for (final sample in sorted.skip(1)) {
+      if (sample.start.isAfter(end)) {
+        final span = end.difference(start);
+        if (!span.isNegative) total += span;
+        start = sample.start;
+        end = sample.end;
+      } else if (sample.end.isAfter(end)) {
+        end = sample.end;
+      }
+    }
+    final span = end.difference(start);
+    if (!span.isNegative) total += span;
+    return total;
   }
 }

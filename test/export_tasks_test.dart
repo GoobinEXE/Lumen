@@ -110,6 +110,30 @@ void main() {
       expect(lines.single.status, TaskExportStatus.open);
     });
 
+    test('concluídas vêm antes e o título ignora espaço e maiúscula', () {
+      final doneKey = TaskPeriod.window(
+        recurrence: TaskRecurrence.daily,
+        now: now,
+      ).periodKey;
+
+      final lines = taskExportLines(
+        tasks: [
+          daily('z', '  Zebra ').copyWith(completedPeriodKey: doneKey),
+          daily('a', 'alpha').copyWith(completedPeriodKey: doneKey),
+          daily('b', 'Beta'),
+        ],
+        now: now,
+        periodDays: 7,
+      );
+
+      expect(lines.map((line) => line.title), ['alpha', 'Zebra', 'Beta']);
+      expect(lines.map((line) => line.status), [
+        TaskExportStatus.completed,
+        TaskExportStatus.completed,
+        TaskExportStatus.open,
+      ]);
+    });
+
     test('tarefa concluída e aberta no mesmo período mantêm concluídas primeiro', () {
       final doneKey = TaskPeriod.window(
         recurrence: TaskRecurrence.once,

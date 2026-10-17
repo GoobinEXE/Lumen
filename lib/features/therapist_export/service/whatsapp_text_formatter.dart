@@ -201,14 +201,23 @@ class WhatsappTextFormatter {
     return buffer.toString();
   }
 
+  /// Corta no teto do deep link. A reticência entra na contagem.
+  static String clipMessage(String messageText) {
+    if (messageText.length <= kWhatsAppMessageMaxChars) return messageText;
+    return '${messageText.substring(0, kWhatsAppMessageMaxChars - 1)}…';
+  }
+
+  /// O WhatsApp só abre o chat com dígitos. Espaço, +, parêntese e traço saem.
+  static String digitsOnlyPhone(String? phoneNumber) {
+    return phoneNumber?.replaceAll(RegExp(r'[^0-9]'), '') ?? '';
+  }
+
   static Future<bool> sendToWhatsApp({
     required String messageText,
     String? phoneNumber,
   }) async {
-    final cleanPhone = phoneNumber?.replaceAll(RegExp(r'[^0-9]'), '') ?? '';
-    final text = messageText.length > kWhatsAppMessageMaxChars
-        ? '${messageText.substring(0, kWhatsAppMessageMaxChars - 1)}…'
-        : messageText;
+    final cleanPhone = digitsOnlyPhone(phoneNumber);
+    final text = clipMessage(messageText);
     final encoded = Uri.encodeComponent(text);
 
     final nativeUri = cleanPhone.isNotEmpty

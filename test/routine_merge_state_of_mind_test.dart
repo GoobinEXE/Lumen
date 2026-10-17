@@ -105,5 +105,50 @@ void main() {
       expect(snapshots.single.completedHabits, contains('Ler'));
       expect(snapshots.single.stateOfMind?.labels, contains('focused'));
     });
+
+    test('dois salvamentos: o SoM novo fica no último e o da manhã permanece', () async {
+      final morning = DateTime(2026, 10, 7, 8);
+      final evening = DateTime(2026, 10, 7, 21);
+      await repo.appendSnapshot(
+        RoutineSnapshot(
+          id: 'manha',
+          savedAt: morning,
+          mainFocusAnchor: 'Abrir o editor',
+          waterGlasses: 1,
+          stateOfMind: StateOfMindEntry(
+            valence: 0.2,
+            labels: const {'calm'},
+            timestamp: morning,
+          ),
+        ),
+      );
+      await repo.appendSnapshot(
+        RoutineSnapshot(
+          id: 'noite',
+          savedAt: evening,
+          mainFocusAnchor: 'Fechar o dia',
+          waterGlasses: 4,
+        ),
+      );
+
+      await repo.mergeTodayStateOfMind(
+        StateOfMindEntry(
+          valence: 0.8,
+          labels: const {'grateful'},
+          timestamp: DateTime(2026, 10, 7, 21, 30),
+        ),
+      );
+
+      final snapshots = repo.getSnapshotsForDate(morning);
+      expect(snapshots.map((snapshot) => snapshot.id), ['manha', 'noite']);
+      expect(snapshots.first.waterGlasses, 1);
+      expect(snapshots.first.mainFocusAnchor, 'Abrir o editor');
+      expect(snapshots.first.stateOfMind?.valence, 0.2);
+      expect(snapshots.first.stateOfMind?.labels, contains('calm'));
+      expect(snapshots.last.waterGlasses, 4);
+      expect(snapshots.last.mainFocusAnchor, 'Fechar o dia');
+      expect(snapshots.last.stateOfMind?.valence, 0.8);
+      expect(snapshots.last.stateOfMind?.labels, contains('grateful'));
+    });
   });
 }

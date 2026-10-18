@@ -358,7 +358,7 @@ O caminho rápido grava em dois lugares, com o mesmo timestamp: o histórico (`M
 
 | ID | Feature | Status | Notas |
 |----|---------|--------|-------|
-| S01 | Histórico sono 14 dias | ✅ | a noite que cruza a meia-noite conta no dia em que a pessoa acorda |
+| S01 | Histórico sono 14 dias | ✅ | a noite que cruza a meia-noite conta no dia em que a pessoa acorda; cochilo com mais de 3 h de intervalo não entra nessa noite |
 | S02 | Card última noite (estágios, score) | ✅ | REM/deep/light |
 | S03 | Déficit sono / REM flags | ✅ | domínio `SleepRecord` |
 | S04 | Recuperação (HRV, RHR, passos, exercício) | ✅ | |

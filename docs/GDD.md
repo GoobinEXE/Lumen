@@ -361,7 +361,7 @@ O caminho rápido grava em dois lugares, com o mesmo timestamp: o histórico (`M
 | S01 | Histórico sono 14 dias | ✅ | a noite que cruza a meia-noite conta no dia em que a pessoa acorda |
 | S02 | Card última noite (estágios, score) | ✅ | REM/deep/light |
 | S03 | Déficit sono / REM flags | ✅ | domínio `SleepRecord` |
-| S04 | Recuperação (HRV, RHR, passos, exercício) | ✅ | |
+| S04 | Recuperação (HRV, RHR, passos, exercício) | ✅ | passos do dia vêm da agregação do sistema; relógio e telefone não somam |
 | S05 | Ambiente (luz, dB ambiental/fones) | ✅ | iOS bridge |
 | S06 | Gráficos (`fl_chart`) | ✅ | nos cards |
 | S07 | Correlação sono × humor × recuperação | ✅ | `CorrelationEngine` |

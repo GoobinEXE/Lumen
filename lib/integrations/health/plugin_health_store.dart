@@ -7,6 +7,7 @@ import 'models/daily_recovery_snapshot.dart';
 import 'models/health_demographics.dart';
 import 'models/sleep_night.dart';
 import 'models/sleep_record.dart';
+import 'models/step_count.dart';
 
 /// Cliente compartilhado do plugin `health` (HealthKit no iOS, Health Connect no Android).
 class PluginHealthStore {
@@ -244,6 +245,9 @@ class PluginHealthStore {
         startTime: startTime,
         endTime: now,
       );
+      // HKStatistics / aggregate do Health Connect. Soma crua dobra o
+      // relógio e o telefone; o mapa nulo significa que a query falhou.
+      final platformSteps = await _platformStepsByDay(now: now, days: days);
 
       final snapshots = <DailyRecoverySnapshot>[];
       if (healthData.isNotEmpty) {
@@ -261,9 +265,8 @@ class PluginHealthStore {
 
           final hrvSamples = <double>[];
           final restingSamples = <double>[];
-          var stepsTotal = 0.0;
+          final stepSamples = <StepContribution>[];
           var exerciseTotal = 0.0;
-          var hasSteps = false;
           var hasExercise = false;
 
           for (final p in points) {
@@ -276,9 +279,15 @@ class PluginHealthStore {
               if (rhr != null) restingSamples.add(rhr.toDouble());
             } else if (p.type == HealthDataType.STEPS) {
               final steps = _numericOf(p);
-              if (steps != null) {
-                stepsTotal += steps.toDouble();
-                hasSteps = true;
+              if (steps != null && steps > 0) {
+                stepSamples.add(
+                  StepContribution(
+                    sourceKey: _stepSourceKey(p),
+                    count: steps.toDouble(),
+                    start: p.dateFrom,
+                    end: p.dateTo,
+                  ),
+                );
               }
             } else if (p.type == HealthDataType.EXERCISE_TIME) {
               final exercise = _numericOf(p);
@@ -306,8 +315,32 @@ class PluginHealthStore {
                   ? null
                   : restingSamples.reduce((a, b) => a + b) /
                       restingSamples.length,
-              steps: hasSteps ? stepsTotal.round() : null,
+              steps: platformSteps != null
+                  ? platformSteps[entry.key]
+                  : dedupedStepCount(stepSamples),
               exerciseMinutes: hasExercise ? exerciseTotal : null,
+            ),
+          );
+        }
+      }
+
+      if (platformSteps != null) {
+        final seen = {
+          for (final snap in snapshots)
+            '${snap.date.year}-${snap.date.month}-${snap.date.day}',
+        };
+        for (final entry in platformSteps.entries) {
+          if (seen.contains(entry.key)) continue;
+          final parts = entry.key.split('-');
+          if (parts.length != 3) continue;
+          final year = int.tryParse(parts[0]);
+          final month = int.tryParse(parts[1]);
+          final day = int.tryParse(parts[2]);
+          if (year == null || month == null || day == null) continue;
+          snapshots.add(
+            DailyRecoverySnapshot(
+              date: DateTime(year, month, day),
+              steps: entry.value,
             ),
           );
         }
@@ -377,6 +410,53 @@ class PluginHealthStore {
       }
     }
     return latest;
+  }
+
+  /// Agregado diário do sistema. `null` se a query falhar — aí o fallback
+  /// separa pelo app de origem. Dia sem amostra não entra no mapa.
+  Future<Map<String, int>?> _platformStepsByDay({
+    required DateTime now,
+    required int days,
+  }) async {
+    try {
+      final startDay = DateTime(
+        now.year,
+        now.month,
+        now.day,
+      ).subtract(Duration(days: days - 1));
+      final endDay = DateTime(now.year, now.month, now.day).add(
+        const Duration(days: 1),
+      );
+      final points = await _health.getHealthIntervalDataFromTypes(
+        startDate: startDay,
+        endDate: endDay,
+        types: const [HealthDataType.STEPS],
+        interval: const Duration(days: 1).inSeconds,
+      );
+      final totals = <String, int>{};
+      for (final point in points) {
+        if (point.type != HealthDataType.STEPS) continue;
+        final value = _numericOf(point);
+        if (value == null || value < 0) continue;
+        final key =
+            '${point.dateFrom.year}-${point.dateFrom.month}-${point.dateFrom.day}';
+        totals[key] = value.round();
+      }
+      return totals;
+    } catch (e) {
+      debugPrint('[PluginHealthStore] passos agregados: $e');
+      return null;
+    }
+  }
+
+  /// No Android a origem é o pacote (Samsung e telefone não são o mesmo).
+  /// `sourceDeviceId` do plugin é o aparelho que leu, não o que gravou.
+  String _stepSourceKey(HealthDataPoint point) {
+    final name = point.sourceName.trim();
+    if (name.isNotEmpty) return name;
+    final id = point.sourceId.trim();
+    if (id.isNotEmpty) return id;
+    return '';
   }
 
   num? _numericOf(HealthDataPoint point) {

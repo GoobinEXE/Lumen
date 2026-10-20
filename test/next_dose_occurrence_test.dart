@@ -88,6 +88,30 @@ void main() {
         expect(uniqueMoments, hasLength(6));
       },
     );
+
+    test('8:00 e 08:00 no mesmo dia disputam o mesmo alarme', () {
+      final mondayMorning = DateTime(2026, 9, 21, 6);
+      final slots = upcomingDoseOccurrences(
+        now: mondayMorning,
+        scheduledTimes: const ['8:00', '08:00'],
+        daysOfWeek: const [DateTime.monday, DateTime.monday],
+      );
+
+      expect(slots, hasLength(4));
+      expect(slots.map((slot) => slot.time).toSet(), {'08:00'});
+      expect(slots.map((slot) => slot.at).toSet(), {DateTime(2026, 9, 21, 8)});
+
+      final ids = slots
+          .map(
+            (slot) => doseNotificationId(
+              medicationId: 'med-1',
+              time: slot.time,
+              weekday: slot.weekday,
+            ),
+          )
+          .toSet();
+      expect(ids, hasLength(1));
+    });
   });
 
   group('doseNotificationId', () {

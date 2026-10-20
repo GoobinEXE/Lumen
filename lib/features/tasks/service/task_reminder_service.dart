@@ -236,6 +236,8 @@ class TaskReminderService {
         payload: item.payload,
         mode: mode,
         details: item.details,
+        repeating: item.repeating,
+        matchComponents: item.matchComponents,
       );
     }
 
@@ -261,6 +263,34 @@ class TaskReminderService {
         now: now,
         onceDate: task.onceDate,
       );
+      final anchors = TaskPeriod.anchorFires(
+        task: task,
+        now: now,
+        quietHours: quiet,
+      );
+      final anchorMinutes = <String>{};
+      for (final anchor in anchors) {
+        anchorMinutes.add(_minuteKey(anchor.at));
+        final anchorPeriod = TaskPeriod.window(
+          recurrence: task.recurrence,
+          now: anchor.at,
+          onceDate: task.onceDate,
+        );
+        planned.add(
+          _planned(
+            task: task,
+            l10n: l10n,
+            at: anchor.at,
+            id: taskAnchorNotificationId(
+              taskId: task.id,
+              slotKey: anchor.slotKey,
+            ),
+            periodKey: anchorPeriod.periodKey,
+            repeating: anchor.repeat != TaskAnchorRepeat.once,
+            matchComponents: _matchFor(anchor.repeat),
+          ),
+        );
+      }
       final fires = TaskPeriod.upcomingFires(
         task: task,
         now: now,
@@ -268,38 +298,77 @@ class TaskReminderService {
       );
       for (var i = 0; i < fires.length; i++) {
         final at = fires[i];
+        if (anchorMinutes.contains(_minuteKey(at))) continue;
         planned.add(
-          _PlannedTask(
+          _planned(
+            task: task,
+            l10n: l10n,
+            at: at,
             id: taskNotificationId(
               taskId: task.id,
               periodKey: period.periodKey,
               slot: i,
             ),
-            when: tz.TZDateTime(
-              tz.local,
-              at.year,
-              at.month,
-              at.day,
-              at.hour,
-              at.minute,
-            ),
-            title: l10n.taskReminderTitle(task.title),
-            body: l10n.taskReminderBody,
-            payload: TaskReminderPayload(
-              kind: taskReminderKind,
-              taskId: task.id,
-              title: task.title,
-              periodKey: period.periodKey,
-              alertStyle: task.alertStyle,
-              minutes: task.naggingIntervalMinutes,
-            ).encode(),
-            details: _details(l10n, task.alertStyle),
+            periodKey: period.periodKey,
+            repeating: false,
+            matchComponents: null,
           ),
         );
       }
     }
     return planned;
   }
+
+  _PlannedTask _planned({
+    required TaskItem task,
+    required AppLocalizations l10n,
+    required DateTime at,
+    required int id,
+    required String periodKey,
+    required bool repeating,
+    required DateTimeComponents? matchComponents,
+  }) {
+    return _PlannedTask(
+      id: id,
+      when: tz.TZDateTime(
+        tz.local,
+        at.year,
+        at.month,
+        at.day,
+        at.hour,
+        at.minute,
+      ),
+      title: l10n.taskReminderTitle(task.title),
+      body: l10n.taskReminderBody,
+      payload: TaskReminderPayload(
+        kind: taskReminderKind,
+        taskId: task.id,
+        title: task.title,
+        periodKey: periodKey,
+        alertStyle: task.alertStyle,
+        minutes: task.naggingIntervalMinutes,
+      ).encode(),
+      details: _details(l10n, task.alertStyle),
+      repeating: repeating,
+      matchComponents: matchComponents,
+    );
+  }
+
+  DateTimeComponents? _matchFor(TaskAnchorRepeat repeat) {
+    switch (repeat) {
+      case TaskAnchorRepeat.once:
+        return null;
+      case TaskAnchorRepeat.daily:
+        return DateTimeComponents.time;
+      case TaskAnchorRepeat.weekly:
+        return DateTimeComponents.dayOfWeekAndTime;
+      case TaskAnchorRepeat.monthly:
+        return DateTimeComponents.dayOfMonthAndTime;
+    }
+  }
+
+  String _minuteKey(DateTime at) =>
+      '${at.year}-${at.month}-${at.day}-${at.hour}-${at.minute}';
 
   Future<void> _zoned({
     required int id,
@@ -309,6 +378,8 @@ class TaskReminderService {
     required String payload,
     required AndroidScheduleMode mode,
     required NotificationDetails details,
+    required bool repeating,
+    required DateTimeComponents? matchComponents,
   }) {
     return LocalNotificationScheduler.zonedSchedule(
       id: id,
@@ -317,7 +388,8 @@ class TaskReminderService {
       when: when,
       payload: payload,
       mode: mode,
-      repeating: false,
+      repeating: repeating,
+      matchDateTimeComponents: matchComponents,
       details: details,
     );
   }
@@ -470,6 +542,8 @@ class _PlannedTask {
     required this.body,
     required this.payload,
     required this.details,
+    required this.repeating,
+    required this.matchComponents,
   });
 
   final int id;
@@ -478,6 +552,8 @@ class _PlannedTask {
   final String body;
   final String payload;
   final NotificationDetails details;
+  final bool repeating;
+  final DateTimeComponents? matchComponents;
 }
 
 class _StoredSchedule {

@@ -1,6 +1,26 @@
 import 'task_item.dart';
 import 'task_quiet_hours.dart';
 
+/// Como o horário da tarefa volta a tocar com o app fechado.
+enum TaskAnchorRepeat { once, daily, weekly, monthly }
+
+/// Próximo toque do horário em si, fora do nagging de minutos.
+///
+/// Diária, semanal e mensal repetem no sistema. Quinzenal e pontual
+/// agendam as próximas ocorrências uma a uma: o aparelho não tem
+/// intervalo de 14 dias.
+class TaskAnchorFire {
+  const TaskAnchorFire({
+    required this.at,
+    required this.repeat,
+    required this.slotKey,
+  });
+
+  final DateTime at;
+  final TaskAnchorRepeat repeat;
+  final String slotKey;
+}
+
 /// Janela vigente de uma tarefa — sem dívida do período anterior.
 class TaskPeriodWindow {
   const TaskPeriodWindow({
@@ -149,6 +169,97 @@ class TaskPeriod {
     }
   }
 
+  /// Horário que continua tocando sem abrir o app.
+  ///
+  /// O nagging ([upcomingFires]) mora só na janela vigente. Este toque é o
+  /// relógio da tarefa: amanhã, a outra semana, o outro mês.
+  static List<TaskAnchorFire> anchorFires({
+    required TaskItem task,
+    required DateTime now,
+    required TaskQuietHours quietHours,
+  }) {
+    if (!task.hasReminder || !task.active) return const [];
+    final parsed = parseTimeOfDay(task.timeOfDay!);
+    if (parsed == null) return const [];
+    final hour = parsed.$1;
+    final minute = parsed.$2;
+    final completed = isCompletedInCurrentPeriod(task, now);
+    final current = window(
+      recurrence: task.recurrence,
+      now: now,
+      onceDate: task.onceDate,
+    );
+
+    switch (task.recurrence) {
+      case TaskRecurrence.once:
+        final once = _onceAnchor(
+          task: task,
+          now: now,
+          quietHours: quietHours,
+          hour: hour,
+          minute: minute,
+          completed: completed,
+        );
+        return once == null ? const [] : [once];
+      case TaskRecurrence.daily:
+        final next = _nextClock(
+          now: now,
+          quietHours: quietHours,
+          hour: hour,
+          minute: minute,
+          completed: completed,
+          current: current,
+          stepDays: 1,
+          lookbackDays: 1,
+        );
+        if (next == null) return const [];
+        return [
+          TaskAnchorFire(at: next, repeat: TaskAnchorRepeat.daily, slotKey: 'daily'),
+        ];
+      case TaskRecurrence.weekly:
+        return _weekdayAnchors(
+          now: now,
+          quietHours: quietHours,
+          hour: hour,
+          minute: minute,
+          weekdays: task.weekdays,
+          completed: completed,
+          current: current,
+          stepDays: 7,
+          repeat: TaskAnchorRepeat.weekly,
+        );
+      case TaskRecurrence.biweekly:
+        return _blockAnchors(
+          task: task,
+          now: now,
+          quietHours: quietHours,
+          hour: hour,
+          minute: minute,
+          completed: completed,
+          current: current,
+          count: 2,
+        );
+      case TaskRecurrence.monthly:
+        final next = _nextMonthly(
+          task: task,
+          now: now,
+          quietHours: quietHours,
+          hour: hour,
+          minute: minute,
+          completed: completed,
+          current: current,
+        );
+        if (next == null) return const [];
+        return [
+          TaskAnchorFire(
+            at: next,
+            repeat: TaskAnchorRepeat.monthly,
+            slotKey: 'monthly',
+          ),
+        ];
+    }
+  }
+
   /// Próximos toques na janela vigente (nagging), filtrados por quiet hours.
   static List<DateTime> upcomingFires({
     required TaskItem task,
@@ -274,5 +385,230 @@ class TaskPeriod {
   static int _daysInMonth(DateTime monthStart) {
     final next = DateTime(monthStart.year, monthStart.month + 1, 1);
     return next.subtract(const Duration(days: 1)).day;
+  }
+
+  static DateTime _afterQuiet(DateTime at, TaskQuietHours quiet) {
+    if (!quiet.contains(at)) return at;
+    return quiet.nextAllowed(at);
+  }
+
+  static bool _rawInCompletedPeriod({
+    required bool completed,
+    required TaskPeriodWindow current,
+    required DateTime raw,
+    required TaskRecurrence recurrence,
+    DateTime? onceDate,
+  }) {
+    if (!completed) return false;
+    final period = window(
+      recurrence: recurrence,
+      now: raw,
+      onceDate: onceDate,
+    );
+    return period.periodKey == current.periodKey;
+  }
+
+  static DateTime? _nextClock({
+    required DateTime now,
+    required TaskQuietHours quietHours,
+    required int hour,
+    required int minute,
+    required bool completed,
+    required TaskPeriodWindow current,
+    required int stepDays,
+    required int lookbackDays,
+  }) {
+    var day = DateTime(now.year, now.month, now.day).subtract(
+      Duration(days: lookbackDays),
+    );
+    DateTime? best;
+    for (var i = 0; i < lookbackDays + stepDays + 2; i++) {
+      final raw = DateTime(day.year, day.month, day.day, hour, minute);
+      final blocked = _rawInCompletedPeriod(
+        completed: completed,
+        current: current,
+        raw: raw,
+        recurrence: stepDays == 1
+            ? TaskRecurrence.daily
+            : TaskRecurrence.weekly,
+      );
+      if (!blocked) {
+        final at = _afterQuiet(raw, quietHours);
+        if (at.isAfter(now) && (best == null || at.isBefore(best))) {
+          best = at;
+        }
+      }
+      day = day.add(Duration(days: stepDays));
+    }
+    return best;
+  }
+
+  static TaskAnchorFire? _onceAnchor({
+    required TaskItem task,
+    required DateTime now,
+    required TaskQuietHours quietHours,
+    required int hour,
+    required int minute,
+    required bool completed,
+  }) {
+    if (completed) return null;
+    final anchor = task.onceDate == null
+        ? DateTime(now.year, now.month, now.day)
+        : DateTime(
+            task.onceDate!.year,
+            task.onceDate!.month,
+            task.onceDate!.day,
+          );
+    final at = _afterQuiet(
+      DateTime(anchor.year, anchor.month, anchor.day, hour, minute),
+      quietHours,
+    );
+    if (!at.isAfter(now)) return null;
+    return TaskAnchorFire(
+      at: at,
+      repeat: TaskAnchorRepeat.once,
+      slotKey: 'once',
+    );
+  }
+
+  static List<TaskAnchorFire> _weekdayAnchors({
+    required DateTime now,
+    required TaskQuietHours quietHours,
+    required int hour,
+    required int minute,
+    required List<int> weekdays,
+    required bool completed,
+    required TaskPeriodWindow current,
+    required int stepDays,
+    required TaskAnchorRepeat repeat,
+  }) {
+    final wanted = (weekdays.isEmpty
+            ? const {1, 2, 3, 4, 5, 6, 7}
+            : weekdays.toSet())
+        .toList()
+      ..sort();
+    final fires = <TaskAnchorFire>[];
+    final seen = <String>{};
+    for (final weekday in wanted) {
+      if (weekday < DateTime.monday || weekday > DateTime.sunday) continue;
+      var day = DateTime(now.year, now.month, now.day).subtract(
+        const Duration(days: 7),
+      );
+      while (day.weekday != weekday) {
+        day = day.add(const Duration(days: 1));
+      }
+      DateTime? best;
+      for (var i = 0; i < 4; i++) {
+        final raw = DateTime(day.year, day.month, day.day, hour, minute);
+        final blocked = _rawInCompletedPeriod(
+          completed: completed,
+          current: current,
+          raw: raw,
+          recurrence: TaskRecurrence.weekly,
+        );
+        if (!blocked) {
+          final at = _afterQuiet(raw, quietHours);
+          if (at.isAfter(now) && (best == null || at.isBefore(best))) {
+            best = at;
+          }
+        }
+        day = day.add(Duration(days: stepDays));
+      }
+      if (best == null) continue;
+      final minuteKey =
+          '${best.year}-${best.month}-${best.day}-${best.hour}-${best.minute}';
+      if (!seen.add(minuteKey)) continue;
+      fires.add(
+        TaskAnchorFire(
+          at: best,
+          repeat: repeat,
+          slotKey: 'wd-$weekday',
+        ),
+      );
+    }
+    fires.sort((a, b) => a.at.compareTo(b.at));
+    return fires;
+  }
+
+  static List<TaskAnchorFire> _blockAnchors({
+    required TaskItem task,
+    required DateTime now,
+    required TaskQuietHours quietHours,
+    required int hour,
+    required int minute,
+    required bool completed,
+    required TaskPeriodWindow current,
+    required int count,
+  }) {
+    final fires = <TaskAnchorFire>[];
+    final seen = <String>{};
+    var cursor = now.subtract(const Duration(days: 14));
+    for (var i = 0; i < 6 && fires.length < count; i++) {
+      final period = window(
+        recurrence: TaskRecurrence.biweekly,
+        now: cursor,
+      );
+      final raw = _firstWeekdayFire(
+        period: period,
+        weekdays: task.weekdays,
+        hour: hour,
+        minute: minute,
+      );
+      final blocked = raw != null &&
+          _rawInCompletedPeriod(
+            completed: completed,
+            current: current,
+            raw: raw,
+            recurrence: TaskRecurrence.biweekly,
+          );
+      if (raw != null && !blocked) {
+        final at = _afterQuiet(raw, quietHours);
+        final minuteKey =
+            '${at.year}-${at.month}-${at.day}-${at.hour}-${at.minute}';
+        if (at.isAfter(now) && seen.add(minuteKey)) {
+          fires.add(
+            TaskAnchorFire(
+              at: at,
+              repeat: TaskAnchorRepeat.once,
+              slotKey: 'biweekly-${fires.length}',
+            ),
+          );
+        }
+      }
+      cursor = period.end.add(const Duration(hours: 1));
+    }
+    return fires;
+  }
+
+  static DateTime? _nextMonthly({
+    required TaskItem task,
+    required DateTime now,
+    required TaskQuietHours quietHours,
+    required int hour,
+    required int minute,
+    required bool completed,
+    required TaskPeriodWindow current,
+  }) {
+    var month = DateTime(now.year, now.month - 1, 1);
+    DateTime? best;
+    for (var i = 0; i < 4; i++) {
+      final last = _daysInMonth(month);
+      final day = task.dayOfMonth.clamp(1, last);
+      final raw = DateTime(month.year, month.month, day, hour, minute);
+      final blocked = _rawInCompletedPeriod(
+        completed: completed,
+        current: current,
+        raw: raw,
+        recurrence: TaskRecurrence.monthly,
+      );
+      if (!blocked) {
+        final at = _afterQuiet(raw, quietHours);
+        if (at.isAfter(now) && (best == null || at.isBefore(best))) {
+          best = at;
+        }
+      }
+      month = DateTime(month.year, month.month + 1, 1);
+    }
+    return best;
   }
 }

@@ -154,6 +154,161 @@ void main() {
     });
   });
 
+  group('TaskPeriod.anchorFires', () {
+    const quiet = TaskQuietHours.defaults();
+
+    test('diária das 9h de hoje à tarde toca amanhã e repete', () {
+      final task = TaskItem(
+        id: 'sun',
+        title: 'Tomar sol',
+        timeOfDay: '09:00',
+      );
+      final fires = TaskPeriod.anchorFires(
+        task: task,
+        now: DateTime(2026, 10, 3, 15),
+        quietHours: quiet,
+      );
+      expect(fires, hasLength(1));
+      expect(fires.single.at, DateTime(2026, 10, 4, 9));
+      expect(fires.single.repeat, TaskAnchorRepeat.daily);
+      expect(fires.single.slotKey, 'daily');
+    });
+
+    test('diária ainda hoje fica hoje', () {
+      final fires = TaskPeriod.anchorFires(
+        task: TaskItem(id: 'sun', title: 'Tomar sol', timeOfDay: '09:00'),
+        now: DateTime(2026, 10, 3, 8),
+        quietHours: quiet,
+      );
+      expect(fires.single.at, DateTime(2026, 10, 3, 9));
+    });
+
+    test('concluída de manhã empurra o relógio para amanhã', () {
+      final now = DateTime(2026, 10, 3, 8);
+      final period = TaskPeriod.window(
+        recurrence: TaskRecurrence.daily,
+        now: now,
+      );
+      final fires = TaskPeriod.anchorFires(
+        task: TaskItem(
+          id: 'sun',
+          title: 'Tomar sol',
+          timeOfDay: '09:00',
+          completedPeriodKey: period.periodKey,
+        ),
+        now: now,
+        quietHours: quiet,
+      );
+      expect(fires.single.at, DateTime(2026, 10, 4, 9));
+    });
+
+    test('semanal de segunda, no domingo, cai na segunda seguinte', () {
+      final fires = TaskPeriod.anchorFires(
+        task: const TaskItem(
+          id: 'book',
+          title: 'Ler o livro',
+          timeOfDay: '18:00',
+          recurrence: TaskRecurrence.weekly,
+          weekdays: [DateTime.monday],
+        ),
+        now: DateTime(2026, 10, 4, 19),
+        quietHours: quiet,
+      );
+      expect(fires, hasLength(1));
+      expect(fires.single.at, DateTime(2026, 10, 5, 18));
+      expect(fires.single.repeat, TaskAnchorRepeat.weekly);
+    });
+
+    test('semanal em vários dias marca cada dia, não só o primeiro', () {
+      final fires = TaskPeriod.anchorFires(
+        task: const TaskItem(
+          id: 'train',
+          title: 'Treino',
+          timeOfDay: '09:00',
+          recurrence: TaskRecurrence.weekly,
+          weekdays: [DateTime.monday, DateTime.wednesday, DateTime.friday],
+        ),
+        now: DateTime(2026, 10, 5, 8), // segunda 8h
+        quietHours: quiet,
+      );
+      expect(
+        fires.map((fire) => fire.at).toList(),
+        [
+          DateTime(2026, 10, 5, 9),
+          DateTime(2026, 10, 7, 9),
+          DateTime(2026, 10, 9, 9),
+        ],
+      );
+    });
+
+    test('23h no silêncio vira 7h e esse horário repete', () {
+      final fires = TaskPeriod.anchorFires(
+        task: TaskItem(id: 'night', title: 'Fechar o dia', timeOfDay: '23:00'),
+        now: DateTime(2026, 10, 3, 15),
+        quietHours: quiet,
+      );
+      expect(fires.single.at, DateTime(2026, 10, 4, 7));
+      expect(fires.single.repeat, TaskAnchorRepeat.daily);
+    });
+
+    test('pontual futura entra uma vez; horário passado não entra', () {
+      final future = TaskPeriod.anchorFires(
+        task: TaskItem(
+          id: 'dentist',
+          title: 'Dentista',
+          timeOfDay: '15:00',
+          recurrence: TaskRecurrence.once,
+          onceDate: DateTime(2026, 10, 8),
+        ),
+        now: DateTime(2026, 10, 3, 9),
+        quietHours: quiet,
+      );
+      expect(future.single.at, DateTime(2026, 10, 8, 15));
+      expect(future.single.repeat, TaskAnchorRepeat.once);
+
+      final past = TaskPeriod.anchorFires(
+        task: TaskItem(
+          id: 'dentist',
+          title: 'Dentista',
+          timeOfDay: '08:00',
+          recurrence: TaskRecurrence.once,
+          onceDate: DateTime(2026, 10, 3),
+        ),
+        now: DateTime(2026, 10, 3, 9),
+        quietHours: quiet,
+      );
+      expect(past, isEmpty);
+    });
+
+    test('mensal depois do dia do mês vai para o mês seguinte', () {
+      final fires = TaskPeriod.anchorFires(
+        task: TaskItem(
+          id: 'bill',
+          title: 'Pagar',
+          timeOfDay: '10:00',
+          recurrence: TaskRecurrence.monthly,
+          dayOfMonth: 2,
+        ),
+        now: DateTime(2026, 10, 3, 12),
+        quietHours: quiet,
+      );
+      expect(fires.single.at, DateTime(2026, 11, 2, 10));
+      expect(fires.single.repeat, TaskAnchorRepeat.monthly);
+    });
+
+    test('id do horário não muda quando o dia muda', () {
+      final today = taskAnchorNotificationId(taskId: 'sun', slotKey: 'daily');
+      final tomorrow = taskAnchorNotificationId(taskId: 'sun', slotKey: 'daily');
+      expect(today, tomorrow);
+      expect(
+        today,
+        isNot(
+          taskNotificationId(taskId: 'sun', periodKey: '2026-10-03', slot: 0),
+        ),
+      );
+    });
+  });
+
   group('taskReminderLaunchIntent', () {
     final payload = TaskReminderPayload(
       kind: taskReminderKind,

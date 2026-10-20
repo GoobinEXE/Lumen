@@ -20,6 +20,15 @@ int taskNotificationId({
   return _stableId('task|$taskId|$periodKey|$slot');
 }
 
+/// Id estável do horário da tarefa. Não leva a chave do período: o mesmo
+/// aviso repete no sistema depois que a janela de hoje acaba.
+int taskAnchorNotificationId({
+  required String taskId,
+  required String slotKey,
+}) {
+  return _stableId('task-anchor|$taskId|$slotKey');
+}
+
 int _stableId(String key) {
   var hash = 0x811c9dc5;
   for (final unit in key.codeUnits) {

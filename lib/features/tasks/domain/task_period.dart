@@ -36,27 +36,27 @@ class TaskPeriod {
             : DateTime(onceDate.year, onceDate.month, onceDate.day);
         return TaskPeriodWindow(
           start: anchor,
-          end: anchor.add(const Duration(days: 1)),
+          end: _addCalendarDays(anchor, 1),
           periodKey: _dayKey(anchor),
         );
       case TaskRecurrence.daily:
         return TaskPeriodWindow(
           start: day,
-          end: day.add(const Duration(days: 1)),
+          end: _addCalendarDays(day, 1),
           periodKey: _dayKey(day),
         );
       case TaskRecurrence.weekly:
         final start = _mondayOf(day);
         return TaskPeriodWindow(
           start: start,
-          end: start.add(const Duration(days: 7)),
+          end: _addCalendarDays(start, 7),
           periodKey: _weekKey(start),
         );
       case TaskRecurrence.biweekly:
         final start = _biweeklyStart(day);
         return TaskPeriodWindow(
           start: start,
-          end: start.add(const Duration(days: 14)),
+          end: _addCalendarDays(start, 14),
           periodKey: 'B${_dayKey(start)}',
         );
       case TaskRecurrence.monthly:
@@ -228,14 +228,27 @@ class TaskPeriod {
 
   static DateTime _mondayOf(DateTime day) {
     final date = DateTime(day.year, day.month, day.day);
-    return date.subtract(Duration(days: date.weekday - DateTime.monday));
+    return _addCalendarDays(date, DateTime.monday - date.weekday);
   }
 
   static DateTime _biweeklyStart(DateTime day) {
     final monday = _mondayOf(day);
-    final days = monday.difference(biweeklyEpoch).inDays;
+    final days = _calendarDaysBetween(biweeklyEpoch, monday);
     final block = days < 0 ? ((days - 13) ~/ 14) : days ~/ 14;
-    return biweeklyEpoch.add(Duration(days: block * 14));
+    return _addCalendarDays(biweeklyEpoch, block * 14);
+  }
+
+  static DateTime _addCalendarDays(DateTime day, int days) {
+    final shifted = DateTime.utc(day.year, day.month, day.day).add(
+      Duration(days: days),
+    );
+    return DateTime(shifted.year, shifted.month, shifted.day);
+  }
+
+  static int _calendarDaysBetween(DateTime from, DateTime to) {
+    final start = DateTime.utc(from.year, from.month, from.day);
+    final end = DateTime.utc(to.year, to.month, to.day);
+    return end.difference(start).inDays;
   }
 
   static DateTime? _firstWeekdayFire({
@@ -248,7 +261,7 @@ class TaskPeriod {
         ? const {1, 2, 3, 4, 5, 6, 7}
         : weekdays.toSet();
     for (var offset = 0; offset < 14; offset++) {
-      final day = period.start.add(Duration(days: offset));
+      final day = _addCalendarDays(period.start, offset);
       if (!day.isBefore(period.end)) break;
       if (!wanted.contains(day.weekday)) continue;
       return DateTime(day.year, day.month, day.day, hour, minute);
@@ -264,15 +277,16 @@ class TaskPeriod {
   }
 
   static String _weekKey(DateTime monday) {
-    final thursday = monday.add(const Duration(days: 3));
+    final thursday = _addCalendarDays(monday, 3);
     final jan4 = DateTime(thursday.year, 1, 4);
     final week1Monday = _mondayOf(jan4);
-    final week = (monday.difference(week1Monday).inDays ~/ 7) + 1;
+    final week = (_calendarDaysBetween(week1Monday, monday) ~/ 7) + 1;
     return '${thursday.year}-W${week.toString().padLeft(2, '0')}';
   }
 
   static int _daysInMonth(DateTime monthStart) {
+    final first = DateTime(monthStart.year, monthStart.month, 1);
     final next = DateTime(monthStart.year, monthStart.month + 1, 1);
-    return next.subtract(const Duration(days: 1)).day;
+    return _calendarDaysBetween(first, next);
   }
 }

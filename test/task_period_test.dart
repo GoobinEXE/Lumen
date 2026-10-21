@@ -41,6 +41,71 @@ void main() {
       expect(weekB.start, DateTime(2026, 10, 5));
     });
 
+    test('virada do horário de verão não repete a chave da semana', () {
+      final before = TaskPeriod.window(
+        recurrence: TaskRecurrence.weekly,
+        now: DateTime(2026, 3, 23, 12),
+      );
+      final after = TaskPeriod.window(
+        recurrence: TaskRecurrence.weekly,
+        now: DateTime(2026, 3, 30, 12),
+      );
+      expect(before.periodKey, '2026-W13');
+      expect(after.periodKey, '2026-W14');
+      expect(before.start, DateTime(2026, 3, 23));
+      expect(after.start, DateTime(2026, 3, 30));
+      expect(
+        TaskPeriod.isCompletedInCurrentPeriod(
+          TaskItem(
+            id: 'w',
+            title: 'Revisão',
+            recurrence: TaskRecurrence.weekly,
+            completedPeriodKey: before.periodKey,
+          ),
+          DateTime(2026, 3, 30, 9),
+        ),
+        isFalse,
+      );
+    });
+
+    test('quinzena nova não herda a conclusão da anterior', () {
+      final before = TaskPeriod.window(
+        recurrence: TaskRecurrence.biweekly,
+        now: DateTime(2026, 3, 30, 12),
+      );
+      final after = TaskPeriod.window(
+        recurrence: TaskRecurrence.biweekly,
+        now: DateTime(2026, 4, 6, 9),
+      );
+      expect(before.start, DateTime(2026, 3, 23));
+      expect(before.end, DateTime(2026, 4, 6));
+      expect(after.start, DateTime(2026, 4, 6));
+      expect(before.periodKey, 'B2026-03-23');
+      expect(after.periodKey, 'B2026-04-06');
+      expect(
+        TaskPeriod.isCompletedInCurrentPeriod(
+          TaskItem(
+            id: 'b',
+            title: 'Revisão',
+            recurrence: TaskRecurrence.biweekly,
+            completedPeriodKey: before.periodKey,
+          ),
+          DateTime(2026, 4, 6, 9),
+        ),
+        isFalse,
+      );
+    });
+
+    test('dia civil inclui a última hora mesmo na volta do relógio', () {
+      final window = TaskPeriod.window(
+        recurrence: TaskRecurrence.daily,
+        now: DateTime(2026, 11, 1, 23, 30),
+      );
+      expect(window.start, DateTime(2026, 11, 1));
+      expect(window.end, DateTime(2026, 11, 2));
+      expect(window.contains(DateTime(2026, 11, 1, 23, 30)), isTrue);
+    });
+
     test('once fica no dia pontual', () {
       final window = TaskPeriod.window(
         recurrence: TaskRecurrence.once,

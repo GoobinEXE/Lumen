@@ -182,16 +182,67 @@ void main() {
   });
 
   test('onboarding não aparece se já houver dados locais', () async {
-    SharedPreferences.setMockInitialValues({
-      'noa_mood_entries_v2': '[]',
-    });
+    SharedPreferences.setMockInitialValues({'noa_mood_entries_v2': '[]'});
     final prefs = await SharedPreferences.getInstance();
     expect(shouldShowFirstLaunchOnboarding(prefs), isFalse);
     expect(prefs.getBool(onboardingDoneKey), isTrue);
   });
 
+  test('medicação, perfil ou sync já ligado pulam o onboarding', () async {
+    final seeds = <Map<String, Object>>[
+      {'noa_medications_list_v2': '[]'},
+      {UserProfileRepository.prefsKey: '{}'},
+      {'noa_health_sync_enabled': true},
+    ];
+    for (final seed in seeds) {
+      SharedPreferences.setMockInitialValues(seed);
+      final prefs = await SharedPreferences.getInstance();
+      expect(shouldShowFirstLaunchOnboarding(prefs), isFalse);
+      expect(prefs.getBool(onboardingDoneKey), isTrue);
+    }
+  });
+
+  test('sync de saúde desligado ainda mostra o onboarding', () async {
+    SharedPreferences.setMockInitialValues({'noa_health_sync_enabled': false});
+    final prefs = await SharedPreferences.getInstance();
+    expect(shouldShowFirstLaunchOnboarding(prefs), isTrue);
+    expect(prefs.getBool(onboardingDoneKey), isNot(isTrue));
+  });
+
+  test('perfil ilegível não é apagado na leitura', () async {
+    SharedPreferences.setMockInitialValues({
+      UserProfileRepository.prefsKey: '[1, 2]',
+    });
+    final prefs = await SharedPreferences.getInstance();
+    final repo = UserProfileRepository(prefs);
+
+    final read = repo.read();
+
+    expect(read.trimmedName, isNull);
+    expect(read.birthDate, isNull);
+    expect(prefs.getString(UserProfileRepository.prefsKey), '[1, 2]');
+  });
+
+  test('id vazio do perfil não regrava o JSON na leitura', () async {
+    const raw = '{"id":"","name":"Ana","updatedAt":"2026-10-02T00:00:00.000"}';
+    SharedPreferences.setMockInitialValues({
+      UserProfileRepository.prefsKey: raw,
+    });
+    final prefs = await SharedPreferences.getInstance();
+    final repo = UserProfileRepository(prefs);
+
+    final read = repo.read();
+
+    expect(read.id, isNotEmpty);
+    expect(read.trimmedName, 'Ana');
+    expect(prefs.getString(UserProfileRepository.prefsKey), raw);
+  });
+
   group('OnboardingProfileDraft', () {
-    final emptyProfile = UserProfile(id: 'u1', updatedAt: DateTime(2026, 10, 6));
+    final emptyProfile = UserProfile(
+      id: 'u1',
+      updatedAt: DateTime(2026, 10, 6),
+    );
 
     test('sem Health exige todos os campos antes de concluir', () {
       final draft = OnboardingProfileDraft.fromProfile(emptyProfile);
@@ -200,7 +251,10 @@ void main() {
         draft.requiredFromUser,
         equals(OnboardingProfileField.values.toSet()),
       );
-      expect(draft.missingFields, equals(OnboardingProfileField.values.toSet()));
+      expect(
+        draft.missingFields,
+        equals(OnboardingProfileField.values.toSet()),
+      );
       expect(draft.isComplete, isFalse);
     });
 
@@ -245,18 +299,19 @@ void main() {
     });
 
     test('rascunho completo vira perfil com importedFromHealth', () {
-      final draft = OnboardingProfileDraft.fromProfile(
-        emptyProfile,
-        demographics: ProfileDemographics(
-          birthDate: DateTime(1998, 5, 20),
-          weightKg: 62.5,
-          heightCm: 168,
-          biologicalSex: 'female',
-        ),
-      ).copyWith(
-        name: '  Ana ',
-        voiceToneProfile: VoiceToneProfile.femaleAdult,
-      );
+      final draft =
+          OnboardingProfileDraft.fromProfile(
+            emptyProfile,
+            demographics: ProfileDemographics(
+              birthDate: DateTime(1998, 5, 20),
+              weightKg: 62.5,
+              heightCm: 168,
+              biologicalSex: 'female',
+            ),
+          ).copyWith(
+            name: '  Ana ',
+            voiceToneProfile: VoiceToneProfile.femaleAdult,
+          );
       expect(draft.isComplete, isTrue);
 
       final profile = draft.applyTo(emptyProfile);
@@ -290,8 +345,10 @@ void main() {
     test('campo vazio não conta como inválido; fora da faixa conta', () {
       final base = OnboardingProfileDraft.fromProfile(emptyProfile);
       expect(base.hasInvalidMetrics, isFalse);
-      expect(base.copyWith(heightCm: 168, weightKg: 62).hasInvalidMetrics,
-          isFalse);
+      expect(
+        base.copyWith(heightCm: 168, weightKg: 62).hasInvalidMetrics,
+        isFalse,
+      );
       expect(base.copyWith(heightCm: 1.68).hasInvalidMetrics, isTrue);
       expect(base.copyWith(weightKg: 62500).hasInvalidMetrics, isTrue);
       // Limpar o campo volta a ser branco, não erro.

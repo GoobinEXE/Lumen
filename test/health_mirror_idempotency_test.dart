@@ -16,37 +16,40 @@ import 'package:noa/l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  test('o mesmo salvamento não espelha água, hábito e humor outra vez', () async {
-    SharedPreferences.setMockInitialValues({});
-    final prefs = await SharedPreferences.getInstance();
-    final health = _RecordingHealth();
-    final when = DateTime(2026, 10, 2, 9, 30);
-    final current = DailyRoutineState(
-      date: DateTime(2026, 10, 2),
-      waterGlasses: 2,
-      completedHabits: const {'Respirar um minuto'},
-      stateOfMind: StateOfMindEntry(timestamp: when, valence: 0.4),
-    );
-    final previous = DailyRoutineState(date: current.date);
-
-    Future<void> mirror() {
-      return RoutineHealthMirror.mirrorIfEnabled(
-        prefs: prefs,
-        healthService: health,
-        snapshotId: 'snap-1',
-        previous: previous,
-        current: current,
-        syncEnabled: true,
+  test(
+    'o mesmo salvamento não espelha água, hábito e humor outra vez',
+    () async {
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+      final health = _RecordingHealth();
+      final when = DateTime(2026, 10, 2, 9, 30);
+      final current = DailyRoutineState(
+        date: DateTime(2026, 10, 2),
+        waterGlasses: 2,
+        completedHabits: const {'Respirar um minuto'},
+        stateOfMind: StateOfMindEntry(timestamp: when, valence: 0.4),
       );
-    }
+      final previous = DailyRoutineState(date: current.date);
 
-    await mirror();
-    await mirror();
+      Future<void> mirror() {
+        return RoutineHealthMirror.mirrorIfEnabled(
+          prefs: prefs,
+          healthService: health,
+          snapshotId: 'snap-1',
+          previous: previous,
+          current: current,
+          syncEnabled: true,
+        );
+      }
 
-    expect(health.waterWrites, 2);
-    expect(health.mindWrites, 1);
-    expect(health.somWrites, 1);
-  });
+      await mirror();
+      await mirror();
+
+      expect(health.waterWrites, 2);
+      expect(health.mindWrites, 1);
+      expect(health.somWrites, 1);
+    },
+  );
 
   test(
     'dois snapshots do mesmo dia (água 2 depois 3) espelham só o delta',
@@ -144,12 +147,132 @@ void main() {
     expect(await repo.logById('local-1'), isNotNull);
     expect(await repo.logById('apple_1_m1'), isNull);
   });
+
+  test('sync desligado não lê State of Mind do Saúde', () async {
+    final local = DailyRoutineState(
+      date: DateTime(2026, 10, 21),
+      stateOfMind: StateOfMindEntry(
+        timestamp: DateTime(2026, 10, 21, 8),
+        valence: 0.2,
+      ),
+    );
+    final health = _RecordingHealth()
+      ..somHistory = [
+        StateOfMindEntry(timestamp: DateTime(2026, 10, 21, 21), valence: 0.9),
+      ];
+
+    final merged = await RoutineHealthMirror.mergeStateOfMindFromHealth(
+      local: local,
+      syncEnabled: false,
+      healthService: health,
+    );
+
+    expect(health.somReads, 0);
+    expect(identical(merged, local), isTrue);
+  });
+
+  test('SoM do Saúde entra só no dia civil da rotina', () async {
+    final day = DateTime(2026, 10, 21);
+    final health = _RecordingHealth()
+      ..somHistory = [
+        StateOfMindEntry(
+          timestamp: DateTime(2026, 10, 22),
+          valence: -1,
+          labels: const {'sad'},
+        ),
+        StateOfMindEntry(
+          timestamp: DateTime(2026, 10, 21, 23, 59),
+          valence: 0.8,
+          labels: const {'calm'},
+        ),
+        StateOfMindEntry(
+          timestamp: DateTime(2026, 10, 20, 23),
+          valence: -0.4,
+          labels: const {'angry'},
+        ),
+      ];
+
+    final merged = await RoutineHealthMirror.mergeStateOfMindFromHealth(
+      local: DailyRoutineState(date: day),
+      syncEnabled: true,
+      healthService: health,
+    );
+
+    expect(merged.stateOfMind?.valence, 0.8);
+    expect(merged.stateOfMind?.labels, {'calm'});
+    expect(merged.stateOfMind?.source, StateOfMindSource.appleHealth);
+  });
+
+  test(
+    'SoM local mais novo permanece quando a amostra da Apple é antiga',
+    () async {
+      final localSom = StateOfMindEntry(
+        timestamp: DateTime(2026, 10, 21, 21),
+        valence: 0.9,
+        source: StateOfMindSource.lumen,
+      );
+      final local = DailyRoutineState(
+        date: DateTime(2026, 10, 21),
+        stateOfMind: localSom,
+      );
+      final health = _RecordingHealth()
+        ..somHistory = [
+          StateOfMindEntry(
+            timestamp: DateTime(2026, 10, 21, 8),
+            valence: -0.2,
+            labels: const {'sad'},
+          ),
+        ];
+
+      final merged = await RoutineHealthMirror.mergeStateOfMindFromHealth(
+        local: local,
+        syncEnabled: true,
+        healthService: health,
+      );
+
+      expect(identical(merged, local), isTrue);
+      expect(merged.stateOfMind?.valence, 0.9);
+      expect(merged.stateOfMind?.source, StateOfMindSource.lumen);
+    },
+  );
+
+  test('amostra vinda do Saúde não é escrita de volta', () async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    final health = _RecordingHealth();
+    final day = DateTime(2026, 10, 21, 9);
+
+    await RoutineHealthMirror.mirrorStateOfMindEntry(
+      prefs: prefs,
+      healthService: health,
+      entry: StateOfMindEntry(
+        timestamp: day,
+        valence: 0.5,
+        source: StateOfMindSource.appleHealth,
+      ),
+      day: day,
+    );
+    expect(health.somWrites, 0);
+
+    await RoutineHealthMirror.mirrorStateOfMindEntry(
+      prefs: prefs,
+      healthService: health,
+      entry: StateOfMindEntry(
+        timestamp: day.add(const Duration(hours: 1)),
+        valence: 0.4,
+      ),
+      day: day,
+    );
+    expect(health.somWrites, 1);
+  });
 }
 
 class _RecordingHealth implements HealthService {
   int waterWrites = 0;
   int mindWrites = 0;
   int somWrites = 0;
+  int somReads = 0;
+  List<StateOfMindEntry> somHistory = const [];
 
   @override
   HealthAppSource get activeSource => HealthAppSource.healthConnect;
@@ -185,22 +308,26 @@ class _RecordingHealth implements HealthService {
   }
 
   @override
-  Future<List<DailyEnvironmentSnapshot>> getEnvironmentHistory({int days = 14}) async =>
-      const [];
+  Future<List<DailyEnvironmentSnapshot>> getEnvironmentHistory({
+    int days = 14,
+  }) async => const [];
 
   @override
   Future<SleepRecord?> getLastNightSleep() async => null;
 
   @override
-  Future<List<DailyRecoverySnapshot>> getRecoveryHistory({int days = 14}) async =>
-      const [];
+  Future<List<DailyRecoverySnapshot>> getRecoveryHistory({
+    int days = 14,
+  }) async => const [];
 
   @override
   Future<List<SleepRecord>> getSleepHistory({int days = 7}) async => const [];
 
   @override
-  Future<List<StateOfMindEntry>> getStateOfMindHistory({int days = 14}) async =>
-      const [];
+  Future<List<StateOfMindEntry>> getStateOfMindHistory({int days = 14}) async {
+    somReads++;
+    return somHistory;
+  }
 
   @override
   Future<HealthDemographics> readDemographics() async =>

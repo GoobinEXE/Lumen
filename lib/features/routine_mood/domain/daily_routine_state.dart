@@ -1,3 +1,4 @@
+import '../../../core/time/civil_day.dart';
 import '../../state_of_mind/domain/state_of_mind_entry.dart';
 
 /// Representa o estado completo da rotina diária e reflexões emocionais in-app.
@@ -63,6 +64,20 @@ class DailyRoutineState {
       'tookPrescribedMedication': tookPrescribedMedication,
       'therapistNotes': therapistNotes,
     };
+  }
+
+  static DailyRoutineState forCivilDay({
+    required DailyRoutineState? held,
+    required DailyRoutineState loaded,
+    required DateTime now,
+  }) {
+    final today = civilDay(now);
+    if (held != null && isSameCivilDay(held.date, today)) return held;
+    if (isSameCivilDay(loaded.date, today)) return loaded;
+    return DailyRoutineState(
+      date: today,
+      microHabits: (held ?? loaded).microHabits,
+    );
   }
 
   factory DailyRoutineState.fromMap(Map<String, dynamic> map) {

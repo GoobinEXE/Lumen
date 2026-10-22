@@ -214,6 +214,7 @@ class _LumenShellState extends ConsumerState<LumenShell>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state != AppLifecycleState.resumed) return;
+    ref.read(civilTodayProvider.notifier).syncFromClock();
     ref.invalidate(medicationsListProvider);
     ref.read(todayMedicationLogsProvider.notifier).loadTodayLogs();
     ref.read(tasksListProvider.notifier).load();

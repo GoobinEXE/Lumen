@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/localization/locale_provider.dart';
 import '../../../core/persistence/sync_ledger.dart';
 import '../../../core/providers.dart';
+import '../../../core/time/civil_day.dart';
 import '../../../integrations/calendar/device_calendar.dart';
 import '../../health_sync/data/health_sync_prefs.dart';
 import '../../health_sync/service/routine_health_mirror.dart';
@@ -21,19 +24,55 @@ final deviceCalendarProvider = Provider<DeviceCalendar>((ref) {
   return DeviceCalendar();
 });
 
+class CivilTodayNotifier extends StateNotifier<DateTime> {
+  CivilTodayNotifier() : super(civilDay(DateTime.now())) {
+    _schedule();
+  }
+
+  Timer? _timer;
+
+  void syncFromClock() {
+    final today = civilDay(DateTime.now());
+    if (!isSameCivilDay(state, today)) state = today;
+  }
+
+  void _schedule() {
+    _timer?.cancel();
+    final now = DateTime.now();
+    final next = DateTime(now.year, now.month, now.day + 1);
+    var delay = next.difference(now);
+    if (delay <= Duration.zero) delay = const Duration(seconds: 1);
+    _timer = Timer(delay, () {
+      syncFromClock();
+      _schedule();
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+}
+
+final civilTodayProvider =
+    StateNotifierProvider<CivilTodayNotifier, DateTime>((ref) {
+  return CivilTodayNotifier();
+});
+
 final todayRoutineDraftProvider = FutureProvider<DailyRoutineState>((ref) async {
   final l10n = ref.watch(appLocalizationsProvider);
   final prefs = ref.watch(sharedPreferencesProvider);
   final repo = ref.watch(routineRepositoryProvider);
-  final now = DateTime.now();
-  final todaySnapshots = repo.getSnapshotsForDate(now);
+  final today = ref.watch(civilTodayProvider);
+  final todaySnapshots = repo.getSnapshotsForDate(today);
   final waterGlasses = todaySnapshots.isEmpty
       ? 0
       : todaySnapshots
           .map((snapshot) => snapshot.waterGlasses)
           .reduce((a, b) => a > b ? a : b);
   return DailyRoutineState(
-    date: DateTime(now.year, now.month, now.day),
+    date: today,
     microHabits: getMicroHabitsTemplate(prefs, l10n),
     waterGlasses: waterGlasses,
   );
@@ -41,7 +80,8 @@ final todayRoutineDraftProvider = FutureProvider<DailyRoutineState>((ref) async 
 
 final todaySnapshotsProvider = FutureProvider<List<RoutineSnapshot>>((ref) async {
   final repo = ref.watch(routineRepositoryProvider);
-  return repo.getSnapshotsForDate(DateTime.now());
+  final today = ref.watch(civilTodayProvider);
+  return repo.getSnapshotsForDate(today);
 });
 
 final recentRoutineSnapshotsProvider =

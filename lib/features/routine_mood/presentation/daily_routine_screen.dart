@@ -7,6 +7,7 @@ import 'package:uuid/uuid.dart';
 import '../../../core/icons/app_icons.dart';
 import '../../../core/localization/locale_provider.dart';
 import '../../../core/providers.dart';
+import '../../../core/time/civil_day.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/glass_surface.dart';
@@ -45,13 +46,39 @@ class _DailyRoutineScreenState extends ConsumerState<DailyRoutineScreen> {
   String? _anchorTaskId;
   bool _initialized = false;
   bool _isSaving = false;
+  bool _needsCheckInReset = false;
 
-  void _initFromState(DailyRoutineState state) {
-    if (_initialized) return;
-    _state = state;
-    _eveningController.text = state.eveningReflection;
-    _therapistNotesController.text = state.therapistNotes ?? '';
-    _initialized = true;
+  DailyRoutineState _adoptDraft(DailyRoutineState loaded, DateTime now) {
+    final held = _initialized &&
+            _state != null &&
+            isSameCivilDay(_state!.date, now)
+        ? _state
+        : null;
+    final next = DailyRoutineState.forCivilDay(
+      held: held,
+      loaded: loaded,
+      now: now,
+    );
+    if (!_initialized) {
+      _state = next;
+      _eveningController.text = next.eveningReflection;
+      _therapistNotesController.text = next.therapistNotes ?? '';
+      _initialized = true;
+    } else if (held == null) {
+      _state = next;
+      _anchorTaskId = null;
+      _needsCheckInReset = true;
+    }
+    if (_needsCheckInReset) {
+      _needsCheckInReset = false;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        _eveningController.clear();
+        _therapistNotesController.clear();
+        _checkInKey.currentState?.reset();
+      });
+    }
+    return _state ?? next;
   }
 
   @override
@@ -78,9 +105,25 @@ class _DailyRoutineScreenState extends ConsumerState<DailyRoutineScreen> {
     final tasks = ref.read(tasksListProvider).value ?? const [];
     final taskRepo = ref.read(taskRepositoryProvider);
     final savedAt = DateTime.now();
+    final loaded = ref.read(todayRoutineDraftProvider).asData?.value ?? current;
+    final held = _state != null && isSameCivilDay(_state!.date, savedAt)
+        ? _state
+        : null;
+    if (held == null) {
+      _eveningController.clear();
+      _therapistNotesController.clear();
+      _anchorTaskId = null;
+      _checkInKey.currentState?.reset();
+    }
+    final base = DailyRoutineState.forCivilDay(
+      held: held,
+      loaded: loaded,
+      now: savedAt,
+    );
+    _state = base;
     final checkIn = _checkInKey.currentState?.draft() ?? const CheckInDraft();
     final som = checkIn.toStateOfMind(timestamp: savedAt);
-    final draft = (_state ?? current).copyWith(
+    final draft = base.copyWith(
       mainFocusAnchor: _anchorTitleFromTasks(tasks),
       therapistNotes: _therapistNotesController.text.trim(),
       eveningReflection: _eveningController.text.trim(),
@@ -88,8 +131,7 @@ class _DailyRoutineScreenState extends ConsumerState<DailyRoutineScreen> {
       completedHabits: taskRepo.completedTitles(tasks, savedAt),
       stateOfMind: som,
       tookPrescribedMedication:
-          (_state ?? current).tookPrescribedMedication ||
-          checkIn.tookMedication,
+          base.tookPrescribedMedication || checkIn.tookMedication,
     );
     final snapshot = RoutineSnapshot.capture(
       id: const Uuid().v4(),
@@ -138,7 +180,12 @@ class _DailyRoutineScreenState extends ConsumerState<DailyRoutineScreen> {
     final isDark = theme.brightness == Brightness.dark;
     final l10n = ref.watch(appLocalizationsProvider);
     final routineAsync = ref.watch(todayRoutineDraftProvider);
-    final snapshots = ref.watch(todaySnapshotsProvider).value ?? const [];
+    final now = DateTime.now();
+    final snapshots = [
+      for (final snapshot
+          in ref.watch(todaySnapshotsProvider).value ?? const <RoutineSnapshot>[])
+        if (isSameCivilDay(snapshot.savedAt, now)) snapshot,
+    ];
     final tasksAsync = ref.watch(tasksListProvider);
 
     return PopScope(
@@ -149,12 +196,13 @@ class _DailyRoutineScreenState extends ConsumerState<DailyRoutineScreen> {
         body: SafeArea(
           bottom: false,
           child: routineAsync.when(
+          skipLoadingOnReload: true,
+          skipLoadingOnRefresh: true,
           loading: () => const FormSkeleton(),
           error: (err, stack) =>
               Center(child: Text(l10n.errorWithDetails('$err'))),
           data: (loadedState) {
-            _initFromState(loadedState);
-            final current = _state ?? loadedState;
+            final current = _adoptDraft(loadedState, DateTime.now());
             final todayFormatted = DateFormat(
               l10n.dateFormatFullPattern,
               l10n.localeName,

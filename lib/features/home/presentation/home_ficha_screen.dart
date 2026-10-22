@@ -8,6 +8,7 @@ import '../../../core/icons/app_icons.dart';
 import '../../../core/localization/l10n_labels.dart';
 import '../../../core/localization/locale_provider.dart';
 import '../../../core/providers.dart';
+import '../../../core/time/civil_day.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/glass_surface.dart';
@@ -805,7 +806,10 @@ class _AnchorCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final snapshots = ref.watch(todaySnapshotsProvider).value ?? const [];
+    final snapshots = [
+      for (final snapshot in ref.watch(todaySnapshotsProvider).value ?? const [])
+        if (isSameCivilDay(snapshot.savedAt, DateTime.now())) snapshot,
+    ];
     final theme = Theme.of(context);
     final locale = l10n.localeName;
     final withAnchor = snapshots

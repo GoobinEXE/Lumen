@@ -71,6 +71,31 @@ void main() {
       },
     );
 
+    test('08:00:00 vira 08:00 e divide o id com o horário sem segundos', () {
+      final fridayMorning = DateTime(2026, 9, 25, 7);
+      final slots = upcomingDoseOccurrences(
+        now: fridayMorning,
+        scheduledTimes: const ['08:00:00'],
+        daysOfWeek: const [DateTime.friday],
+      );
+
+      expect(slots, hasLength(1));
+      expect(slots.single.time, '08:00');
+      expect(slots.single.at, DateTime(2026, 9, 25, 8));
+      expect(
+        doseNotificationId(
+          medicationId: 'med-1',
+          time: slots.single.time,
+          weekday: slots.single.weekday,
+        ),
+        doseNotificationId(
+          medicationId: 'med-1',
+          time: '08:00',
+          weekday: DateTime.friday,
+        ),
+      );
+    });
+
     test(
       '3 horários em 2 dias da semana geram 6 ocorrências, sem duplicar',
       () {

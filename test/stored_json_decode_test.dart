@@ -33,5 +33,32 @@ void main() {
     expect(storedJsonListIsReadable(null), isTrue);
     expect(storedJsonListIsReadable(''), isTrue);
     expect(storedJsonListIsReadable('[]'), isTrue);
+    expect(
+      storedJsonListIsReadable('[{"id":"a"}]'),
+      isTrue,
+    );
+  });
+
+  test('JSON quebrado não é lista gravável e a decodificação não inventa item', () {
+    expect(storedJsonListIsReadable('{'), isFalse);
+    expect(storedJsonListIsReadable('[{"id":"a"}, 1]'), isFalse);
+
+    final empty = decodeStoredJsonList<String>('', (map) => map['id'] as String);
+    expect(empty.unreadable, isFalse);
+    expect(empty.items, isEmpty);
+
+    final broken = decodeStoredJsonList<String>('{', (map) => map['id'] as String);
+    expect(broken.unreadable, isTrue);
+    expect(broken.items, isEmpty);
+  });
+
+  test('parser que estoura pula o item e segura o irmão', () {
+    final read = decodeStoredJsonList<String>(
+      '[{"id":"a"}, {"id":1}, {"id":"b"}]',
+      (map) => map['id'] as String,
+    );
+    expect(read.unreadable, isFalse);
+    expect(read.hadCorruptItems, isTrue);
+    expect(read.items, ['a', 'b']);
   });
 }

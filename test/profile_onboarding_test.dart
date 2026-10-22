@@ -150,6 +150,40 @@ void main() {
     expect(repo.read().trimmedName, 'João');
   });
 
+  test('nome com espaço é cortado e nome em branco some', () async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    final repo = UserProfileRepository(prefs);
+
+    await repo.saveName('  Ana  ');
+    expect(repo.read().trimmedName, 'Ana');
+
+    await repo.saveName('   ');
+    expect(repo.read().trimmedName, isNull);
+
+    await repo.saveName('Ana');
+    await repo.saveName(null);
+    expect(repo.read().trimmedName, isNull);
+  });
+
+  test('limpar o sexo não apaga altura nem peso', () async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    final repo = UserProfileRepository(prefs);
+
+    await repo.updateFields(
+      heightCm: 168,
+      weightKg: 62,
+      biologicalSex: 'female',
+    );
+    await repo.updateFields(clearBiologicalSex: true);
+    final stored = repo.read();
+
+    expect(stored.biologicalSex, isNull);
+    expect(stored.heightCm, 168);
+    expect(stored.weightKg, 62);
+  });
+
   test('repositório atualiza campos e preenche lacunas', () async {
     SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
@@ -309,6 +343,8 @@ void main() {
       expect(OnboardingProfileDraft.parseMetric(' 168 '), 168);
       expect(OnboardingProfileDraft.parseMetric(''), isNull);
       expect(OnboardingProfileDraft.parseMetric('abc'), isNull);
+      expect(OnboardingProfileDraft.parseMetric('62,5kg'), isNull);
+      expect(OnboardingProfileDraft.parseMetric('62.5.1'), isNull);
       expect(OnboardingProfileDraft.parseMetric(null), isNull);
     });
   });

@@ -173,6 +173,72 @@ void main() {
     expect(feed.single.id, 'dose_skipped');
   });
 
+  test('sono entra na hora de acordar, não na meia-noite do dia', () {
+    final feed = build(
+      mood: [
+        MoodEntry(
+          id: 'early',
+          timestamp: DateTime(2026, 10, 2, 6, 30),
+          valence: 3,
+          energy: EnergyLevel.balanced,
+          focus: FocusState.focused,
+        ),
+      ],
+      sleep: [
+        SleepRecord(
+          date: DateTime(2026, 10, 2),
+          bedtime: DateTime(2026, 10, 1, 23),
+          wakeTime: DateTime(2026, 10, 2, 7),
+          totalSleep: const Duration(hours: 7),
+        ),
+      ],
+    );
+
+    expect(feed.first.id, startsWith('sleep_'));
+    expect(feed.first.timestamp, DateTime(2026, 10, 2, 7));
+    expect(feed.last.id, 'checkin_early');
+  });
+
+  test('zero passos continua no feed; dose adiada fica de fora', () {
+    final feed = build(
+      recovery: [
+        DailyRecoverySnapshot(date: DateTime(2026, 10, 2), steps: 0),
+      ],
+      logs: [
+        MedicationLog(
+          id: 'later',
+          medicationId: 'med',
+          medicationName: 'Dose',
+          scheduledTime: DateTime(2026, 10, 2, 8),
+          snoozedUntil: DateTime(2026, 10, 2, 8, 15),
+        ),
+      ],
+    );
+
+    expect(feed, hasLength(1));
+    expect(feed.single.kind, ProfileFeedKind.recovery);
+    expect(feed.single.detail, '0 passos');
+  });
+
+  test('dose tomada e pulada ao mesmo tempo conta como tomada', () {
+    final takenAt = DateTime(2026, 10, 2, 9, 15);
+    final feed = build(
+      logs: [
+        MedicationLog(
+          id: 'both',
+          medicationId: 'med',
+          medicationName: 'Dose',
+          scheduledTime: DateTime(2026, 10, 2, 8),
+          takenAt: takenAt,
+          skipped: true,
+        ),
+      ],
+    );
+
+    expect(feed.single.timestamp, takenAt);
+    expect(feed.single.detail, l10n.profileFeedDoseTaken);
+  });
+
   test('respeita o teto de itens', () {
     final mood = List<MoodEntry>.generate(
       10,

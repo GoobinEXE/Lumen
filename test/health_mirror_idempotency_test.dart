@@ -144,6 +144,44 @@ void main() {
     expect(await repo.logById('local-1'), isNotNull);
     expect(await repo.logById('apple_1_m1'), isNull);
   });
+
+  test('sync desligado não escreve nem queima a marca do copo', () async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    final health = _RecordingHealth();
+    final day = DateTime(2026, 10, 23);
+    const snapshotId = 'snap-sync-off';
+    final current = DailyRoutineState(
+      date: day,
+      waterGlasses: 2,
+      completedHabits: const {'Respirar um minuto'},
+      stateOfMind: StateOfMindEntry(
+        timestamp: DateTime(2026, 10, 23, 9),
+        valence: 0.2,
+      ),
+    );
+
+    Future<void> mirror({required bool syncEnabled}) {
+      return RoutineHealthMirror.mirrorIfEnabled(
+        prefs: prefs,
+        healthService: health,
+        snapshotId: snapshotId,
+        previous: DailyRoutineState(date: day),
+        current: current,
+        syncEnabled: syncEnabled,
+      );
+    }
+
+    await mirror(syncEnabled: false);
+    expect(health.waterWrites, 0);
+    expect(health.mindWrites, 0);
+    expect(health.somWrites, 0);
+
+    await mirror(syncEnabled: true);
+    expect(health.waterWrites, 2);
+    expect(health.mindWrites, 1);
+    expect(health.somWrites, 1);
+  });
 }
 
 class _RecordingHealth implements HealthService {

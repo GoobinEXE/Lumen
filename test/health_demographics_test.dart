@@ -24,6 +24,18 @@ void main() {
     expect(HealthDemographics.sexFromHealthKitRawValue(0), isNull);
     expect(HealthDemographics.sexFromHealthKitRawValue(null), isNull);
     expect(HealthDemographics.sexFromHealthKitRawValue(42), isNull);
+    expect(HealthDemographics.sexFromHealthKitRawValue(0.9), isNull);
+  });
+
+  test('código fracionário do plugin trunca para o sexo inteiro', () {
+    expect(
+      HealthDemographics.sexFromHealthKitRawValue(1.9),
+      HealthBiologicalSex.female,
+    );
+    expect(
+      HealthDemographics.sexFromHealthKitRawValue(2.0),
+      HealthBiologicalSex.male,
+    );
   });
 
   test('altura converte para centímetros conforme a unidade', () {

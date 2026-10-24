@@ -251,6 +251,9 @@ class MedicationReminderService {
         payload: dose.payload,
         mode: mode,
         repeating: true,
+        matchDateTimeComponents: dose.repeatsEveryDay
+            ? DateTimeComponents.time
+            : DateTimeComponents.dayOfWeekAndTime,
         details: details,
       );
     }
@@ -272,26 +275,24 @@ class MedicationReminderService {
     final planned = <_PlannedDose>[];
     for (final med in meds) {
       if (!med.active) continue;
-      final upcoming = upcomingDoseOccurrences(
+      final alerts = scheduledDoseAlerts(
         now: now,
+        medicationId: med.id,
         scheduledTimes: med.scheduledTimes,
         daysOfWeek: med.daysOfWeek,
       );
-      for (final slot in upcoming) {
+      for (final alert in alerts) {
         planned.add(
           _PlannedDose(
-            id: doseNotificationId(
-              medicationId: med.id,
-              time: slot.time,
-              weekday: slot.weekday,
-            ),
+            id: alert.id,
+            repeatsEveryDay: alert.repeatsEveryDay,
             when: tz.TZDateTime(
               tz.local,
-              slot.at.year,
-              slot.at.month,
-              slot.at.day,
-              slot.at.hour,
-              slot.at.minute,
+              alert.at.year,
+              alert.at.month,
+              alert.at.day,
+              alert.at.hour,
+              alert.at.minute,
             ),
             title: l10n.medDoseReminderTitle(med.name),
             body: l10n.medDoseReminderBody,
@@ -299,7 +300,7 @@ class MedicationReminderService {
               kind: medicationDoseKind,
               medicationId: med.id,
               name: med.name,
-              time: slot.time,
+              time: alert.time,
             ).encode(),
           ),
         );
@@ -316,6 +317,7 @@ class MedicationReminderService {
     required String payload,
     required AndroidScheduleMode mode,
     required bool repeating,
+    DateTimeComponents? matchDateTimeComponents,
     required NotificationDetails details,
   }) {
     return LocalNotificationScheduler.zonedSchedule(
@@ -326,6 +328,7 @@ class MedicationReminderService {
       payload: payload,
       mode: mode,
       repeating: repeating,
+      matchDateTimeComponents: matchDateTimeComponents,
       details: details,
     );
   }
@@ -527,6 +530,7 @@ Locale localeFromSystem() {
 class _PlannedDose {
   const _PlannedDose({
     required this.id,
+    required this.repeatsEveryDay,
     required this.when,
     required this.title,
     required this.body,
@@ -534,6 +538,7 @@ class _PlannedDose {
   });
 
   final int id;
+  final bool repeatsEveryDay;
   final tz.TZDateTime when;
   final String title;
   final String body;

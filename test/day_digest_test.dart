@@ -116,6 +116,75 @@ void main() {
     expect(digest.latestStateOfMind?.labels, contains('happy'));
   });
 
+  test('SoM mais novo vence um salvamento posterior com humor antigo', () {
+    final digest = DayDigest(
+      day: day,
+      checkIns: const [],
+      snapshots: [
+        RoutineSnapshot(
+          id: 'late-mood',
+          savedAt: DateTime(2026, 10, 6, 18),
+          stateOfMind: StateOfMindEntry(
+            labels: const {'happy'},
+            timestamp: DateTime(2026, 10, 6, 18),
+          ),
+        ),
+        RoutineSnapshot(
+          id: 'later-save',
+          savedAt: DateTime(2026, 10, 6, 21),
+          stateOfMind: StateOfMindEntry(
+            labels: const {'sad'},
+            timestamp: DateTime(2026, 10, 6, 9),
+          ),
+        ),
+      ],
+      medicationLogs: const [],
+      completedTaskTitles: const [],
+    );
+
+    expect(digest.latestStateOfMind?.labels, contains('happy'));
+  });
+
+  test('salvamento sem SoM não apaga o humor que já estava no dia', () {
+    final digest = DayDigest(
+      day: day,
+      checkIns: const [],
+      snapshots: [
+        RoutineSnapshot(
+          id: 'with-som',
+          savedAt: DateTime(2026, 10, 6, 12),
+          stateOfMind: StateOfMindEntry(
+            labels: const {'calm'},
+            timestamp: DateTime(2026, 10, 6, 12),
+          ),
+        ),
+        RoutineSnapshot(
+          id: 'anchor-only',
+          savedAt: DateTime(2026, 10, 6, 22),
+          mainFocusAnchor: 'Fechar o texto',
+        ),
+      ],
+      medicationLogs: const [],
+      completedTaskTitles: const [],
+    );
+
+    expect(digest.latestStateOfMind?.labels, contains('calm'));
+    expect(digest.isEmpty, isFalse);
+  });
+
+  test('só a tarefa concluída tira o dia do vazio', () {
+    final digest = DayDigest(
+      day: day,
+      checkIns: const [],
+      snapshots: const [],
+      medicationLogs: const [],
+      completedTaskTitles: const ['Água'],
+    );
+
+    expect(digest.isEmpty, isFalse);
+    expect(digest.latestStateOfMind, isNull);
+  });
+
   group('DayDigest após RoutineRepository.mergeTodayStateOfMind', () {
     setUp(() {
       SharedPreferences.setMockInitialValues({});

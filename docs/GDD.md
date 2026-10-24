@@ -351,7 +351,7 @@ O caminho rápido grava em dois lugares, com o mesmo timestamp: o histórico (`M
 | M05 | Alerta de refil | ✅ | threshold |
 | M06 | Importar meds do Apple Health | ✅ | bridge `readMedications` |
 | M07 | Sync dose events Apple ↔ Lumen | 🟡 | read + write na bridge; UX parcial |
-| M08 | Notificações locais | ✅ | um aviso por horário na semana; Tomar e Adiar, inclusive com o app fechado; o toque abre Remédios |
+| M08 | Notificações locais | ✅ | remédio todos os dias: um alarme diário por horário (`DateTimeComponents.time`), não sete. Dia restrito: um por dia marcado. Tomar e Adiar, inclusive com o app fechado; o toque abre Remédios |
 | M09 | Vincular med local ↔ concept Apple | 🟡 | campos `appleConceptId` / `rxNormCode` |
 
 ### 6.5 Sono & analytics

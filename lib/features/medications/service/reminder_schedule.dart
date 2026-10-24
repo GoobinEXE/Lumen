@@ -68,6 +68,99 @@ int doseNotificationId({
   return _stableId('dose|$medicationId|$time|$weekday');
 }
 
+int doseDailyNotificationId({
+  required String medicationId,
+  required String time,
+}) {
+  return _stableId('dose|$medicationId|$time|daily');
+}
+
+bool coversEveryWeekday(List<int> daysOfWeek) {
+  final days = daysOfWeek.toSet();
+  for (var day = DateTime.monday; day <= DateTime.sunday; day++) {
+    if (!days.contains(day)) return false;
+  }
+  return true;
+}
+
+class ScheduledDoseAlert {
+  const ScheduledDoseAlert({
+    required this.id,
+    required this.time,
+    required this.at,
+    required this.repeatsEveryDay,
+  });
+
+  final int id;
+  final String time;
+  final DateTime at;
+  final bool repeatsEveryDay;
+}
+
+List<ScheduledDoseAlert> scheduledDoseAlerts({
+  required DateTime now,
+  required String medicationId,
+  required List<String> scheduledTimes,
+  required List<int> daysOfWeek,
+}) {
+  if (coversEveryWeekday(daysOfWeek)) {
+    final seen = <String>{};
+    final alerts = <ScheduledDoseAlert>[];
+    for (final raw in scheduledTimes) {
+      final parsed = _parsedClock(raw);
+      if (parsed == null) continue;
+      if (!seen.add(parsed.time)) continue;
+      alerts.add(
+        ScheduledDoseAlert(
+          id: doseDailyNotificationId(
+            medicationId: medicationId,
+            time: parsed.time,
+          ),
+          time: parsed.time,
+          at: _nextDailyInstant(now, parsed.hour, parsed.minute),
+          repeatsEveryDay: true,
+        ),
+      );
+    }
+    return alerts;
+  }
+
+  return [
+    for (final slot in upcomingDoseOccurrences(
+      now: now,
+      scheduledTimes: scheduledTimes,
+      daysOfWeek: daysOfWeek,
+    ))
+      ScheduledDoseAlert(
+        id: doseNotificationId(
+          medicationId: medicationId,
+          time: slot.time,
+          weekday: slot.weekday,
+        ),
+        time: slot.time,
+        at: slot.at,
+        repeatsEveryDay: false,
+      ),
+  ];
+}
+
+({String time, int hour, int minute})? _parsedClock(String raw) {
+  final parts = raw.split(':');
+  final hour = int.tryParse(parts.isEmpty ? '' : parts[0]);
+  final minute = int.tryParse(parts.length > 1 ? parts[1] : '');
+  if (hour == null || minute == null) return null;
+  if (hour < 0 || hour > 23 || minute < 0 || minute > 59) return null;
+  final time =
+      '${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}';
+  return (time: time, hour: hour, minute: minute);
+}
+
+DateTime _nextDailyInstant(DateTime now, int hour, int minute) {
+  final today = DateTime(now.year, now.month, now.day, hour, minute);
+  if (today.isAfter(now)) return today;
+  return DateTime(now.year, now.month, now.day + 1, hour, minute);
+}
+
 int snoozeNotificationId(String logId) => _stableId('snooze|$logId');
 
 int _stableId(String key) {

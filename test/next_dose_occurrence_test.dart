@@ -90,6 +90,75 @@ void main() {
     );
   });
 
+  group('scheduledDoseAlerts', () {
+    test('remédio diário ocupa um alarme por horário, não sete', () {
+      final fridayMorning = DateTime(2026, 9, 25, 7);
+
+      final alerts = scheduledDoseAlerts(
+        now: fridayMorning,
+        medicationId: 'med-1',
+        scheduledTimes: const ['08:00', '20:00'],
+        daysOfWeek: const [1, 2, 3, 4, 5, 6, 7],
+      );
+
+      expect(alerts, hasLength(2));
+      expect(alerts.every((alert) => alert.repeatsEveryDay), isTrue);
+      expect(alerts.map((alert) => alert.time).toList(), ['08:00', '20:00']);
+      expect(alerts[0].at, DateTime(2026, 9, 25, 8));
+      expect(alerts[1].at, DateTime(2026, 9, 25, 20));
+      expect(
+        alerts.map((alert) => alert.id).toSet(),
+        hasLength(2),
+      );
+    });
+
+    test('horário de hoje que já passou vai para amanhã no alarme diário', () {
+      final fridayLate = DateTime(2026, 9, 25, 9);
+      final alerts = scheduledDoseAlerts(
+        now: fridayLate,
+        medicationId: 'med-1',
+        scheduledTimes: const ['08:00'],
+        daysOfWeek: const [1, 2, 3, 4, 5, 6, 7],
+      );
+
+      expect(alerts.single.at, DateTime(2026, 9, 26, 8));
+      expect(alerts.single.repeatsEveryDay, isTrue);
+    });
+
+    test('dia restrito continua um alarme por dia marcado', () {
+      final sunday = DateTime(2026, 9, 27, 10);
+      final alerts = scheduledDoseAlerts(
+        now: sunday,
+        medicationId: 'med-1',
+        scheduledTimes: const ['08:00'],
+        daysOfWeek: const [1, 2, 3, 4, 5],
+      );
+
+      expect(alerts, hasLength(5));
+      expect(alerts.every((alert) => !alert.repeatsEveryDay), isTrue);
+      expect(
+        alerts.map((alert) => alert.id).toSet(),
+        hasLength(5),
+      );
+    });
+
+    test('quatro remédios com três horários diários cabem no teto do iOS', () {
+      final now = DateTime(2026, 9, 25, 7);
+      final alerts = [
+        for (var med = 0; med < 4; med++)
+          ...scheduledDoseAlerts(
+            now: now,
+            medicationId: 'med-$med',
+            scheduledTimes: const ['08:00', '14:00', '20:00'],
+            daysOfWeek: const [1, 2, 3, 4, 5, 6, 7],
+          ),
+      ];
+
+      expect(alerts, hasLength(12));
+      expect(alerts.map((alert) => alert.id).toSet(), hasLength(12));
+    });
+  });
+
   group('doseNotificationId', () {
     test('é estável para o mesmo medicamento, horário e dia da semana', () {
       final first = doseNotificationId(

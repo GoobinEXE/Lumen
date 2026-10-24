@@ -22,11 +22,7 @@ void main() {
         daily('c', 'Inativa').copyWith(active: false),
       ];
 
-      final lines = taskExportLines(
-        tasks: tasks,
-        now: now,
-        periodDays: 7,
-      );
+      final lines = taskExportLines(tasks: tasks, now: now, periodDays: 7);
 
       expect(lines, hasLength(2));
       // Concluídas vêm primeiro.
@@ -46,11 +42,7 @@ void main() {
         onceDate: DateTime(2026, 9, 1),
       );
 
-      final lines = taskExportLines(
-        tasks: [old],
-        now: now,
-        periodDays: 7,
-      );
+      final lines = taskExportLines(tasks: [old], now: now, periodDays: 7);
 
       expect(lines, isEmpty);
     });
@@ -63,11 +55,7 @@ void main() {
         onceDate: DateTime(2026, 10, 5),
       );
 
-      final lines = taskExportLines(
-        tasks: [soon],
-        now: now,
-        periodDays: 7,
-      );
+      final lines = taskExportLines(tasks: [soon], now: now, periodDays: 7);
 
       expect(lines, hasLength(1));
       expect(lines.single.status, TaskExportStatus.open);
@@ -83,11 +71,7 @@ void main() {
         dayOfMonth: 25,
       );
 
-      final lines = taskExportLines(
-        tasks: [midMonth],
-        now: now,
-        periodDays: 7,
-      );
+      final lines = taskExportLines(tasks: [midMonth], now: now, periodDays: 7);
 
       expect(lines, isEmpty);
     });
@@ -110,30 +94,71 @@ void main() {
       expect(lines.single.status, TaskExportStatus.open);
     });
 
-    test('tarefa concluída e aberta no mesmo período mantêm concluídas primeiro', () {
-      final doneKey = TaskPeriod.window(
-        recurrence: TaskRecurrence.once,
-        now: now,
-        onceDate: DateTime(2026, 10, 5),
+    test('conclusão de ontem não marca a diária como feita hoje', () {
+      final yesterday = TaskPeriod.window(
+        recurrence: TaskRecurrence.daily,
+        now: DateTime(2026, 10, 6, 21),
       ).periodKey;
 
-      final doneOnce = TaskItem(
-        id: 'h',
-        title: 'Pagar boleto',
-        recurrence: TaskRecurrence.once,
-        onceDate: DateTime(2026, 10, 5),
-        completedPeriodKey: doneKey,
-      );
-
       final lines = taskExportLines(
-        tasks: [doneOnce],
+        tasks: [
+          daily('a', 'Beber água').copyWith(completedPeriodKey: yesterday),
+        ],
         now: now,
         periodDays: 7,
       );
 
       expect(lines, hasLength(1));
-      expect(lines.single.status, TaskExportStatus.completed);
+      expect(lines.single.status, TaskExportStatus.open);
     });
+
+    test('mensal concluída no mês entra mesmo com o dia fora dos 7 dias', () {
+      final key = TaskPeriod.window(
+        recurrence: TaskRecurrence.monthly,
+        now: now,
+      ).periodKey;
+      final rent = TaskItem(
+        id: 'rent',
+        title: 'Pagar aluguel',
+        recurrence: TaskRecurrence.monthly,
+        dayOfMonth: 25,
+        completedPeriodKey: key,
+      );
+
+      final lines = taskExportLines(tasks: [rent], now: now, periodDays: 7);
+
+      expect(lines, hasLength(1));
+      expect(lines.single.status, TaskExportStatus.completed);
+      expect(key, '2026-10');
+    });
+
+    test(
+      'tarefa concluída e aberta no mesmo período mantêm concluídas primeiro',
+      () {
+        final doneKey = TaskPeriod.window(
+          recurrence: TaskRecurrence.once,
+          now: now,
+          onceDate: DateTime(2026, 10, 5),
+        ).periodKey;
+
+        final doneOnce = TaskItem(
+          id: 'h',
+          title: 'Pagar boleto',
+          recurrence: TaskRecurrence.once,
+          onceDate: DateTime(2026, 10, 5),
+          completedPeriodKey: doneKey,
+        );
+
+        final lines = taskExportLines(
+          tasks: [doneOnce],
+          now: now,
+          periodDays: 7,
+        );
+
+        expect(lines, hasLength(1));
+        expect(lines.single.status, TaskExportStatus.completed);
+      },
+    );
   });
 
   group('describeTaskExportLines', () {

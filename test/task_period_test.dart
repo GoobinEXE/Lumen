@@ -121,11 +121,7 @@ void main() {
         completedPeriodKey: period.periodKey,
       );
       expect(
-        TaskPeriod.upcomingFires(
-          task: task,
-          now: now,
-          quietHours: quiet,
-        ),
+        TaskPeriod.upcomingFires(task: task, now: now, quietHours: quiet),
         isEmpty,
       );
     });
@@ -207,7 +203,11 @@ void main() {
 
   group('TaskPeriod.appliesOn', () {
     test('daily vale todo dia', () {
-      final task = TaskItem(id: 'd', title: 'Água', recurrence: TaskRecurrence.daily);
+      final task = TaskItem(
+        id: 'd',
+        title: 'Água',
+        recurrence: TaskRecurrence.daily,
+      );
       expect(TaskPeriod.appliesOn(task, DateTime(2026, 10, 6)), isTrue);
     });
 
@@ -220,6 +220,28 @@ void main() {
       );
       expect(TaskPeriod.appliesOn(task, DateTime(2026, 10, 6)), isFalse);
       expect(TaskPeriod.appliesOn(task, DateTime(2026, 10, 8, 15)), isTrue);
+    });
+
+    test('weekday 0 não vira domingo nem a semana inteira', () {
+      final bogus = TaskItem(
+        id: 'w',
+        title: 'Treino',
+        recurrence: TaskRecurrence.weekly,
+        weekdays: const [0],
+      );
+      final sunday = DateTime(2026, 10, 11);
+      final monday = DateTime(2026, 10, 5);
+
+      expect(TaskPeriod.appliesOn(bogus, sunday), isFalse);
+      expect(TaskPeriod.appliesOn(bogus, monday), isFalse);
+      expect(
+        TaskPeriod.appliesOn(bogus.copyWith(weekdays: const [7]), sunday),
+        isTrue,
+      );
+      expect(
+        TaskPeriod.appliesOn(bogus.copyWith(weekdays: const [7]), monday),
+        isFalse,
+      );
     });
 
     test('weekly só nos weekdays escolhidos', () {

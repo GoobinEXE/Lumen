@@ -190,4 +190,21 @@ void main() {
     // Mantém os mais recentes.
     expect(feed.first.id, 'checkin_m9');
   });
+
+  test('semana 53 do feed cai na segunda 28/12/2020 ao meio-dia', () {
+    final feed = build(
+      tasks: const [
+        TaskItem(
+          id: 'w53',
+          title: 'Fechar o ano',
+          completedPeriodKey: '2020-W53',
+        ),
+      ],
+    );
+
+    expect(feed, hasLength(1));
+    expect(feed.single.kind, ProfileFeedKind.task);
+    expect(feed.single.timestamp, DateTime(2020, 12, 28, 12));
+    expect(feed.single.title, 'Fechar o ano');
+  });
 }

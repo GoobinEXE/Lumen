@@ -41,6 +41,26 @@ void main() {
       expect(weekB.start, DateTime(2026, 10, 5));
     });
 
+    test('domingo 3/1/2021 ainda é a W53 de 2020', () {
+      final sunday = DateTime(2021, 1, 3, 18);
+      final nextMonday = DateTime(2021, 1, 4, 8);
+      final week53 = TaskPeriod.window(
+        recurrence: TaskRecurrence.weekly,
+        now: sunday,
+      );
+      final week01 = TaskPeriod.window(
+        recurrence: TaskRecurrence.weekly,
+        now: nextMonday,
+      );
+
+      expect(week53.periodKey, '2020-W53');
+      expect(week53.start, DateTime(2020, 12, 28));
+      expect(week53.contains(DateTime(2021, 1, 3, 23, 59)), isTrue);
+      expect(week53.contains(DateTime(2021, 1, 4)), isFalse);
+      expect(week01.periodKey, '2021-W01');
+      expect(week01.start, DateTime(2021, 1, 4));
+    });
+
     test('once fica no dia pontual', () {
       final window = TaskPeriod.window(
         recurrence: TaskRecurrence.once,
@@ -151,6 +171,23 @@ void main() {
       );
       expect(fires.every(period.contains), isTrue);
       expect(fires.every((f) => f.isBefore(DateTime(2026, 10, 5))), isTrue);
+    });
+
+    test('adiamento que já passou não puxa o próximo toque', () {
+      final task = TaskItem(
+        id: 't1',
+        title: 'Ler',
+        timeOfDay: '09:00',
+        naggingIntervalMinutes: 30,
+        snoozedUntil: DateTime(2026, 10, 3, 9, 15),
+      );
+      final fires = TaskPeriod.upcomingFires(
+        task: task,
+        now: DateTime(2026, 10, 3, 10),
+        quietHours: quiet,
+        maxCount: 1,
+      );
+      expect(fires, [DateTime(2026, 10, 3, 10, 30)]);
     });
   });
 

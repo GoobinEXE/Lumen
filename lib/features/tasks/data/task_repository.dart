@@ -74,13 +74,22 @@ class TaskRepository {
 
   Future<TaskItem> upsert(TaskItem task) {
     return _synchronized(() async {
+      await reload();
       final all = List<TaskItem>.from(_read());
       final index = all.indexWhere((t) => t.id == task.id);
       if (index >= 0) {
-        all[index] = task;
-      } else {
-        all.add(task);
+        final current = all[index];
+        final merged = task.copyWith(
+          completedPeriodKey: current.completedPeriodKey,
+          clearCompletedPeriodKey: current.completedPeriodKey == null,
+          snoozedUntil: current.snoozedUntil,
+          clearSnoozedUntil: current.snoozedUntil == null,
+        );
+        all[index] = merged;
+        await _saveAll(all);
+        return merged;
       }
+      all.add(task);
       await _saveAll(all);
       return task;
     });

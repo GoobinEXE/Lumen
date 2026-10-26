@@ -32,12 +32,23 @@ class MedicationRepository {
 
   Future<List<Medication>> getMedications() async => _readMeds();
 
-  Future<void> saveMedication(Medication med) {
+  Future<void> saveMedication(Medication med, {int? stockAtEditStart}) {
     return _synchronized(() async {
+      if (stockAtEditStart != null) {
+        await reload();
+      }
       final list = List<Medication>.from(await _readMeds());
       final index = list.indexWhere((m) => m.id == med.id);
       if (index >= 0) {
-        list[index] = med;
+        var next = med;
+        if (stockAtEditStart != null) {
+          final consumed = stockAtEditStart - list[index].remainingStock;
+          if (consumed > 0) {
+            final stock = med.remainingStock - consumed;
+            next = med.copyWith(remainingStock: stock < 0 ? 0 : stock);
+          }
+        }
+        list[index] = next;
       } else {
         list.add(med);
       }

@@ -262,7 +262,10 @@ class _AddMedicationSheetState extends ConsumerState<AddMedicationSheet> {
     try {
       await ref
           .read(todayMedicationLogsProvider.notifier)
-          .saveMedication(saved);
+          .saveMedication(
+            saved,
+            stockAtEditStart: existing?.remainingStock,
+          );
 
       if (mounted) {
         Navigator.pop(context);

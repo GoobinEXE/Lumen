@@ -52,5 +52,37 @@ void main() {
       );
       expect(updated!.completedPeriodKey, period.periodKey);
     });
+
+    test(
+      'editar a tarefa depois do aviso não apaga a conclusão nem o adiamento',
+      () async {
+        SharedPreferences.setMockInitialValues({});
+        final prefs = await SharedPreferences.getInstance();
+        final repo = TaskRepository(prefs);
+        final created = await repo.upsert(
+          const TaskItem(id: 'ler', title: 'Ler'),
+        );
+        final now = DateTime(2026, 10, 3, 12);
+        await repo.markComplete(created.id, now);
+        final until = DateTime(2026, 10, 3, 18);
+        await repo.snooze(created.id, until);
+
+        final opened = created;
+        final saved = await repo.upsert(
+          opened.copyWith(title: 'Ler o capítulo'),
+        );
+
+        final period = TaskPeriod.window(
+          recurrence: TaskRecurrence.daily,
+          now: now,
+        );
+        expect(saved.title, 'Ler o capítulo');
+        expect(saved.completedPeriodKey, period.periodKey);
+        expect(saved.snoozedUntil, until);
+        final stored = await repo.getById(created.id);
+        expect(stored!.completedPeriodKey, period.periodKey);
+        expect(stored.snoozedUntil, until);
+      },
+    );
   });
 }

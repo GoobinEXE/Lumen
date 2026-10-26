@@ -116,5 +116,70 @@ void main() {
         expect(resumedAfternoon.skipped, isTrue);
       },
     );
+
+    test(
+      'salvar a ficha aberta antes da dose não devolve a cápsula ao estoque',
+      () async {
+        await repo.saveMedication(
+          const Medication(
+            id: 'a',
+            name: 'Venvanse',
+            dosage: '30mg',
+            scheduledTimes: ['08:00'],
+            remainingStock: 10,
+            totalStock: 30,
+          ),
+        );
+        final day = DateTime(2026, 10, 1, 9);
+        final logs = await repo.getLogsForDate(day);
+        await repo.markAsTaken(logs.single.id, DateTime(2026, 10, 1, 8, 2));
+
+        final opened = (await repo.getMedications()).single;
+        expect(opened.remainingStock, 9);
+
+        await repo.saveMedication(
+          opened.copyWith(name: 'Venvanse 30', remainingStock: 10),
+          stockAtEditStart: 10,
+        );
+
+        final stored = (await repo.getMedications()).single;
+        expect(stored.name, 'Venvanse 30');
+        expect(stored.remainingStock, 9);
+      },
+    );
+
+    test(
+      'cápsula tomada durante a edição desconta do número que a pessoa digitou',
+      () async {
+        await repo.saveMedication(
+          const Medication(
+            id: 'a',
+            name: 'Venvanse',
+            dosage: '30mg',
+            scheduledTimes: ['08:00'],
+            remainingStock: 10,
+            totalStock: 30,
+          ),
+        );
+        final day = DateTime(2026, 10, 1, 9);
+        final logs = await repo.getLogsForDate(day);
+        await repo.markAsTaken(logs.single.id, DateTime(2026, 10, 1, 8, 2));
+
+        await repo.saveMedication(
+          const Medication(
+            id: 'a',
+            name: 'Venvanse',
+            dosage: '30mg',
+            scheduledTimes: ['08:00'],
+            remainingStock: 20,
+            totalStock: 30,
+          ),
+          stockAtEditStart: 10,
+        );
+
+        final stored = (await repo.getMedications()).single;
+        expect(stored.remainingStock, 19);
+      },
+    );
   });
 }

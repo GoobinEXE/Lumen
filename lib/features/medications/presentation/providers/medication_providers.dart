@@ -176,8 +176,11 @@ class TodayMedicationLogsNotifier
     await loadTodayLogs();
   }
 
-  Future<void> saveMedication(Medication med) async {
-    await _repository.saveMedication(med);
+  Future<void> saveMedication(Medication med, {int? stockAtEditStart}) async {
+    await _repository.saveMedication(
+      med,
+      stockAtEditStart: stockAtEditStart,
+    );
     await _syncReminders();
     _ref.invalidate(medicationsListProvider);
     await loadTodayLogs();

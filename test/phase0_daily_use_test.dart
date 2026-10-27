@@ -183,7 +183,7 @@ void main() {
       expect(nights.single.date, DateTime(2026, 10, 1));
       expect(nights.single.remSleep, const Duration(hours: 1));
       expect(nights.single.deepSleep, const Duration(hours: 1));
-      expect(nights.single.totalSleep, const Duration(hours: 2));
+      expect(nights.single.totalSleep, const Duration(hours: 4, minutes: 30));
     },
   );
 

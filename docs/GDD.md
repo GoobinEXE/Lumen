@@ -85,7 +85,7 @@ Dois pilares complementares no mesmo app:
 | Cores-chave | Teal `#1FAF8A` (primária), lavanda `#8B7BC8` (acento), coral `#FF8A5C` (Des-Trava) |
 | Ícone | Arte em `lumen.ai`. iOS é o `ios/Runner/Lumen.icon` do Icon Composer, com vidro e luz, sem raster chapado por cima. Android usa essa arte no adaptive icon: fundo `#F6F1DE` no claro e `#16161A` no escuro; o L fica `#3A3A40` no claro e `#F4F1EC` no escuro |
 | Locales | `pt` (fonte), `en`, `es`, `ja` |
-| Versão do app | [SemVer](https://semver.org/lang/pt-BR/) em `pubspec.yaml`: `MAJOR.MINOR.PATCH`. Atual: `0.2.2` (série 0, antes do lançamento). `1.0.0` é o primeiro lançamento público. O `+N` do Flutter é só o build da loja e sobe a cada envio |
+| Versão do app | [SemVer](https://semver.org/lang/pt-BR/) em `pubspec.yaml`: `MAJOR.MINOR.PATCH`. Atual: `0.2.3` (série 0, antes do lançamento). `1.0.0` é o primeiro lançamento público. O `+N` do Flutter é só o build da loja e sobe a cada envio |
 
 ### Perfis de tom de voz (humanizados, zero dialeto de IA)
 

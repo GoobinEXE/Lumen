@@ -65,6 +65,15 @@ class DailyRoutineState {
     };
   }
 
+  DailyRoutineState keptForNextSave() {
+    return DailyRoutineState(
+      date: DateTime(date.year, date.month, date.day),
+      microHabits: List<String>.from(microHabits),
+      waterGlasses: waterGlasses,
+      tookPrescribedMedication: tookPrescribedMedication,
+    );
+  }
+
   factory DailyRoutineState.fromMap(Map<String, dynamic> map) {
     StateOfMindEntry? som;
     if (map['stateOfMind'] is Map<String, dynamic>) {

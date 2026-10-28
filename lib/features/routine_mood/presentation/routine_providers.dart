@@ -36,6 +36,8 @@ final todayRoutineDraftProvider = FutureProvider<DailyRoutineState>((ref) async 
     date: DateTime(now.year, now.month, now.day),
     microHabits: getMicroHabitsTemplate(prefs, l10n),
     waterGlasses: waterGlasses,
+    tookPrescribedMedication:
+        RoutineSnapshot.latestTookPrescribedMedication(todaySnapshots),
   );
 });
 

@@ -118,6 +118,16 @@ class RoutineSnapshot {
     };
   }
 
+  static bool latestTookPrescribedMedication(List<RoutineSnapshot> snapshots) {
+    RoutineSnapshot? latest;
+    for (final snapshot in snapshots) {
+      if (latest == null || snapshot.savedAt.isAfter(latest.savedAt)) {
+        latest = snapshot;
+      }
+    }
+    return latest?.tookPrescribedMedication ?? false;
+  }
+
   factory RoutineSnapshot.fromMap(Map<String, dynamic> map) {
     StateOfMindEntry? som;
     if (map['stateOfMind'] is Map) {

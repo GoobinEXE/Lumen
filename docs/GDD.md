@@ -514,7 +514,7 @@ Entrada só na aba Dia (linha discreta). Protótipo: `Design/Stitch/new/des_trav
 | microHabits | List\<String\> | |
 | completedHabits | Set\<String\> | |
 | waterGlasses | int | |
-| tookPrescribedMedication | bool | |
+| tookPrescribedMedication | bool | fato do dia: o rascunho segue o último salvamento e não volta para falso sozinho |
 | therapistNotes | String? | |
 
 ### Medication

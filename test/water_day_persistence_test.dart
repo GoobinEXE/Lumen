@@ -71,18 +71,15 @@ void main() {
           waterGlasses: 4,
           mainFocusAnchor: 'Terminar relatório',
           eveningReflection: 'Dia puxado',
+          tookPrescribedMedication: true,
         );
 
-        // Mesmo padrão de `_saveRoutine`: limpa campos íntimos, mas
-        // preserva a água do dia explicitamente.
-        final cleared = DailyRoutineState(
-          date: beforeSave.date,
-          microHabits: beforeSave.microHabits,
-          waterGlasses: beforeSave.waterGlasses,
-        );
+        final cleared = beforeSave.keptForNextSave();
 
         expect(cleared.waterGlasses, 4);
+        expect(cleared.tookPrescribedMedication, isTrue);
         expect(cleared.mainFocusAnchor, isEmpty);
+        expect(cleared.eveningReflection, isEmpty);
       },
     );
 

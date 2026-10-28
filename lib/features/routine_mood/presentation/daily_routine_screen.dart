@@ -112,12 +112,7 @@ class _DailyRoutineScreenState extends ConsumerState<DailyRoutineScreen> {
     // SoM do snapshot usa o mesmo timestamp do MoodEntry → ledger evita espelho duplo.
     await ref.read(routineHealthMirrorProvider.notifier).saveSnapshot(snapshot);
 
-    final cleared = DailyRoutineState(
-      date: DateTime(savedAt.year, savedAt.month, savedAt.day),
-      microHabits: List<String>.from(draft.microHabits),
-      // Água é acumulada do dia civil; save não pode zerar o contador.
-      waterGlasses: draft.waterGlasses,
-    );
+    final cleared = draft.keptForNextSave();
 
     if (mounted) {
       _eveningController.clear();

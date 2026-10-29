@@ -44,31 +44,38 @@ void openClinicalFolderScreen(BuildContext context) {
   _LumenShellScope.of(context).showTab(_ShellTab.clinicFolder);
 }
 
+void _pushOnHomeTab(_LumenShellScope scope, WidgetBuilder builder) {
+  scope.showTab(_ShellTab.home);
+  void push() {
+    final nav = scope.navigatorFor(_ShellTab.home);
+    if (nav == null) return;
+    nav.push(MaterialPageRoute<void>(builder: builder));
+  }
+
+  if (scope.navigatorFor(_ShellTab.home) != null) {
+    push();
+    return;
+  }
+  WidgetsBinding.instance.addPostFrameCallback((_) => push());
+}
+
 /// Porta canônica de Tarefas: aba Início, raiz, com `TasksHubScreen`
 /// empilhada por cima. Única pilha possível — reusada pela Home e pela Dia.
 void openTasksHub(BuildContext context) {
-  final scope = _LumenShellScope.of(context);
-  scope.showTab(_ShellTab.home);
-  WidgetsBinding.instance.addPostFrameCallback((_) {
-    final nav = scope.navigatorFor(_ShellTab.home);
-    if (nav == null) return;
-    nav.push(MaterialPageRoute<void>(builder: (_) => const TasksHubScreen()));
-  });
+  _pushOnHomeTab(
+    _LumenShellScope.of(context),
+    (_) => const TasksHubScreen(),
+  );
 }
 
 /// Porta canônica de "Meus dias": mesma política de pilha de [openTasksHub]
 /// (aba Início, raiz, calendário empilhado por cima), reusada pela Home e
 /// pela Dia.
 void openRoutineCalendarScreen(BuildContext context) {
-  final scope = _LumenShellScope.of(context);
-  scope.showTab(_ShellTab.home);
-  WidgetsBinding.instance.addPostFrameCallback((_) {
-    final nav = scope.navigatorFor(_ShellTab.home);
-    if (nav == null) return;
-    nav.push(
-      MaterialPageRoute<void>(builder: (_) => const RoutineCalendarScreen()),
-    );
-  });
+  _pushOnHomeTab(
+    _LumenShellScope.of(context),
+    (_) => const RoutineCalendarScreen(),
+  );
 }
 
 /// Abre a tela de perfil (feed). Empilha no navegador da aba ativa quando o
@@ -365,13 +372,7 @@ class _LumenShellState extends ConsumerState<LumenShell>
       return;
     }
     _lastTasksNavigation = now;
-    _showTab(_ShellTab.home);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      final nav = _navKeys[_ShellTab.home.index].currentState;
-      if (nav == null) return;
-      nav.push(MaterialPageRoute<void>(builder: (_) => const TasksHubScreen()));
-    });
+    openTasksHub(context);
   }
 
   ScrollPhysics _pagePhysics(BuildContext context, {required bool canPop}) {

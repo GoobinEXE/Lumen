@@ -365,6 +365,85 @@ void main() {
   });
 
   testWidgets(
+    'tap em Tarefas na Home abre sem depender de frame de scroll',
+    (tester) async {
+      await pumpShell(tester);
+
+      final home = find.byType(HomeFichaScreen);
+      final tasksCard = find.text(l10n.homeTasksTitle);
+      final homeScroll = find.descendant(
+        of: home,
+        matching: find.byType(Scrollable),
+      );
+      await revealForTap(tester, tasksCard, scrollable: homeScroll);
+      await tester.pumpAndSettle();
+
+      await tester.tap(tasksCard);
+
+      expect(Navigator.of(tester.element(home)).canPop(), isTrue);
+
+      await tester.pump();
+      expect(find.byType(TasksHubScreen), findsOneWidget);
+      expect(onScreen(tester, appBarTitle(l10n.tasksHubTitle)), isTrue);
+    },
+  );
+
+  testWidgets(
+    'tap em Meus dias na Home abre sem depender de frame de scroll',
+    (tester) async {
+      await pumpShell(tester);
+
+      final home = find.byType(HomeFichaScreen);
+      final calendarCard = find.text(l10n.homeMyDaysTitle);
+      final homeScroll = find.descendant(
+        of: home,
+        matching: find.byType(Scrollable),
+      );
+      await revealForTap(tester, calendarCard, scrollable: homeScroll);
+      await tester.pumpAndSettle();
+
+      await tester.tap(calendarCard);
+
+      expect(Navigator.of(tester.element(home)).canPop(), isTrue);
+
+      await tester.pump();
+      expect(find.byType(RoutineCalendarScreen), findsOneWidget);
+      expect(onScreen(tester, appBarTitle(l10n.routineCalendarTitle)), isTrue);
+    },
+  );
+
+  testWidgets(
+    'toques repetidos em Tarefas não empilham vários Hubs',
+    (tester) async {
+      await pumpShell(tester);
+
+      final home = find.byType(HomeFichaScreen);
+      final homeScroll = find.descendant(
+        of: home,
+        matching: find.byType(Scrollable),
+      );
+      await revealForTap(
+        tester,
+        find.text(l10n.homeTasksTitle),
+        scrollable: homeScroll,
+      );
+      await tester.pumpAndSettle();
+
+      final context = tester.element(home);
+      for (var i = 0; i < 5; i++) {
+        openTasksHub(context);
+      }
+      await settleRoute(tester);
+
+      expect(find.byType(TasksHubScreen), findsOneWidget);
+      expect(
+        Navigator.of(tester.element(find.byType(TasksHubScreen))).canPop(),
+        isTrue,
+      );
+    },
+  );
+
+  testWidgets(
     'Configurações → Pasta clínica esvazia a pilha de origem ao voltar',
     (tester) async {
       await pumpShell(tester);

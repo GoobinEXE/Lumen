@@ -44,15 +44,19 @@ void openClinicalFolderScreen(BuildContext context) {
   _LumenShellScope.of(context).showTab(_ShellTab.clinicFolder);
 }
 
-void _pushOnHomeTab(_LumenShellScope scope, WidgetBuilder builder) {
-  scope.showTab(_ShellTab.home);
+void _pushOnHomeTab({
+  required VoidCallback showHome,
+  required NavigatorState? Function() homeNavigator,
+  required WidgetBuilder builder,
+}) {
+  showHome();
   void push() {
-    final nav = scope.navigatorFor(_ShellTab.home);
+    final nav = homeNavigator();
     if (nav == null) return;
     nav.push(MaterialPageRoute<void>(builder: builder));
   }
 
-  if (scope.navigatorFor(_ShellTab.home) != null) {
+  if (homeNavigator() != null) {
     push();
     return;
   }
@@ -62,9 +66,11 @@ void _pushOnHomeTab(_LumenShellScope scope, WidgetBuilder builder) {
 /// Porta canônica de Tarefas: aba Início, raiz, com `TasksHubScreen`
 /// empilhada por cima. Única pilha possível — reusada pela Home e pela Dia.
 void openTasksHub(BuildContext context) {
+  final scope = _LumenShellScope.of(context);
   _pushOnHomeTab(
-    _LumenShellScope.of(context),
-    (_) => const TasksHubScreen(),
+    showHome: () => scope.showTab(_ShellTab.home),
+    homeNavigator: () => scope.navigatorFor(_ShellTab.home),
+    builder: (_) => const TasksHubScreen(),
   );
 }
 
@@ -72,9 +78,11 @@ void openTasksHub(BuildContext context) {
 /// (aba Início, raiz, calendário empilhado por cima), reusada pela Home e
 /// pela Dia.
 void openRoutineCalendarScreen(BuildContext context) {
+  final scope = _LumenShellScope.of(context);
   _pushOnHomeTab(
-    _LumenShellScope.of(context),
-    (_) => const RoutineCalendarScreen(),
+    showHome: () => scope.showTab(_ShellTab.home),
+    homeNavigator: () => scope.navigatorFor(_ShellTab.home),
+    builder: (_) => const RoutineCalendarScreen(),
   );
 }
 
@@ -372,7 +380,14 @@ class _LumenShellState extends ConsumerState<LumenShell>
       return;
     }
     _lastTasksNavigation = now;
-    openTasksHub(context);
+    _pushOnHomeTab(
+      showHome: () => _showTab(_ShellTab.home),
+      homeNavigator: () {
+        if (!mounted) return null;
+        return _navKeys[_ShellTab.home.index].currentState;
+      },
+      builder: (_) => const TasksHubScreen(),
+    );
   }
 
   ScrollPhysics _pagePhysics(BuildContext context, {required bool canPop}) {

@@ -17,6 +17,7 @@ import 'package:noa/features/profile/presentation/profile_screen.dart';
 import 'package:noa/features/routine_mood/presentation/daily_routine_screen.dart';
 import 'package:noa/features/settings/presentation/settings_screen.dart';
 import 'package:noa/features/tasks/presentation/tasks_hub_screen.dart';
+import 'package:noa/features/tasks/service/task_notification_bus.dart';
 import 'package:noa/features/therapist_export/presentation/clinical_folder_screen.dart';
 import 'package:noa/l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -440,6 +441,20 @@ void main() {
         Navigator.of(tester.element(find.byType(TasksHubScreen))).canPop(),
         isTrue,
       );
+    },
+  );
+
+  testWidgets(
+    'notificação de tarefa abre o Hub sem o contexto da tela',
+    (tester) async {
+      final seen = TaskNotificationBus.openTasks.value;
+      addTearDown(() => TaskNotificationBus.openTasks.value = seen);
+
+      TaskNotificationBus.requestOpenTasks();
+      await pumpShell(tester);
+
+      expect(find.byType(TasksHubScreen), findsOneWidget);
+      expect(onScreen(tester, appBarTitle(l10n.tasksHubTitle)), isTrue);
     },
   );
 

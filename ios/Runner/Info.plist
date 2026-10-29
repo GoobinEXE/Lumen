@@ -4,10 +4,6 @@
 <dict>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
-	<key>FLTEnableFlutterGPU</key>
-	<true/>
-	<key>FLTEnableImpeller</key>
-	<true/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
@@ -28,12 +24,20 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>FLTEnableFlutterGPU</key>
+	<true/>
+	<key>FLTEnableImpeller</key>
+	<true/>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>whatsapp</string>
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_dartobservatory._tcp</string>
+	</array>
 	<key>NSCalendarsFullAccessUsageDescription</key>
 	<string>O Lumen grava no Calendário a hora em que você salva a rotina, com a âncora e o que você anotou.</string>
 	<key>NSCalendarsUsageDescription</key>
@@ -42,6 +46,8 @@
 	<string>O Lumen lê sono, batimentos, HRV, FC em repouso, passos, exercício, estado emocional, tempo sob luz do dia, exposição sonora ambiental/fones, medicamentos/doses, altura, peso, sexo biológico e data de nascimento do Apple Health para correlacionar recuperação, humor e sobrecarga e preencher seu perfil sem redigitar.</string>
 	<key>NSHealthUpdateUsageDescription</key>
 	<string>O Lumen escreve no Apple Health água, atenção plena e estados emocionais registrados no app, para manter a sincronização mútua. Lembretes e estoque de medicação ficam só no Lumen.</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Permitir conexão com o Flutter para testes locais.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
@@ -81,12 +87,6 @@
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
-	</array>
-	<key>NSLocalNetworkUsageDescription</key>
-	<string>Permitir conexão com o Flutter para testes locais.</string>
-	<key>NSBonjourServices</key>
-	<array>
-		<string>_dartobservatory._tcp</string>
 	</array>
 </dict>
 </plist>

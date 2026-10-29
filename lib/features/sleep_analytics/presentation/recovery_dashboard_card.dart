@@ -4,6 +4,7 @@ import '../../../core/icons/app_icons.dart';
 import '../../../core/localization/locale_provider.dart';
 import '../../../core/providers.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/glass_surface.dart';
 import '../../../core/theme/responsive.dart';
 import '../../../core/widgets/async_placeholders.dart';
@@ -21,7 +22,7 @@ class RecoveryDashboardCard extends ConsumerWidget {
     final narrow = isNarrow(context);
 
     return GlassSurface(
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(AppSpacing.card),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -30,14 +31,14 @@ class RecoveryDashboardCard extends ConsumerWidget {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: AppColors.accent.withValues(
+                  color: AppColors.primary.withValues(
                     alpha: isDark ? 0.25 : 0.12,
                   ),
-                  shape: BoxShape.circle,
+                  borderRadius: BorderRadius.circular(AppRadii.input),
                 ),
                 child: Icon(
                   AppIcons.favoriteOutline,
-                  color: isDark ? AppColors.primaryLight : AppColors.accent,
+                  color: isDark ? AppColors.primaryLight : AppColors.primary,
                   size: 20,
                 ),
               ),
@@ -46,7 +47,7 @@ class RecoveryDashboardCard extends ConsumerWidget {
                 child: Text(
                   l10n.recoveryCardTitle,
                   style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ),
@@ -55,12 +56,11 @@ class RecoveryDashboardCard extends ConsumerWidget {
           const SizedBox(height: 6),
           Text(
             l10n.recoveryCardSubtitle,
-            style: TextStyle(
+            style: theme.textTheme.bodySmall?.copyWith(
               fontSize: kMinBodySecondary,
-              color: isDark ? AppColors.textMutedDark : AppColors.textMuted,
             ),
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 16),
           FadeSwap(
             child: lastAsync.when(
               loading: () => const SlotSkeleton(

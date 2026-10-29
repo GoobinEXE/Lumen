@@ -6,7 +6,7 @@ import 'package:liquid_glass_renderer/liquid_glass_renderer.dart';
 
 import 'app_colors.dart';
 
-/// Papéis de superfície liquid glass no Lumen.
+/// Papéis de superfície liquid glass no Lumen (só iOS).
 enum LumenGlassRole {
   /// Cards de hub / painéis.
   surface,
@@ -27,51 +27,45 @@ enum LumenGlassRole {
 /// Força FakeGlass em testes / diagnóstico (sem shader contínuo).
 bool debugLumenForceFakeGlass = false;
 
-/// Android: tokens/API do caminho “lite” (sem refração real no chrome).
-///
-/// Blur de BackdropFilter volta só em nav/app bar/sheet — poucas camadas.
-/// Cards e chips densos ficam em [LumenGlassLite] (ver
-/// [lumenGlassPreferLitePaint]).
+/// Liquid Glass é identidade visual só do iOS.
+bool lumenUsesLiquidGlass() {
+  return !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS;
+}
+
+/// Android (e demais): chrome e superfícies Material 3.
+bool lumenUsesMaterialChrome() => !lumenUsesLiquidGlass();
+
+/// Compat legado — preferir [lumenUsesMaterialChrome].
+@Deprecated('Use lumenUsesMaterialChrome() / lumenUsesLiquidGlass()')
 bool lumenGlassAndroidLite() {
   return !kIsWeb && defaultTargetPlatform == TargetPlatform.android;
 }
 
-/// Paint direto ([LumenGlassLite]) sem BackdropFilter.
+/// Paint direto ([LumenGlassLite]) sem BackdropFilter — só no caminho glass iOS.
 ///
-/// - Chips: sempre (check-in / wraps densos) nas duas plataformas.
-/// - Android surfaces: lite (N cards no scroll).
-/// - Android nav/app bar/sheet: FakeGlass com blur moderado (1–2 camadas).
-/// - iOS chrome: refração; surfaces/sheets: FakeGlass com blur.
+/// Chips densos (check-in) usam lite; surfaces/sheets usam FakeGlass; chrome
+/// iOS refrata.
 bool lumenGlassPreferLitePaint(LumenGlassRole role) {
-  if (role == LumenGlassRole.chip) return true;
-  if (lumenGlassAndroidLite()) {
-    return role == LumenGlassRole.surface;
-  }
-  return false;
+  if (lumenUsesMaterialChrome()) return false;
+  return role == LumenGlassRole.chip;
 }
 
-/// Se este papel deve usar [FakeGlass] (sem refração).
+/// Se este papel deve usar [FakeGlass] (sem refração). Só faz sentido no iOS.
 ///
 /// Cards/painéis ([LumenGlassRole.surface]), chips e sheets ficam em
 /// FakeGlass: o `liquid_glass_renderer` real chama `toImageSync` com o matte
 /// transform da árvore; em lista scrollável / PageView / form longo isso vira
-/// Infinity/NaN ou texto ilegível.
-///
-/// No Android o chrome (nav, app bar) também fica em FakeGlass: a refração
-/// real recomposita a cada frame do [PageView] e congela a troca de aba.
-/// No iOS a refração continua no chrome.
+/// Infinity/NaN ou texto ilegível. Chrome iOS refrata.
 bool lumenGlassUseFake({
   required BuildContext context,
   required LumenGlassRole role,
   bool forceLite = false,
 }) {
+  if (lumenUsesMaterialChrome()) return true;
   final reduceMotion = MediaQuery.disableAnimationsOf(context);
-  final androidChrome = lumenGlassAndroidLite() &&
-      (role == LumenGlassRole.navBar || role == LumenGlassRole.appBar);
   return debugLumenForceFakeGlass ||
       forceLite ||
       reduceMotion ||
-      androidChrome ||
       role == LumenGlassRole.chip ||
       role == LumenGlassRole.surface ||
       role == LumenGlassRole.sheet;
@@ -82,7 +76,7 @@ double lumenGlassRadius(LumenGlassRole role, {double? override}) {
       switch (role) {
         LumenGlassRole.navBar => 24.5,
         LumenGlassRole.appBar => 22,
-        LumenGlassRole.sheet => 32,
+        LumenGlassRole.sheet => 36,
         LumenGlassRole.chip => 16,
         LumenGlassRole.surface => 20,
       };
@@ -107,27 +101,17 @@ LiquidGlassSettings lumenGlassSettings({
     role: role,
     forceLite: forceLite,
   );
-  final androidLite = lumenGlassAndroidLite();
   final preferLite = lumenGlassPreferLitePaint(role);
   final reduceMotion = MediaQuery.disableAnimationsOf(context);
 
-  // iOS chrome: tint baixo (refração). Android: meio-termo translúcido
-  // (sheet um pouco mais fechado para leitura de form).
-  final baseAlpha = androidLite
-      ? switch (role) {
-          LumenGlassRole.navBar => isDark ? 0.40 : 0.46,
-          LumenGlassRole.appBar => isDark ? 0.46 : 0.52,
-          LumenGlassRole.sheet => isDark ? 0.76 : 0.80,
-          LumenGlassRole.chip => isDark ? 0.28 : 0.34,
-          LumenGlassRole.surface => isDark ? 0.36 : 0.42,
-        }
-      : switch (role) {
-          LumenGlassRole.navBar => isDark ? 0.10 : 0.07,
-          LumenGlassRole.appBar => isDark ? 0.16 : 0.12,
-          LumenGlassRole.sheet => isDark ? 0.78 : 0.88,
-          LumenGlassRole.chip => isDark ? 0.20 : 0.16,
-          LumenGlassRole.surface => isDark ? 0.16 : 0.12,
-        };
+  // iOS: tint baixo no chrome (refração); sheet quase opaco (forms legíveis).
+  final baseAlpha = switch (role) {
+    LumenGlassRole.navBar => isDark ? 0.10 : 0.07,
+    LumenGlassRole.appBar => isDark ? 0.16 : 0.12,
+    LumenGlassRole.sheet => isDark ? 0.94 : 0.97,
+    LumenGlassRole.chip => isDark ? 0.20 : 0.16,
+    LumenGlassRole.surface => isDark ? 0.16 : 0.12,
+  };
 
   var glassColor = (isDark ? const Color(0xFF2A2A32) : Colors.white)
       .withValues(alpha: baseAlpha);
@@ -150,30 +134,22 @@ LiquidGlassSettings lumenGlassSettings({
         };
 
   // Blur só fora do paint lite (e com reduzir movimento = 0).
-  // Android chrome/sheet: σ um pouco menor que iOS (1–2 BackdropFilters).
   final blur = (preferLite || reduceMotion)
       ? 0.0
-      : androidLite
+          : useFake
           ? switch (role) {
+              LumenGlassRole.chip => 6.0,
+              LumenGlassRole.navBar => 12.0,
+              LumenGlassRole.sheet => 24.0,
+              _ => 10.0,
+            }
+          : switch (role) {
               LumenGlassRole.navBar => 10.0,
               LumenGlassRole.appBar => 8.0,
-              LumenGlassRole.sheet => 10.0,
-              LumenGlassRole.surface => 0.0,
-              LumenGlassRole.chip => 0.0,
-            }
-          : useFake
-              ? switch (role) {
-                  LumenGlassRole.chip => 6.0,
-                  LumenGlassRole.navBar => 12.0,
-                  _ => 10.0,
-                }
-              : switch (role) {
-                  LumenGlassRole.navBar => 10.0,
-                  LumenGlassRole.appBar => 8.0,
-                  LumenGlassRole.sheet => 10.0,
-                  LumenGlassRole.surface => 6.0,
-                  LumenGlassRole.chip => 4.0,
-                };
+              LumenGlassRole.sheet => 20.0,
+              LumenGlassRole.surface => 6.0,
+              LumenGlassRole.chip => 4.0,
+            };
 
   return LiquidGlassSettings(
     glassColor: glassColor,
@@ -183,11 +159,11 @@ LiquidGlassSettings lumenGlassSettings({
     lightIntensity: role == LumenGlassRole.chip ? 0.35 : 0.55,
     ambientStrength: isDark ? 0.12 : 0.08,
     refractiveIndex: useFake ? 1.0 : 1.18,
-    saturation: preferLite && androidLite ? 1.0 : 1.15,
+    saturation: 1.15,
   );
 }
 
-/// Vidro Android lite: mesmos tokens do FakeGlass, sem BackdropFilter.
+/// Paint lite iOS (chips densos): tokens do FakeGlass, sem BackdropFilter.
 class LumenGlassLite extends StatelessWidget {
   const LumenGlassLite({
     super.key,
@@ -388,10 +364,7 @@ List<BoxShadow> lumenGlassShadow({
     LumenGlassRole.chip => isDark ? 0.14 : 0.05,
     LumenGlassRole.surface => isDark ? 0.24 : 0.07,
   };
-  final lite = lumenGlassAndroidLite();
-  final blurRadius = lite
-      ? (role == LumenGlassRole.chip ? 6.0 : 10.0)
-      : (role == LumenGlassRole.chip ? 10.0 : 20.0);
+  final blurRadius = role == LumenGlassRole.chip ? 10.0 : 20.0;
   return [
     BoxShadow(
       color: (shadowColor ?? (isDark ? Colors.black : AppColors.shadow))

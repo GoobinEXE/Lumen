@@ -224,6 +224,7 @@ class _FirstLaunchOnboardingState extends ConsumerState<FirstLaunchOnboarding> {
         _back();
       },
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         body: SafeArea(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -281,7 +282,7 @@ class _FirstLaunchOnboardingState extends ConsumerState<FirstLaunchOnboarding> {
                     minHeight: 4,
                     value: (_step + 1) / FirstLaunchOnboarding.stepCount,
                     backgroundColor: isDark
-                        ? Colors.white.withValues(alpha: 0.08)
+                        ? AppColors.surfaceContainerHighestDark
                         : AppColors.primarySoft,
                     color: AppColors.primary,
                   ),

@@ -128,7 +128,7 @@ class SettingsScreen extends ConsumerWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: AppSpacing.section),
             _SectionLabel(text: l10n.settingsLanguageSection),
             GlassSurface(
               child: _SettingsTile(
@@ -146,7 +146,7 @@ class SettingsScreen extends ConsumerWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: AppSpacing.section),
             _SectionLabel(text: l10n.settingsAccessSection),
             GlassSurface(
               child: Column(
@@ -200,7 +200,7 @@ class SettingsScreen extends ConsumerWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: AppSpacing.section),
             _SectionLabel(text: l10n.settingsDataSection),
             GlassSurface(
               child: Column(
@@ -238,7 +238,7 @@ class SettingsScreen extends ConsumerWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: AppSpacing.section),
             _SectionLabel(text: l10n.settingsAboutSection),
             GlassSurface(
               child: Column(

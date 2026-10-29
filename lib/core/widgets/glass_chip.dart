@@ -5,7 +5,7 @@ import '../theme/app_colors.dart';
 import '../theme/app_spacing.dart';
 import '../theme/lumen_glass_style.dart';
 
-/// Pill de seleção no estilo Apple — sem `Chip` Material.
+/// Pill de seleção — Liquid Glass no iOS; [FilterChip] Material 3 no Android.
 class GlassChip extends StatelessWidget {
   const GlassChip({
     super.key,
@@ -28,6 +28,27 @@ class GlassChip extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
     final accent = selectedColor ?? AppColors.primary;
     final reduceMotion = MediaQuery.disableAnimationsOf(context);
+
+    if (lumenUsesMaterialChrome()) {
+      return FilterChip(
+        label: Text(label),
+        avatar: avatar,
+        selected: selected,
+        showCheckmark: false,
+        onSelected: onTap == null
+            ? null
+            : (_) {
+                if (!reduceMotion) HapticFeedback.selectionClick();
+                onTap!();
+              },
+        selectedColor: selectedColor == null
+            ? null
+            : Color.alphaBlend(
+                accent.withValues(alpha: 0.28),
+                theme.colorScheme.secondaryContainer,
+              ),
+      );
+    }
 
     final textColor = selected
         ? (isDark ? AppColors.textLight : AppColors.textDark)
@@ -86,7 +107,7 @@ class GlassChip extends StatelessWidget {
   }
 }
 
-/// Ação em pill (equivalente a ActionChip sem Material).
+/// Ação em pill (equivalente a ActionChip).
 class GlassActionChip extends StatelessWidget {
   const GlassActionChip({
     super.key,
@@ -101,6 +122,15 @@ class GlassActionChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (lumenUsesMaterialChrome()) {
+      return ActionChip(
+        label: Text(label),
+        avatar: icon == null
+            ? null
+            : Icon(icon, size: 16, color: Theme.of(context).colorScheme.primary),
+        onPressed: onTap,
+      );
+    }
     return GlassChip(
       label: label,
       onTap: onTap,

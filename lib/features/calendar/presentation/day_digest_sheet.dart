@@ -61,7 +61,7 @@ class DayDigestSheet extends ConsumerWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.section),
               digestAsync.when(
                 loading: () => const FormSkeleton(),
                 error: (err, _) => Text(l10n.errorWithDetails('$err')),
@@ -88,7 +88,7 @@ class DayDigestSheet extends ConsumerWidget {
                                 ],
                               ),
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: AppSpacing.section),
                       _Section(
                         title: l10n.dayDigestSomTitle,
                         child: digest.latestStateOfMind == null
@@ -100,7 +100,7 @@ class DayDigestSheet extends ConsumerWidget {
                                 languageCode: lang,
                               ),
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: AppSpacing.section),
                       _Section(
                         title: l10n.dayDigestRoutineTitle,
                         child: digest.snapshots.isEmpty
@@ -118,7 +118,7 @@ class DayDigestSheet extends ConsumerWidget {
                                 ],
                               ),
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: AppSpacing.section),
                       _Section(
                         title: l10n.dayDigestMedsTitle,
                         child: digest.medicationLogs.isEmpty
@@ -130,7 +130,7 @@ class DayDigestSheet extends ConsumerWidget {
                                 ],
                               ),
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: AppSpacing.section),
                       _Section(
                         title: l10n.dayDigestTasksTitle,
                         child: digest.completedTaskTitles.isEmpty

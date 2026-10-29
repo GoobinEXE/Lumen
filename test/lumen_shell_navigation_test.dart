@@ -161,10 +161,11 @@ void main() {
 
     final afterPush = tester.element(find.byType(GlassNavBar));
     expect(identical(before, afterPush), isTrue);
-    final profileTitle = appBarTitle(l10n.profileScreenTitle);
-    expect(onScreen(tester, profileTitle), isTrue);
+    expect(find.byType(ProfileScreen), findsOneWidget);
+    expect(onScreen(tester, find.byType(ProfileScreen)), isTrue);
+    expect(find.text(l10n.profileScreenTitle), findsNothing);
 
-    Navigator.of(tester.element(profileTitle)).pop();
+    Navigator.of(tester.element(find.byType(ProfileScreen))).pop();
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 50));
 
@@ -247,8 +248,16 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 50));
 
-    final title = appBarTitle(l10n.profileScreenTitle);
-    expect(onScreen(tester, title), isTrue);
+    expect(find.byType(ProfileScreen), findsOneWidget);
+    expect(onScreen(tester, find.byType(ProfileScreen)), isTrue);
+    expect(find.text(l10n.profileScreenTitle), findsNothing);
+    expect(
+      find.descendant(
+        of: find.byType(ProfileScreen),
+        matching: find.byTooltip(l10n.settingsOpenTooltip),
+      ),
+      findsOneWidget,
+    );
   });
 
   Finder profileSettingsGear() => find.descendant(

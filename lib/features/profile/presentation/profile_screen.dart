@@ -34,7 +34,6 @@ class ProfileScreen extends ConsumerWidget {
 
     return GlassScaffold(
       appBar: GlassAppBar(
-        title: Text(l10n.profileScreenTitle),
         actions: [
           IconButton(
             tooltip: l10n.settingsOpenTooltip,
@@ -56,7 +55,7 @@ class ProfileScreen extends ConsumerWidget {
             ),
             children: [
               _ProfileHeaderCard(profile: profile),
-              const SizedBox(height: 20),
+              const SizedBox(height: AppSpacing.section),
               const SlotSkeleton(height: 72, bars: 2),
               const SizedBox(height: 16),
               const SlotSkeleton(height: 72, bars: 2),
@@ -71,7 +70,7 @@ class ProfileScreen extends ConsumerWidget {
             ),
             children: [
               _ProfileHeaderCard(profile: profile),
-              const SizedBox(height: 20),
+              const SizedBox(height: AppSpacing.section),
               Text(l10n.errorWithDetails('$err')),
             ],
           ),
@@ -90,7 +89,12 @@ class ProfileScreen extends ConsumerWidget {
                 }
                 if (index == 1) {
                   return Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 20, 0, 8),
+                    padding: const EdgeInsets.fromLTRB(
+                      0,
+                      AppSpacing.section,
+                      0,
+                      12,
+                    ),
                     child: Text(
                       l10n.profileFeedTitle,
                       style: theme.textTheme.titleMedium?.copyWith(
@@ -100,9 +104,24 @@ class ProfileScreen extends ConsumerWidget {
                   );
                 }
                 if (items.isEmpty) {
-                  return Text(
-                    l10n.profileFeedEmpty,
-                    style: theme.textTheme.bodyMedium,
+                  final isDark = theme.brightness == Brightness.dark;
+                  return GlassSurface(
+                    padding: const EdgeInsets.all(AppSpacing.card),
+                    child: Row(
+                      children: [
+                        Icon(
+                          AppIcons.person,
+                          color: AppColors.mutedText(isDark),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            l10n.profileFeedEmpty,
+                            style: theme.textTheme.bodyMedium,
+                          ),
+                        ),
+                      ],
+                    ),
                   );
                 }
                 final item = items[index - 2];

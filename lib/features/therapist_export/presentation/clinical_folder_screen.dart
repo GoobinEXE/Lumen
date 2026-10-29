@@ -29,6 +29,7 @@ import '../service/therapist_pdf_share.dart';
 import '../service/whatsapp_text_formatter.dart';
 import 'therapist_report_screen.dart';
 import 'widgets/weekly_summary_card_preview.dart';
+import '../../../core/theme/glass_surface.dart';
 import '../../../core/widgets/glass_chip.dart';
 import '../../../core/widgets/glass_nav_bar.dart';
 import '../../../core/widgets/glass_toast.dart';
@@ -94,25 +95,32 @@ class _ClinicalFolderScreenState extends ConsumerState<ClinicalFolderScreen> {
     if (contacts.isEmpty) return null;
     if (contacts.length == 1) return contacts.single;
 
-    return showModalBottomSheet<CareContact>(
+    return showLumenSheet<CareContact>(
       context: context,
-      useRootNavigator: true,
-      useSafeArea: true,
-      builder: (context) => ListView(
-        shrinkWrap: true,
-        children: [
-          for (final contact in contacts)
-            ListTile(
-              leading: const Icon(AppIcons.chat),
-              title: Text(
-                contact.displayName?.trim().isNotEmpty == true
-                    ? contact.displayName!
-                    : contact.phone,
-              ),
-              subtitle: Text(contact.phone),
-              onTap: () => Navigator.pop(context, contact),
-            ),
-        ],
+      builder: (context) => LumenKeyboardInset(
+        child: Material(
+          color: Theme.of(context).colorScheme.surfaceContainerLow,
+          borderRadius: const BorderRadius.vertical(
+            top: Radius.circular(AppRadii.sheet),
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: ListView(
+            shrinkWrap: true,
+            children: [
+              for (final contact in contacts)
+                ListTile(
+                  leading: const Icon(AppIcons.chat),
+                  title: Text(
+                    contact.displayName?.trim().isNotEmpty == true
+                        ? contact.displayName!
+                        : contact.phone,
+                  ),
+                  subtitle: Text(contact.phone),
+                  onTap: () => Navigator.pop(context, contact),
+                ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -314,7 +322,7 @@ class _ClinicalFolderScreenState extends ConsumerState<ClinicalFolderScreen> {
                           l10n.profileClinicalSectionSubtitle,
                           style: theme.textTheme.bodyMedium,
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: AppSpacing.section),
                         Wrap(
                           spacing: 8,
                           children: [
@@ -404,7 +412,7 @@ class _ClinicalFolderScreenState extends ConsumerState<ClinicalFolderScreen> {
                             label: Text(l10n.copyTextButton),
                           ),
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: AppSpacing.section),
                         _ActionCard(
                           icon: AppIcons.image,
                           tone: _ClinicalFolderActionTone.outlined,
@@ -414,7 +422,7 @@ class _ClinicalFolderScreenState extends ConsumerState<ClinicalFolderScreen> {
                           busy: _busyShareCard,
                           onPressed: () => _shareCard(l10n, patientName),
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: AppSpacing.section),
                         _ActionCard(
                           icon: AppIcons.pdf,
                           tone: _ClinicalFolderActionTone.outlined,

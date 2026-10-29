@@ -203,7 +203,7 @@ class CheckInFormState extends ConsumerState<CheckInForm> {
               child: Material(
                 color: isSelected
                     ? AppColors.primary
-                    : (isDark ? AppColors.cardDark : AppColors.accentSoft),
+                    : (isDark ? AppColors.cardDark : AppColors.primarySoft),
                 borderRadius: BorderRadius.circular(AppRadii.input),
                 child: InkWell(
                   borderRadius: BorderRadius.circular(AppRadii.input),
@@ -214,7 +214,7 @@ class CheckInFormState extends ConsumerState<CheckInForm> {
                       children: [
                         Icon(
                           AppIcons.forFocus(fs),
-                          color: isSelected ? Colors.white : AppColors.accent,
+                          color: isSelected ? Colors.white : AppColors.primary,
                           size: 18,
                         ),
                         const SizedBox(width: 8),
@@ -271,8 +271,8 @@ class CheckInFormState extends ConsumerState<CheckInForm> {
                             margin: const EdgeInsets.symmetric(horizontal: 3),
                             decoration: BoxDecoration(
                               color: _energy == el
-                                  ? AppColors.accent
-                                  : AppColors.accent.withValues(alpha: 0.25),
+                                  ? AppColors.primary
+                                  : AppColors.primary.withValues(alpha: 0.22),
                               borderRadius: BorderRadius.circular(AppRadii.pill),
                             ),
                           ),
@@ -317,12 +317,12 @@ class CheckInFormState extends ConsumerState<CheckInForm> {
             hintText: l10n.optionalNoteHint,
             hintStyle: TextStyle(
               fontSize: 13,
-              color: isDark ? Colors.white38 : Colors.black38,
+              color: AppColors.mutedText(isDark),
             ),
             filled: true,
             fillColor: isDark
-                ? Colors.white.withValues(alpha: 0.04)
-                : Colors.black.withValues(alpha: 0.03),
+                ? AppColors.surfaceContainerDark
+                : AppColors.surfaceContainerLight,
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 14,
               vertical: 12,
@@ -482,13 +482,13 @@ class _EmotionLabelsSectionState
               hintText: l10n.searchEmotionHint,
               hintStyle: TextStyle(
                 fontSize: 13,
-                color: isDark ? Colors.white38 : Colors.black38,
+                color: AppColors.mutedText(isDark),
               ),
               isDense: true,
               filled: true,
               fillColor: isDark
-                  ? Colors.white.withValues(alpha: 0.04)
-                  : Colors.black.withValues(alpha: 0.03),
+                  ? AppColors.surfaceContainerDark
+                  : AppColors.surfaceContainerLight,
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: 14,
                 vertical: 12,
@@ -509,7 +509,7 @@ class _EmotionLabelsSectionState
               return GlassChip(
                 label: StateOfMindLabels.label(id, languageCode),
                 selected: selected,
-                selectedColor: AppColors.accent,
+                selectedColor: AppColors.primary,
                 onTap: () {
                   setState(() {
                     if (selected) {

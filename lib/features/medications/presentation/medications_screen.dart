@@ -135,12 +135,12 @@ class _MedicationsScreenState extends ConsumerState<MedicationsScreen> {
                 ),
               ),
 
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.section),
               _TodayCurve(
                 logs: logsAsync.value ?? const [],
                 meds: medsAsync.value ?? const [],
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: AppSpacing.section),
 
               Text(
                 l10n.dosesTodayTitle,

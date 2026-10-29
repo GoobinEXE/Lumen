@@ -30,7 +30,7 @@ A mudança fecha com `flutter analyze` sem issues e `flutter test` passando.
 - Persistência: `shared_preferences ^2.5.5`, `path_provider ^2.1.6`, `uuid ^4.6.0`
 - Saúde: `health ^13.3.2` e `ios/Runner/HealthKitBridge.swift` (channel `dev.prism.lumen/healthkit_bridge`)
 - Sistema: `flutter_local_notifications ^22.3.1`, `share_plus ^13.3.0`, `printing ^5.14.3`, `pdf ^3.12.0`, `url_launcher ^6.3.2`
-- UI: `fl_chart ^1.2.0`, `intl 0.20.2`, `cupertino_icons ^1.0.9`, `liquid_glass_renderer` (Impeller)
+- UI: `fl_chart ^1.2.0`, `intl 0.20.2`, `cupertino_icons ^1.0.9`, `liquid_glass_renderer` (Impeller, **só iOS**); Android usa Material 3 via os mesmos wrappers
 - Dev: `flutter_test` (SDK), `flutter_lints ^6.0.0`
 - iOS é a plataforma primária. Android usa o mesmo domínio.
 
@@ -58,7 +58,7 @@ Domínio não importa Flutter. Modelo imutável, um tipo por conceito do GDD, co
 - Arquivo `snake_case`, tipo `PascalCase`, membro `camelCase`
 - String de UI só em `lib/l10n/app_pt.arb`, chave `camelCase`. Labels de State of Mind ficam em `state_of_mind_*.dart`
 - Chave de prefs: `noa_*` com sufixo de versão (`noa_mood_entries_v2`)
-- Cor, espaço e raio em `AppColors`, `AppSpacing`, `AppRadii`. Superfície em `GlassSurface`. Ícone em `AppIcons`. CTA `#1FAF8A`. Fundo sólido
+- Cor, espaço e raio em `AppColors`, `AppSpacing`, `AppRadii`. Superfície em `GlassSurface` (glass no iOS / `Card` M3 no Android). Ícone em `AppIcons`. CTA `#1FAF8A`. Fundo sólido. Gate de plataforma: `lumenUsesLiquidGlass` / `lumenUsesMaterialChrome` (só no core/tema — telas de feature não checam `Platform`)
 
 ## Sistema
 

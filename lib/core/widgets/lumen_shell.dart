@@ -16,8 +16,11 @@ import '../../features/tasks/presentation/task_providers.dart';
 import '../../features/tasks/service/task_notification_bus.dart';
 import '../../features/tasks/presentation/tasks_hub_screen.dart';
 import '../../features/therapist_export/presentation/clinical_folder_screen.dart';
+import 'package:noa/l10n/app_localizations.dart';
+
 import '../icons/app_icons.dart';
 import '../localization/locale_provider.dart';
+import '../theme/lumen_glass_style.dart';
 import 'glass_nav_bar.dart';
 
 const _homeRoute = '/';
@@ -379,111 +382,134 @@ class _LumenShellState extends ConsumerState<LumenShell>
     return const PageScrollPhysics();
   }
 
+  List<GlassNavDestination> _destinations(AppLocalizations l10n) {
+    return [
+      GlassNavDestination(
+        icon: AppIcons.home,
+        selectedIcon: AppIcons.homeFilled,
+        label: l10n.navHome,
+        hint: l10n.navOpensTabHint(l10n.navHome),
+      ),
+      GlassNavDestination(
+        icon: AppIcons.routine,
+        selectedIcon: AppIcons.routineFilled,
+        label: l10n.navRoutine,
+        hint: l10n.navOpensTabHint(l10n.navRoutine),
+      ),
+      GlassNavDestination(
+        icon: AppIcons.medication,
+        selectedIcon: AppIcons.medicationFilled,
+        label: l10n.navMeds,
+        hint: l10n.navOpensTabHint(l10n.navMeds),
+      ),
+      GlassNavDestination(
+        icon: AppIcons.clinic,
+        selectedIcon: AppIcons.clinicFilled,
+        label: l10n.navClinicalFolder,
+        hint: l10n.navOpensTabHint(l10n.navClinicalFolder),
+      ),
+    ];
+  }
+
+  Widget _buildTabBar(AppLocalizations l10n) {
+    return RepaintBoundary(
+      child: AnimatedBuilder(
+        animation: _pageController,
+        builder: (context, _) {
+          final page = _pageController.hasClients
+              ? (_pageController.page ?? _index.toDouble())
+              : _index.toDouble();
+          return GlassNavBar(
+            position: page,
+            onSelected: (i) => _showTab(_ShellTab.values[i]),
+            destinations: _destinations(l10n),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildPageView(BuildContext context) {
+    return ValueListenableBuilder<bool>(
+      valueListenable: _activeCanPopNotifier,
+      builder: (context, activeCanPop, _) {
+        final shellCanPop = _index == _ShellTab.home.index || activeCanPop;
+        return PopScope<Object?>(
+          canPop: shellCanPop,
+          onPopInvokedWithResult: _onSystemBack,
+          child: PageView(
+            controller: _pageController,
+            physics: _pagePhysics(context, canPop: activeCanPop),
+            onPageChanged: _onPageChanged,
+            children: [
+              for (final tab in _ShellTab.values)
+                _ShellPage(
+                  key: ValueKey<String>(tab.name),
+                  navigatorKey: _navKeys[tab.index],
+                  observer: _observers[tab.index],
+                  enabled: _index == tab.index,
+                  routeName: _routeName(tab),
+                  onPopNested: _popVisibleTab,
+                  child: _rootFor(tab),
+                ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = ref.watch(appLocalizationsProvider);
     final media = MediaQuery.of(context);
-    final indicator = media.viewPadding.bottom;
-    final reservedBottom = GlassNavBar.reservedBottom(context);
-    // Full-bleed: o PageView pinta atrás da cápsula. O inset vai só no
-    // MediaQuery.padding (FAB / SafeArea / ensureVisible) — Padding físico
-    // deixava o scaffold sólido atrás do vidro e matava a translucidez.
-    //
-    // Teclado: resizeToAvoidBottomInset false — o shell/tab bar NÃO sobe com
-    // o teclado. Gavetas usam showLumenSheet / LumenKeyboardInset.
+    final materialChrome = lumenUsesMaterialChrome();
+    // iOS: full-bleed atrás da cápsula; inset só em MediaQuery.padding.
+    // Android: Scaffold.bottomNavigationBar empurra o body (sem overlap).
+    // Teclado: resize false + viewInsets zerados no shell — tab bar não sobe.
+    // Sheets (useRootNavigator) leem o MediaQuery da overlay com teclado.
 
-    return _LumenShellScope(
-      showTab: _showTab,
-      navigatorFor: (tab) => _navKeys[tab.index].currentState,
-      activeTab: () => _ShellTab.values[_index],
-      child: Scaffold(
-        extendBody: true,
-        resizeToAvoidBottomInset: false,
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        body: Stack(
-          fit: StackFit.expand,
-          children: [
-            MediaQuery(
-              data: media.copyWith(
-                padding: media.padding.copyWith(bottom: reservedBottom),
-              ),
-              // canPop/physics: ValueNotifier — push/pop não rebuilda a nav.
-              child: ValueListenableBuilder<bool>(
-                valueListenable: _activeCanPopNotifier,
-                builder: (context, activeCanPop, _) {
-                  final shellCanPop =
-                      _index == _ShellTab.home.index || activeCanPop;
-                  return PopScope<Object?>(
-                    canPop: shellCanPop,
-                    onPopInvokedWithResult: _onSystemBack,
-                    child: PageView(
-                      controller: _pageController,
-                      physics: _pagePhysics(context, canPop: activeCanPop),
-                      onPageChanged: _onPageChanged,
-                      children: [
-                        for (final tab in _ShellTab.values)
-                          _ShellPage(
-                            key: ValueKey<String>(tab.name),
-                            navigatorKey: _navKeys[tab.index],
-                            observer: _observers[tab.index],
-                            enabled: _index == tab.index,
-                            routeName: _routeName(tab),
-                            onPopNested: _popVisibleTab,
-                            child: _rootFor(tab),
-                          ),
-                      ],
+    final shellMedia = media.copyWith(viewInsets: EdgeInsets.zero);
+
+    return MediaQuery(
+      data: shellMedia,
+      child: _LumenShellScope(
+        showTab: _showTab,
+        navigatorFor: (tab) => _navKeys[tab.index].currentState,
+        activeTab: () => _ShellTab.values[_index],
+        child: materialChrome
+            ? Scaffold(
+                extendBody: false,
+                resizeToAvoidBottomInset: false,
+                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                body: _buildPageView(context),
+                bottomNavigationBar: _buildTabBar(l10n),
+              )
+            : Scaffold(
+                extendBody: true,
+                resizeToAvoidBottomInset: false,
+                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                body: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    MediaQuery(
+                      data: shellMedia.copyWith(
+                        padding: shellMedia.padding.copyWith(
+                          bottom: GlassNavBar.reservedBottom(context),
+                        ),
+                      ),
+                      child: _buildPageView(context),
                     ),
-                  );
-                },
-              ),
-            ),
-            Positioned(
-              left: GlassNavBar.horizontalInset,
-              right: GlassNavBar.horizontalInset,
-              bottom: indicator + GlassNavBar.bottomGap,
-              child: RepaintBoundary(
-                child: AnimatedBuilder(
-                  animation: _pageController,
-                  builder: (context, _) {
-                    final page = _pageController.hasClients
-                        ? (_pageController.page ?? _index.toDouble())
-                        : _index.toDouble();
-                    return GlassNavBar(
-                      position: page,
-                      onSelected: (i) => _showTab(_ShellTab.values[i]),
-                      destinations: [
-                        GlassNavDestination(
-                          icon: AppIcons.home,
-                          selectedIcon: AppIcons.homeFilled,
-                          label: l10n.navHome,
-                          hint: l10n.navOpensTabHint(l10n.navHome),
-                        ),
-                        GlassNavDestination(
-                          icon: AppIcons.routine,
-                          selectedIcon: AppIcons.routineFilled,
-                          label: l10n.navRoutine,
-                          hint: l10n.navOpensTabHint(l10n.navRoutine),
-                        ),
-                        GlassNavDestination(
-                          icon: AppIcons.medication,
-                          selectedIcon: AppIcons.medicationFilled,
-                          label: l10n.navMeds,
-                          hint: l10n.navOpensTabHint(l10n.navMeds),
-                        ),
-                        GlassNavDestination(
-                          icon: AppIcons.clinic,
-                          selectedIcon: AppIcons.clinicFilled,
-                          label: l10n.navClinicalFolder,
-                          hint: l10n.navOpensTabHint(l10n.navClinicalFolder),
-                        ),
-                      ],
-                    );
-                  },
+                    Positioned(
+                      left: GlassNavBar.shellHorizontalInset(),
+                      right: GlassNavBar.shellHorizontalInset(),
+                      bottom: shellMedia.viewPadding.bottom +
+                          GlassNavBar.shellBottomGap(),
+                      child: _buildTabBar(l10n),
+                    ),
+                  ],
                 ),
               ),
-            ),
-          ],
-        ),
       ),
     );
   }

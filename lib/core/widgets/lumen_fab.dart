@@ -5,7 +5,7 @@ import '../theme/app_colors.dart';
 import '../theme/app_spacing.dart';
 import '../theme/lumen_glass_style.dart';
 
-/// CTA flutuante Lumen — sem FloatingActionButton Material.
+/// CTA flutuante — Liquid Glass no iOS; [FloatingActionButton] Material 3 no Android.
 class LumenFab extends StatelessWidget {
   const LumenFab({
     super.key,
@@ -23,6 +23,28 @@ class LumenFab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final reduceMotion = MediaQuery.disableAnimationsOf(context);
+
+    if (lumenUsesMaterialChrome()) {
+      void handlePress() {
+        if (!reduceMotion) HapticFeedback.lightImpact();
+        onPressed();
+      }
+
+      if (label == null) {
+        return FloatingActionButton(
+          onPressed: handlePress,
+          tooltip: tooltip,
+          child: Icon(icon),
+        );
+      }
+      return FloatingActionButton.extended(
+        onPressed: handlePress,
+        tooltip: tooltip,
+        icon: Icon(icon),
+        label: Text(label!),
+      );
+    }
+
     final child = label == null
         ? Padding(
             padding: const EdgeInsets.all(16),

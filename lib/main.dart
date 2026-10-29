@@ -8,6 +8,7 @@ import 'core/localization/locale_provider.dart';
 import 'core/providers.dart';
 import 'core/theme/app_colors.dart';
 import 'core/theme/app_theme.dart';
+import 'core/theme/lumen_glass_style.dart';
 import 'core/theme/theme_mode_provider.dart';
 import 'core/widgets/lumen_shell.dart';
 import 'core/notifications/local_notifications_background.dart';
@@ -71,12 +72,31 @@ class _LumenAppState extends ConsumerState<LumenApp>
     setState(() {});
   }
 
+  @override
+  void didChangePlatformBrightness() {
+    setState(() {});
+  }
+
   Brightness _resolveBrightness(ThemeMode mode, Brightness platform) {
     return switch (mode) {
       ThemeMode.light => Brightness.light,
       ThemeMode.dark => Brightness.dark,
       ThemeMode.system => platform,
     };
+  }
+
+  static const _localizationsDelegates = [
+    AppLocalizations.delegate,
+    GlobalCupertinoLocalizations.delegate,
+    GlobalMaterialLocalizations.delegate,
+    GlobalWidgetsLocalizations.delegate,
+  ];
+
+  Locale? _resolveLocale(List<Locale>? locales, Iterable<Locale> supported) {
+    if (locales == null || locales.isEmpty) {
+      return resolveSupportedLocale();
+    }
+    return resolveSupportedLocale(locales.first);
   }
 
   @override
@@ -87,52 +107,55 @@ class _LumenAppState extends ConsumerState<LumenApp>
     final platformBrightness =
         WidgetsBinding.instance.platformDispatcher.platformBrightness;
     final brightness = _resolveBrightness(themeMode, platformBrightness);
-    final materialTheme =
-        brightness == Brightness.dark ? AppTheme.darkTheme : AppTheme.lightTheme;
 
-    return CupertinoApp(
+    if (lumenUsesLiquidGlass()) {
+      final materialTheme = AppTheme.iosEngineTheme(brightness: brightness);
+      return CupertinoApp(
+        title: l10n.appTitle,
+        debugShowCheckedModeBanner: false,
+        theme: CupertinoThemeData(
+          brightness: brightness,
+          primaryColor: AppColors.primary,
+          scaffoldBackgroundColor: brightness == Brightness.dark
+              ? AppColors.backgroundDark
+              : AppColors.backgroundLight,
+          barBackgroundColor: Colors.transparent,
+          textTheme: CupertinoTextThemeData(
+            primaryColor: brightness == Brightness.dark
+                ? AppColors.textLight
+                : AppColors.textDark,
+          ),
+        ),
+        locale: activeLocale,
+        supportedLocales: AppLocalizations.supportedLocales,
+        localeListResolutionCallback: _resolveLocale,
+        localizationsDelegates: _localizationsDelegates,
+        builder: (context, child) {
+          return Theme(
+            data: materialTheme,
+            child: DefaultTextStyle(
+              style: materialTheme.textTheme.bodyMedium!,
+              child: Material(
+                type: MaterialType.transparency,
+                child: child ?? const SizedBox.shrink(),
+              ),
+            ),
+          );
+        },
+        home: const LumenShell(),
+      );
+    }
+
+    return MaterialApp(
       title: l10n.appTitle,
       debugShowCheckedModeBanner: false,
-      theme: CupertinoThemeData(
-        brightness: brightness,
-        primaryColor: AppColors.primary,
-        scaffoldBackgroundColor: brightness == Brightness.dark
-            ? AppColors.backgroundDark
-            : AppColors.backgroundLight,
-        barBackgroundColor: Colors.transparent,
-        textTheme: CupertinoTextThemeData(
-          primaryColor: brightness == Brightness.dark
-              ? AppColors.textLight
-              : AppColors.textDark,
-        ),
-      ),
+      theme: AppTheme.androidTheme(brightness: Brightness.light),
+      darkTheme: AppTheme.androidTheme(brightness: Brightness.dark),
+      themeMode: themeMode,
       locale: activeLocale,
       supportedLocales: AppLocalizations.supportedLocales,
-      localeListResolutionCallback: (locales, supported) {
-        if (locales == null || locales.isEmpty) {
-          return resolveSupportedLocale();
-        }
-        return resolveSupportedLocale(locales.first);
-      },
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-      ],
-      builder: (context, child) {
-        // Material só como engine invisível (forms, a11y, rotas internas).
-        return Theme(
-          data: materialTheme,
-          child: DefaultTextStyle(
-            style: materialTheme.textTheme.bodyMedium!,
-            child: Material(
-              type: MaterialType.transparency,
-              child: child ?? const SizedBox.shrink(),
-            ),
-          ),
-        );
-      },
+      localeListResolutionCallback: _resolveLocale,
+      localizationsDelegates: _localizationsDelegates,
       home: const LumenShell(),
     );
   }

@@ -104,7 +104,7 @@ class SleepDashboardCard extends ConsumerWidget {
     );
 
     return GlassSurface(
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(AppSpacing.card),
       child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

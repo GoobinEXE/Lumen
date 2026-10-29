@@ -192,8 +192,8 @@ class _UnstuckSheetState extends State<UnstuckSheet>
                           color: active
                               ? AppColors.unstuck
                               : (isDark
-                                    ? Colors.white.withValues(alpha: 0.15)
-                                    : Colors.black.withValues(alpha: 0.08)),
+                                    ? AppColors.surfaceContainerHighestDark
+                                    : AppColors.surfaceContainerHighestLight),
                           borderRadius: BorderRadius.circular(AppRadii.pill),
                           boxShadow: active
                               ? [
@@ -278,8 +278,8 @@ class _UnstuckSheetState extends State<UnstuckSheet>
                             painter: _TimerRingPainter(
                               progress: _timerRunning ? progress : 0,
                               trackColor: isDark
-                                  ? Colors.white.withValues(alpha: 0.1)
-                                  : Colors.black.withValues(alpha: 0.06),
+                                  ? AppColors.surfaceContainerHighestDark
+                                  : AppColors.surfaceContainerHighestLight,
                               progressColor: AppColors.unstuck,
                             ),
                             child: Center(

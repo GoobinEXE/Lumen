@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import '../theme/app_colors.dart';
 import '../theme/lumen_glass_style.dart';
 
-/// Botão circular 44×44 com Liquid Glass — ações no cabeçalho do corpo.
+/// Botão circular 44×44 — Liquid Glass no iOS; [IconButton] tonal no Android.
 class GlassIconButton extends StatelessWidget {
   const GlassIconButton({
     super.key,
@@ -30,6 +30,19 @@ class GlassIconButton extends StatelessWidget {
     final muted = AppColors.mutedText(isDark);
     final reduceMotion = MediaQuery.disableAnimationsOf(context);
     final enabled = onPressed != null;
+
+    if (lumenUsesMaterialChrome()) {
+      return IconButton.filledTonal(
+        tooltip: tooltip,
+        onPressed: enabled
+            ? () {
+                if (!reduceMotion) HapticFeedback.selectionClick();
+                onPressed!();
+              }
+            : null,
+        icon: child ?? Icon(icon, size: 20),
+      );
+    }
 
     return Semantics(
       button: true,

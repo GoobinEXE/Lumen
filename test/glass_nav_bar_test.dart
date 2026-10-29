@@ -101,63 +101,69 @@ void main() {
     return false;
   }
 
-  testWidgets('raízes das quatro abas não usam GlassAppBar', (tester) async {
-    await pumpShell(tester);
+  testWidgets(
+    'raízes das quatro abas não usam GlassAppBar',
+    (tester) async {
+      await pumpShell(tester);
 
-    expect(find.byType(HomeFichaScreen), findsOneWidget);
-    expect(
-      find.descendant(
-        of: find.byType(HomeFichaScreen),
-        matching: find.byType(GlassAppBar),
-      ),
-      findsNothing,
-    );
-
-    for (final entry in [
-      (l10n.navRoutine, DailyRoutineScreen),
-      (l10n.navMeds, MedicationsScreen),
-      (l10n.navClinicalFolder, ClinicalFolderScreen),
-    ]) {
-      await tester.tap(navLabel(entry.$1));
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 50));
-
-      final screen = find.byType(entry.$2);
-      expect(onScreen(tester, screen), isTrue);
+      expect(find.byType(HomeFichaScreen), findsOneWidget);
       expect(
         find.descendant(
-          of: screen,
+          of: find.byType(HomeFichaScreen),
           matching: find.byType(GlassAppBar),
         ),
         findsNothing,
       );
-    }
-  });
 
-  testWidgets('aba ativa tem Semantics selected e lente sobre o slot', (
-    tester,
-  ) async {
-    await pumpShell(tester);
+      for (final entry in [
+        (l10n.navRoutine, DailyRoutineScreen),
+        (l10n.navMeds, MedicationsScreen),
+        (l10n.navClinicalFolder, ClinicalFolderScreen),
+      ]) {
+        await tester.tap(navLabel(entry.$1));
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 50));
 
-    await tester.tap(navLabel(l10n.navMeds));
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 50));
+        final screen = find.byType(entry.$2);
+        expect(onScreen(tester, screen), isTrue);
+        expect(
+          find.descendant(
+            of: screen,
+            matching: find.byType(GlassAppBar),
+          ),
+          findsNothing,
+        );
+      }
+    },
+    variant: TargetPlatformVariant.only(TargetPlatform.iOS),
+  );
 
-    final node = tester.getSemantics(navLabel(l10n.navMeds));
-    expect(node.label, l10n.navMeds);
-    expect(node.hint, l10n.navOpensTabHint(l10n.navMeds));
-    expect(node.flagsCollection.isButton, isTrue);
-    expect(node.flagsCollection.isSelected, Tristate.isTrue);
+  testWidgets(
+    'aba ativa tem Semantics selected e lente sobre o slot',
+    (tester) async {
+      await pumpShell(tester);
 
-    final lens = find.byKey(GlassNavBar.lensKey);
-    expect(lens, findsOneWidget);
-    final medsLabel = navLabel(l10n.navMeds);
-    final lensBox = tester.renderObject(lens) as RenderBox;
-    final labelBox = tester.renderObject(medsLabel) as RenderBox;
-    final lensRect = lensBox.localToGlobal(Offset.zero) & lensBox.size;
-    final labelRect = labelBox.localToGlobal(Offset.zero) & labelBox.size;
-    expect(lensRect.overlaps(labelRect), isTrue);
-  });
+      await tester.tap(navLabel(l10n.navMeds));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 50));
+
+      final node = tester.getSemantics(navLabel(l10n.navMeds));
+      expect(node.label, l10n.navMeds);
+      expect(node.hint, l10n.navOpensTabHint(l10n.navMeds));
+      expect(node.flagsCollection.isButton, isTrue);
+      expect(node.flagsCollection.isSelected, Tristate.isTrue);
+
+      final lens = find.byKey(GlassNavBar.lensKey);
+      expect(lens, findsOneWidget);
+      final medsLabel = navLabel(l10n.navMeds);
+      final lensBox = tester.renderObject(lens) as RenderBox;
+      final labelBox = tester.renderObject(medsLabel) as RenderBox;
+      final lensRect = lensBox.localToGlobal(Offset.zero) & lensBox.size;
+      final labelRect = labelBox.localToGlobal(Offset.zero) & labelBox.size;
+      expect(lensRect.overlaps(labelRect), isTrue);
+    },
+    variant: TargetPlatformVariant.only(TargetPlatform.iOS),
+  );
 
   testWidgets(
     'GlassNavBar não sobe quando o teclado abre (shell sem resize)',
@@ -170,35 +176,53 @@ void main() {
       await pumpShell(tester, keyboardBottom: 320);
       final after = tester.getRect(find.byType(GlassNavBar));
 
-      // Com resizeToAvoidBottomInset: false a cápsula permanece no fundo
-      // da tela (viewPadding), não cola acima do teclado.
       expect(after.bottom, closeTo(before.bottom, 1));
       expect(after.top, closeTo(before.top, 1));
     },
+    variant: TargetPlatformVariant.only(TargetPlatform.iOS),
   );
 
-  testWidgets('com disableAnimations a lente troca de slot de imediato', (
-    tester,
-  ) async {
-    await pumpShell(tester);
+  testWidgets(
+    'com disableAnimations a lente troca de slot de imediato',
+    (tester) async {
+      await pumpShell(tester);
 
-    final lens = find.byKey(GlassNavBar.lensKey);
-    final homeLabel = navLabel(l10n.navHome);
-    final homeBox = tester.renderObject(homeLabel) as RenderBox;
-    final homeRect = homeBox.localToGlobal(Offset.zero) & homeBox.size;
-    var lensBox = tester.renderObject(lens) as RenderBox;
-    var lensRect = lensBox.localToGlobal(Offset.zero) & lensBox.size;
-    expect(lensRect.overlaps(homeRect), isTrue);
+      final lens = find.byKey(GlassNavBar.lensKey);
+      final homeLabel = navLabel(l10n.navHome);
+      final homeBox = tester.renderObject(homeLabel) as RenderBox;
+      final homeRect = homeBox.localToGlobal(Offset.zero) & homeBox.size;
+      var lensBox = tester.renderObject(lens) as RenderBox;
+      var lensRect = lensBox.localToGlobal(Offset.zero) & lensBox.size;
+      expect(lensRect.overlaps(homeRect), isTrue);
 
-    await tester.tap(navLabel(l10n.navClinicalFolder));
-    await tester.pump(); // um frame — sem animação pendente
+      await tester.tap(navLabel(l10n.navClinicalFolder));
+      await tester.pump();
 
-    final clinicLabel = navLabel(l10n.navClinicalFolder);
-    final clinicBox = tester.renderObject(clinicLabel) as RenderBox;
-    final clinicRect = clinicBox.localToGlobal(Offset.zero) & clinicBox.size;
-    lensBox = tester.renderObject(lens) as RenderBox;
-    lensRect = lensBox.localToGlobal(Offset.zero) & lensBox.size;
-    expect(lensRect.overlaps(clinicRect), isTrue);
-    expect(lensRect.overlaps(homeRect), isFalse);
-  });
+      final clinicLabel = navLabel(l10n.navClinicalFolder);
+      final clinicBox = tester.renderObject(clinicLabel) as RenderBox;
+      final clinicRect = clinicBox.localToGlobal(Offset.zero) & clinicBox.size;
+      lensBox = tester.renderObject(lens) as RenderBox;
+      lensRect = lensBox.localToGlobal(Offset.zero) & lensBox.size;
+      expect(lensRect.overlaps(clinicRect), isTrue);
+      expect(lensRect.overlaps(homeRect), isFalse);
+    },
+    variant: TargetPlatformVariant.only(TargetPlatform.iOS),
+  );
+
+  testWidgets(
+    'Android: GlassNavBar monta NavigationBar Material 3',
+    (tester) async {
+      await pumpShell(tester);
+
+      expect(find.byType(NavigationBar), findsOneWidget);
+      expect(find.byKey(GlassNavBar.lensKey), findsNothing);
+
+      await tester.tap(navLabel(l10n.navMeds));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 50));
+
+      expect(onScreen(tester, find.byType(MedicationsScreen)), isTrue);
+    },
+    variant: TargetPlatformVariant.only(TargetPlatform.android),
+  );
 }

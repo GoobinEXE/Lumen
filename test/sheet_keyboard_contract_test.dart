@@ -167,6 +167,7 @@ void main() {
         'lib/features/home/presentation/home_ficha_screen.dart',
         'lib/features/routine_mood/presentation/daily_routine_screen.dart',
         'lib/features/therapist_export/presentation/clinical_folder_screen.dart',
+        'lib/features/onboarding/presentation/first_launch_onboarding.dart',
       ];
       for (final path in required) {
         final file = File(path);

@@ -6,6 +6,7 @@ import '../../../core/icons/app_icons.dart';
 import '../../../core/localization/locale_provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
+import '../../../core/theme/glass_surface.dart';
 import '../../../core/theme/responsive.dart';
 import '../../../core/widgets/async_placeholders.dart';
 import '../domain/task_item.dart';
@@ -77,7 +78,7 @@ class TasksHubScreen extends ConsumerWidget {
                 now: now,
                 isDark: isDark,
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: AppSpacing.section),
               _Group(
                 title: l10n.tasksHubRecurringSection,
                 empty: l10n.tasksHubEmptyRecurring,
@@ -85,7 +86,7 @@ class TasksHubScreen extends ConsumerWidget {
                 now: now,
                 isDark: isDark,
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: AppSpacing.section),
               _Group(
                 title: l10n.tasksHubOnceSection,
                 empty: l10n.tasksHubEmptyOnce,
@@ -129,9 +130,23 @@ class _Group extends ConsumerWidget {
             fontWeight: FontWeight.w700,
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 12),
         if (tasks.isEmpty)
-          Text(empty, style: theme.textTheme.bodyMedium)
+          GlassSurface(
+            padding: const EdgeInsets.all(AppSpacing.card),
+            child: Row(
+              children: [
+                Icon(
+                  AppIcons.tasks,
+                  color: AppColors.mutedText(isDark),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(empty, style: theme.textTheme.bodyMedium),
+                ),
+              ],
+            ),
+          )
         else
           for (final task in tasks)
             _TaskRow(task: task, now: now, isDark: isDark),
@@ -155,56 +170,64 @@ class _TaskRow extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = ref.watch(appLocalizationsProvider);
     final done = TaskPeriod.isCompletedInCurrentPeriod(task, now);
-    return Row(
-      children: [
-        Expanded(
-          child: Semantics(
-            checked: done,
-            label: task.title,
-            child: CheckboxListTile(
-              value: done,
-              title: Text(
-                task.title,
-                style: TextStyle(
-                  fontSize: 14,
-                  decoration: done ? TextDecoration.lineThrough : null,
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: GlassSurface(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        child: Row(
+          children: [
+            Expanded(
+              child: Semantics(
+                checked: done,
+                label: task.title,
+                child: CheckboxListTile(
+                  value: done,
+                  title: Text(
+                    task.title,
+                    style: TextStyle(
+                      fontSize: 14,
+                      decoration: done ? TextDecoration.lineThrough : null,
+                    ),
+                  ),
+                  subtitle: task.timeOfDay == null
+                      ? null
+                      : Text(
+                          l10n.taskReminderChip(task.timeOfDay!),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: isDark
+                                ? AppColors.textMutedDark
+                                : AppColors.textMuted,
+                          ),
+                        ),
+                  activeColor: AppColors.primary,
+                  contentPadding: EdgeInsets.zero,
+                  controlAffinity: ListTileControlAffinity.leading,
+                  onChanged: (_) async {
+                    HapticFeedback.selectionClick();
+                    await ref
+                        .read(tasksListProvider.notifier)
+                        .toggleComplete(task);
+                  },
                 ),
               ),
-              subtitle: task.timeOfDay == null
-                  ? null
-                  : Text(
-                      l10n.taskReminderChip(task.timeOfDay!),
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: isDark
-                            ? AppColors.textMutedDark
-                            : AppColors.textMuted,
-                      ),
-                    ),
-              activeColor: AppColors.primary,
-              contentPadding: EdgeInsets.zero,
-              controlAffinity: ListTileControlAffinity.leading,
-              onChanged: (_) async {
-                HapticFeedback.selectionClick();
-                await ref.read(tasksListProvider.notifier).toggleComplete(task);
-              },
             ),
-          ),
+            IconButton(
+              tooltip: l10n.taskEditorTitleEdit,
+              constraints: const BoxConstraints(
+                minWidth: kMinTapTarget,
+                minHeight: kMinTapTarget,
+              ),
+              icon: Icon(
+                AppIcons.edit,
+                size: 20,
+                color: isDark ? AppColors.textMutedDark : AppColors.textMuted,
+              ),
+              onPressed: () => TaskEditorSheet.show(context, existing: task),
+            ),
+          ],
         ),
-        IconButton(
-          tooltip: l10n.taskEditorTitleEdit,
-          constraints: const BoxConstraints(
-            minWidth: kMinTapTarget,
-            minHeight: kMinTapTarget,
-          ),
-          icon: Icon(
-            Icons.edit_outlined,
-            size: 20,
-            color: isDark ? AppColors.textMutedDark : AppColors.textMuted,
-          ),
-          onPressed: () => TaskEditorSheet.show(context, existing: task),
-        ),
-      ],
+      ),
     );
   }
 }

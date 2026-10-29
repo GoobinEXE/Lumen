@@ -4,12 +4,28 @@ import '../theme/app_spacing.dart';
 import '../theme/lumen_glass_style.dart';
 import 'glass_nav_bar.dart';
 
-/// Banner inferior glass — substitui `SnackBar` Material.
+/// Feedback inferior — banner glass no iOS; [SnackBar] Material 3 no Android.
 void showGlassToast(
   BuildContext context,
   String message, {
   Duration duration = const Duration(seconds: 3),
 }) {
+  if (lumenUsesMaterialChrome()) {
+    final messenger = ScaffoldMessenger.maybeOf(context);
+    if (messenger != null) {
+      messenger
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(
+            content: Text(message),
+            duration: duration,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      return;
+    }
+  }
+
   final overlay = Overlay.maybeOf(context, rootOverlay: true);
   if (overlay == null) {
     return;
@@ -85,6 +101,43 @@ class _GlassToastHostState extends State<_GlassToastHost>
   Widget build(BuildContext context) {
     final bottom = GlassNavBar.reservedBottom(context) + 8;
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final material = lumenUsesMaterialChrome();
+    final scheme = Theme.of(context).colorScheme;
+
+    if (material) {
+      return Positioned(
+        left: AppSpacing.screenH,
+        right: AppSpacing.screenH,
+        bottom: bottom,
+        child: IgnorePointer(
+          child: FadeTransition(
+            opacity: _opacity,
+            child: SlideTransition(
+              position: _slide,
+              child: Material(
+                elevation: 2,
+                color: scheme.inverseSurface,
+                borderRadius: BorderRadius.circular(AppRadii.buttonMaterial),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
+                  child: Text(
+                    widget.message,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: scheme.onInverseSurface,
+                          fontWeight: FontWeight.w500,
+                        ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
 
     return Positioned(
       left: AppSpacing.screenH,

@@ -22,15 +22,14 @@ class GlassNavDestination {
   final String? hint;
 }
 
-/// Dock flutuante do shell — cápsula Liquid Glass com indicador que segue a aba.
+/// Dock do shell — Liquid Glass no iOS; [NavigationBar] Material 3 no Android.
 ///
 /// Contrato com o shell:
-/// - O [PageView] pinta full-bleed atrás desta barra (sem [Padding] físico).
-/// - Inset de layout vem de [reservedBottom] / [MediaQuery.padding].
+/// - iOS: [PageView] full-bleed atrás da cápsula; inset via [reservedBottom].
+/// - Android: barra Material na borda inferior (sem cápsula flutuante).
 /// - [position] fracionário (0..n−1) acompanha o swipe.
 ///
-/// Seleção: indicador de vidro neutro (sem wash teal) + ícone filled + label
-/// primary. Haptic da troca de aba fica no shell ([LumenShell]).
+/// Haptic da troca de aba fica no shell ([LumenShell]).
 class GlassNavBar extends StatelessWidget {
   const GlassNavBar({
     super.key,
@@ -47,32 +46,76 @@ class GlassNavBar extends StatelessWidget {
   static const double bottomGap = 10;
   static const double contentGap = 10;
   static const double barHeight = AppSpacing.navBar;
+  static const double materialBarHeight = 72;
   static const Key lensKey = Key('nav-lens');
 
   static double heightFor(BuildContext context) {
     final scale = MediaQuery.textScalerOf(context).scale(1).clamp(1.0, 1.3);
+    if (lumenUsesMaterialChrome()) {
+      return materialBarHeight * scale;
+    }
     return barHeight * scale;
   }
 
-  /// Espaço a reservar sob o conteúdo (home indicator + gap + barra + folga).
+  /// Espaço a reservar sob o conteúdo.
+  ///
+  /// iOS: home indicator + gap + cápsula (overlay full-bleed).
+  /// Android: o [Scaffold.bottomNavigationBar] já empurra o body — só folga
+  /// de scroll (`contentGap`).
   static double reservedBottom(BuildContext context) {
+    if (lumenUsesMaterialChrome()) {
+      return contentGap;
+    }
     final indicator = MediaQuery.viewPaddingOf(context).bottom;
     return indicator + bottomGap + heightFor(context) + contentGap;
   }
 
-  /// Folga extra sob FABs: o [Scaffold] só ergue o botão pelo home indicator
-  /// (`viewPadding`), não pelo nosso [MediaQuery.padding] injetado.
+  /// Folga extra sob FABs.
+  ///
+  /// iOS: cápsula overlay — o [Scaffold] da página só limpa o home indicator.
+  /// Android: body já fica acima da [NavigationBar] — zero.
   static double fabClearance(BuildContext context) {
+    if (lumenUsesMaterialChrome()) {
+      return 0;
+    }
     return bottomGap + heightFor(context) + contentGap;
+  }
+
+  /// Inset horizontal da dock no shell (0 no Material edge-to-edge).
+  static double shellHorizontalInset() {
+    return lumenUsesMaterialChrome() ? 0 : horizontalInset;
+  }
+
+  /// Gap sob a dock até o home indicator (0 no Material).
+  static double shellBottomGap() {
+    return lumenUsesMaterialChrome() ? 0 : bottomGap;
   }
 
   @override
   Widget build(BuildContext context) {
     assert(destinations.length >= 2, 'GlassNavBar precisa de ao menos 2 abas');
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final height = heightFor(context);
     final count = destinations.length;
     final selected = position.round().clamp(0, count - 1);
+
+    if (lumenUsesMaterialChrome()) {
+      return NavigationBar(
+        height: heightFor(context),
+        selectedIndex: selected,
+        onDestinationSelected: onSelected,
+        destinations: [
+          for (final destination in destinations)
+            NavigationDestination(
+              icon: Icon(destination.icon),
+              selectedIcon: Icon(destination.selectedIcon),
+              label: destination.label,
+              tooltip: destination.hint,
+            ),
+        ],
+      );
+    }
+
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final height = heightFor(context);
     final reduceMotion = MediaQuery.disableAnimationsOf(context);
     final useFake = lumenGlassUseFake(
       context: context,
@@ -86,8 +129,6 @@ class GlassNavBar extends StatelessWidget {
       child: LayoutBuilder(
         builder: (context, constraints) {
           final width = constraints.maxWidth;
-          // Sem largura finita o slot vira Infinity e o Positioned da lente
-          // estoura com "Infinity or NaN toInt".
           if (!width.isFinite || width <= 0) {
             return const SizedBox.shrink();
           }
@@ -97,9 +138,6 @@ class GlassNavBar extends StatelessWidget {
           final lensH = (height - lensPad * 2).clamp(0.0, height);
           final lensLeft = position.clamp(0, count - 1) * slot + lensPad;
 
-          // Sombra da cápsula: no Android lite o blur alto da sombra compete
-          // com N FakeGlass no scroll — mantém contato, σ menor.
-          final shadowBlur = lumenGlassAndroidLite() ? 14.0 : 28.0;
           return DecoratedBox(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(height / 2),
@@ -107,7 +145,7 @@ class GlassNavBar extends StatelessWidget {
                 BoxShadow(
                   color: (isDark ? Colors.black : AppColors.shadow)
                       .withValues(alpha: isDark ? 0.22 : 0.08),
-                  blurRadius: shadowBlur,
+                  blurRadius: 28,
                   offset: const Offset(0, 10),
                   spreadRadius: -4,
                 ),

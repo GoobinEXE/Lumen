@@ -15,7 +15,7 @@ void main() {
   });
 
   testWidgets(
-    'GlassScaffold empura o body abaixo da cápsula — texto não fica sob a barra',
+    'iOS: GlassScaffold empura o body abaixo da cápsula',
     (tester) async {
       const statusTop = 47.0;
 
@@ -34,7 +34,6 @@ void main() {
             appBar: const GlassAppBar(title: Text('Meu perfil')),
             body: Builder(
               builder: (context) {
-                // Topo já consumido pelo Padding do scaffold.
                 expect(MediaQuery.paddingOf(context).top, 0);
                 return ColoredBox(
                   key: const Key('glass-body'),
@@ -56,7 +55,10 @@ void main() {
 
       final reserved =
           GlassAppBar.reservedTop(tester.element(find.byType(GlassAppBar)));
-      expect(reserved, statusTop + kToolbarHeight);
+      expect(
+        reserved,
+        statusTop + kToolbarHeight + GlassAppBar.verticalGap,
+      );
 
       final bodyBox =
           tester.renderObject(find.byKey(const Key('glass-body'))) as RenderBox;
@@ -66,5 +68,26 @@ void main() {
       final first = tester.getTopLeft(find.text('primeiro'));
       expect(first.dy, greaterThanOrEqualTo(reserved));
     },
+    variant: TargetPlatformVariant.only(TargetPlatform.iOS),
+  );
+
+  testWidgets(
+    'Android: GlassScaffold usa AppBar Material no slot do Scaffold',
+    (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: GlassScaffold(
+            appBar: const GlassAppBar(title: Text('Meu perfil')),
+            body: const Text('corpo'),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byType(AppBar), findsOneWidget);
+      expect(find.text('Meu perfil'), findsOneWidget);
+      expect(find.text('corpo'), findsOneWidget);
+    },
+    variant: TargetPlatformVariant.only(TargetPlatform.android),
   );
 }

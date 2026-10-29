@@ -104,7 +104,7 @@ class HomeFichaScreen extends ConsumerWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 18),
+              const SizedBox(height: AppSpacing.section),
               RepaintBoundary(
                 child: _IdentityCard(
                   profile: profile,
@@ -112,9 +112,9 @@ class HomeFichaScreen extends ConsumerWidget {
                   l10n: l10n,
                 ),
               ),
-              const SizedBox(height: 22),
+              const SizedBox(height: AppSpacing.section),
               RepaintBoundary(child: _CareContactsSection(l10n: l10n)),
-              const SizedBox(height: 22),
+              const SizedBox(height: AppSpacing.section),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 4),
                 child: Text(
@@ -124,7 +124,7 @@ class HomeFichaScreen extends ConsumerWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 12),
               Semantics(
                 hint: l10n.navOpensTabHint(l10n.navMeds),
                 child: RepaintBoundary(
@@ -148,7 +148,7 @@ class HomeFichaScreen extends ConsumerWidget {
               const RepaintBoundary(child: SleepDashboardCard()),
               const SizedBox(height: 12),
               const RepaintBoundary(child: RecoveryDashboardCard()),
-              const SizedBox(height: 12),
+              const SizedBox(height: AppSpacing.section),
               RepaintBoundary(
                 child: _NavCard(
                   icon: AppIcons.calendar,
@@ -167,7 +167,7 @@ class HomeFichaScreen extends ConsumerWidget {
                 ),
               ),
               RepaintBoundary(child: _InsightsCard(l10n: l10n)),
-              const SizedBox(height: 22),
+              const SizedBox(height: AppSpacing.section),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 4),
                 child: Text(
@@ -177,7 +177,7 @@ class HomeFichaScreen extends ConsumerWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 12),
               RepaintBoundary(child: _RecentEntries(l10n: l10n)),
             ],
           ),
@@ -699,16 +699,28 @@ class _InsightsCard extends ConsumerWidget {
     return Padding(
       padding: const EdgeInsets.only(top: 12),
       child: GlassSurface(
-        tint: AppColors.accent,
+        tint: AppColors.primary,
         padding: const EdgeInsets.all(AppSpacing.card),
         child: SizedBox(
           width: double.infinity,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                l10n.homeBrainPatternsTitle,
-                style: theme.textTheme.titleMedium,
+              Row(
+                children: [
+                  Icon(
+                    AppIcons.brain,
+                    size: 18,
+                    color: AppColors.primary,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      l10n.homeBrainPatternsTitle,
+                      style: theme.textTheme.titleMedium,
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 8),
               Text(
@@ -741,11 +753,24 @@ class _RecentEntries extends ConsumerWidget {
       error: (err, _) => Text(l10n.errorLoading('$err')),
       data: (entries) {
         if (entries.isEmpty) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4),
-            child: Text(
-              l10n.homeNoEntriesYet,
-              style: theme.textTheme.bodyMedium,
+          return GlassSurface(
+            padding: const EdgeInsets.all(AppSpacing.card),
+            child: Row(
+              children: [
+                Icon(
+                  AppIcons.checkin,
+                  color: AppColors.mutedText(
+                    theme.brightness == Brightness.dark,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    l10n.homeNoEntriesYet,
+                    style: theme.textTheme.bodyMedium,
+                  ),
+                ),
+              ],
             ),
           );
         }

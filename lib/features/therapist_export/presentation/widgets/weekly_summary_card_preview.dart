@@ -119,7 +119,7 @@ class WeeklySummaryCardPreview extends StatelessWidget {
                   ),
                   decoration: BoxDecoration(
                     color: isDark
-                        ? Colors.white.withValues(alpha: 0.06)
+                        ? AppColors.surfaceContainerDark
                         : AppColors.primarySoft,
                     borderRadius: BorderRadius.circular(AppRadii.chip),
                   ),
@@ -272,7 +272,7 @@ class WeeklySummaryCardPreview extends StatelessWidget {
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: isDark
-                      ? Colors.white.withValues(alpha: 0.04)
+                      ? AppColors.surfaceContainerDark
                       : AppColors.backgroundLight,
                   borderRadius: BorderRadius.circular(AppRadii.input),
                   border: Border.all(color: border),
@@ -416,7 +416,7 @@ class _MetricTile extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: isDark
-            ? Colors.white.withValues(alpha: 0.04)
+            ? AppColors.surfaceContainerDark
             : AppColors.backgroundLight,
         borderRadius: BorderRadius.circular(AppRadii.input),
         border: Border.all(color: border),

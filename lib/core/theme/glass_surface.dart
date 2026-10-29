@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
+import 'app_colors.dart';
 import 'app_spacing.dart';
 import 'lumen_glass_style.dart';
 
-/// Overlay de toque sem ripple Material 3 (opacidade suave).
+/// Overlay de toque sem ripple Material 3 (opacidade suave) — caminho iOS.
 WidgetStateProperty<Color?> get glassInkOverlay =>
     WidgetStateProperty.resolveWith((states) {
       if (states.contains(WidgetState.pressed)) {
@@ -18,10 +19,10 @@ WidgetStateProperty<Color?> get glassInkOverlay =>
       return null;
     });
 
-/// Card / painel com Liquid Glass (`liquid_glass_renderer`).
+/// Card / painel: Liquid Glass no iOS, [Card] Material 3 no Android.
 ///
-/// Superfícies de conteúdo usam FakeGlass por padrão (sem `toImageSync` por
-/// card). [lite] permanece por compatibilidade e força o mesmo caminho.
+/// Superfícies iOS usam FakeGlass por padrão (sem `toImageSync` por card).
+/// [lite] permanece por compatibilidade e força FakeGlass no caminho glass.
 class GlassSurface extends StatelessWidget {
   const GlassSurface({
     super.key,
@@ -41,14 +42,42 @@ class GlassSurface extends StatelessWidget {
   final VoidCallback? onTap;
   final Color? shadowColor;
 
-  /// Compat: força FakeGlass (já é o caminho padrão de [LumenGlassRole.surface]).
+  /// Compat: força FakeGlass no iOS (já é o caminho padrão de surface).
   final bool lite;
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final contentPadding = padding ?? EdgeInsets.zero;
 
+    if (lumenUsesMaterialChrome()) {
+      final scheme = Theme.of(context).colorScheme;
+      final shape = RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(borderRadius),
+      );
+      Widget body = Padding(padding: contentPadding, child: child);
+      if (onTap != null) {
+        body = InkWell(
+          onTap: onTap,
+          customBorder: shape,
+          child: body,
+        );
+      }
+      return Card(
+        elevation: 0,
+        color: tint == null
+            ? scheme.surfaceContainerLow
+            : Color.alphaBlend(
+                tint!.withValues(alpha: 0.18),
+                scheme.surfaceContainerLow,
+              ),
+        surfaceTintColor: scheme.surfaceTint,
+        shape: shape,
+        clipBehavior: Clip.antiAlias,
+        child: body,
+      );
+    }
+
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     Widget content = Padding(padding: contentPadding, child: child);
     if (onTap != null) {
       content = GestureDetector(
@@ -229,7 +258,7 @@ class LumenKeyboardInset extends StatelessWidget {
   }
 }
 
-/// Envelope de bottom sheet com Liquid Glass (FakeGlass legível).
+/// Envelope de bottom sheet: Liquid Glass no iOS, superfície Material 3 no Android.
 ///
 /// Teclado via [LumenKeyboardInset] (ver [showLumenSheet]). Forms: scroll
 /// único; **não** use [expandChild] em formulários longos.
@@ -287,8 +316,6 @@ class GlassSheet extends StatelessWidget {
       child: child,
     );
 
-    // expandChild: header fixo + body que preenche.
-    // Default: um scroll só (handle + conteúdo) — sem Flexible/min Column.
     final Widget body;
     if (expandChild) {
       body = Column(
@@ -313,12 +340,31 @@ class GlassSheet extends StatelessWidget {
       );
     }
 
+    if (lumenUsesMaterialChrome()) {
+      final scheme = Theme.of(context).colorScheme;
+      return LumenKeyboardInset(
+        child: Material(
+          color: scheme.surfaceContainerLow,
+          surfaceTintColor: scheme.surfaceTint,
+          elevation: 1,
+          shape: const RoundedRectangleBorder(borderRadius: topRadius),
+          clipBehavior: Clip.antiAlias,
+          child: body,
+        ),
+      );
+    }
+
+    // Underlay quase opaco + FakeGlass com blur alto: texto do form não
+    // mistura com o que está atrás (edit perfil, remédio, tarefas, etc.).
+    final underlay = isDark ? AppColors.cardDark : AppColors.cardLight;
+
     return LumenKeyboardInset(
       child: ClipRRect(
         borderRadius: topRadius,
         child: DecoratedBox(
           decoration: BoxDecoration(
             borderRadius: topRadius,
+            color: underlay.withValues(alpha: 0.96),
             boxShadow: lumenGlassShadow(
               isDark: isDark,
               role: LumenGlassRole.sheet,

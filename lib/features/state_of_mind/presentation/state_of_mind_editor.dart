@@ -182,13 +182,13 @@ class _StateOfMindEditorState extends State<StateOfMindEditor> {
             hintText: l10n.searchEmotionHint,
             hintStyle: TextStyle(
               fontSize: 13,
-              color: isDark ? Colors.white38 : Colors.black38,
+              color: AppColors.mutedText(isDark),
             ),
             isDense: true,
             filled: true,
             fillColor: isDark
-                ? Colors.white.withValues(alpha: 0.05)
-                : Colors.black.withValues(alpha: 0.03),
+                ? AppColors.surfaceContainerDark
+                : AppColors.surfaceContainerLight,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide.none,
@@ -205,7 +205,7 @@ class _StateOfMindEditorState extends State<StateOfMindEditor> {
             return GlassChip(
               label: StateOfMindLabels.label(id, lang),
               selected: selected,
-              selectedColor: AppColors.accent,
+              selectedColor: AppColors.primary,
               onTap: () {
                 setState(() {
                   if (selected) {
@@ -252,7 +252,7 @@ class _StateOfMindEditorState extends State<StateOfMindEditor> {
               return GlassChip(
                 label: StateOfMindAssociations.label(id, lang),
                 selected: selected,
-                selectedColor: AppColors.accent,
+                selectedColor: AppColors.primary,
                 onTap: () {
                   setState(() {
                     if (selected) {

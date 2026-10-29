@@ -5,25 +5,25 @@ import '../theme/app_spacing.dart';
 import '../theme/lumen_glass_style.dart';
 import 'glass_nav_bar.dart';
 
-/// App bar translúcida estilo iOS — sem look Material 3.
+/// App bar: cápsula Liquid Glass no iOS; [AppBar] Material 3 no Android.
 ///
-/// Preferência: overlay em [Stack] (ver [GlassScaffold]). O slot
+/// Preferência iOS: overlay em [Stack] (ver [GlassScaffold]). O slot
 /// `Scaffold.appBar` ainda funciona como PreferredSize.
 ///
 /// Contrato com o scaffold (espelha [GlassNavBar]):
-/// - Inset de layout vem de [reservedTop].
-/// - O [GlassScaffold] **empura** o body abaixo da cápsula — texto/gráfico
-///   nunca ficam sob a barra (nem no scroll inicial).
+/// - Inset de layout vem de [reservedTop] (= status + [preferredSize]).
+/// - No iOS o [GlassScaffold] **empura** o body abaixo da cápsula.
 class GlassAppBar extends StatelessWidget implements PreferredSizeWidget {
   const GlassAppBar({
     super.key,
-    required this.title,
+    this.title,
     this.actions,
     this.leading,
     this.automaticallyImplyLeading = true,
   });
 
-  final Widget title;
+  /// Título na barra. `null` = só leading/actions (ex.: Perfil).
+  final Widget? title;
   final List<Widget>? actions;
   final Widget? leading;
   final bool automaticallyImplyLeading;
@@ -34,24 +34,36 @@ class GlassAppBar extends StatelessWidget implements PreferredSizeWidget {
   /// Altura da cápsula (sem status bar).
   static const double capsuleHeight = kToolbarHeight - 8;
 
-  /// Espaço a reservar acima do conteúdo (status bar + gaps + cápsula).
-  ///
-  /// `viewPadding.top + verticalGap + capsuleHeight` =
-  /// `viewPadding.top + kToolbarHeight`.
+  /// Espaço a reservar acima do conteúdo (status + altura preferida da barra).
   static double reservedTop(BuildContext context) {
     final top = MediaQuery.viewPaddingOf(context).top;
-    return top + kToolbarHeight;
+    final bar = lumenUsesMaterialChrome()
+        ? kToolbarHeight
+        : kToolbarHeight + verticalGap;
+    return top + bar;
   }
 
   @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight + verticalGap);
+  Size get preferredSize => lumenUsesMaterialChrome()
+      ? const Size.fromHeight(kToolbarHeight)
+      : const Size.fromHeight(kToolbarHeight + verticalGap);
 
   @override
   Widget build(BuildContext context) {
+    if (lumenUsesMaterialChrome()) {
+      return AppBar(
+        title: title,
+        actions: actions,
+        leading: leading,
+        automaticallyImplyLeading: automaticallyImplyLeading,
+      );
+    }
+
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final canPop = ModalRoute.of(context)?.canPop ?? false;
     final showLeading = leading != null ||
         (automaticallyImplyLeading && canPop);
+    final titleWidget = title;
 
     return SafeArea(
       bottom: false,
@@ -85,13 +97,15 @@ class GlassAppBar extends StatelessWidget implements PreferredSizeWidget {
                           ),
                         ))
                     : null,
-                middle: DefaultTextStyle(
-                  style: Theme.of(context).appBarTheme.titleTextStyle ??
-                      Theme.of(context).textTheme.titleLarge!,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  child: title,
-                ),
+                middle: titleWidget == null
+                    ? null
+                    : DefaultTextStyle(
+                        style: Theme.of(context).appBarTheme.titleTextStyle ??
+                            Theme.of(context).textTheme.titleLarge!,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        child: titleWidget,
+                      ),
                 trailing: actions == null || actions!.isEmpty
                     ? null
                     : Row(
@@ -109,13 +123,11 @@ class GlassAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 }
 
-/// Scaffold com app bar em overlay visual — body **abaixo** da cápsula.
+/// Scaffold com app bar — overlay glass no iOS; [AppBar] no slot Material.
 ///
-/// Contrato:
+/// Contrato iOS:
 /// - Body começa depois de [GlassAppBar.reservedTop] (Padding físico).
-///   Texto/gráfico não ficam sob a barra.
-/// - [MediaQuery.padding.top] do body zera o topo já consumido pelo Padding
-///   (listas usam só [AppSpacing.screenV], sem somar reservedTop de novo).
+/// - [MediaQuery.padding.top] do body zera o topo já consumido.
 /// - Teclado: `resizeToAvoidBottomInset: false` — só sheets reagem.
 class GlassScaffold extends StatelessWidget {
   const GlassScaffold({
@@ -134,15 +146,31 @@ class GlassScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bar = appBar;
+    final fab = floatingActionButton;
+
+    if (lumenUsesMaterialChrome()) {
+      return Scaffold(
+        resizeToAvoidBottomInset: false,
+        appBar: bar,
+        floatingActionButton: fab == null
+            ? null
+            : Padding(
+                padding: EdgeInsets.only(
+                  bottom: GlassNavBar.fabClearance(context),
+                ),
+                child: fab,
+              ),
+        body: body,
+      );
+    }
+
     final media = MediaQuery.of(context);
     final clearTop = bar != null && extendBodyBehindAppBar
         ? GlassAppBar.reservedTop(context)
         : 0.0;
 
-    final fab = floatingActionButton;
     return Scaffold(
       extendBody: true,
-      // Teclado: só sheets (showLumenSheet) reagem — chrome empilhado não sobe.
       resizeToAvoidBottomInset: false,
       extendBodyBehindAppBar: extendBodyBehindAppBar,
       floatingActionButton: fab == null

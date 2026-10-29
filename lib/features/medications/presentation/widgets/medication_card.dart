@@ -124,7 +124,7 @@ class _MedicationCardState extends ConsumerState<MedicationCard> {
       label: l10n.snooze15mButton,
       child: OutlinedButton(
         style: OutlinedButton.styleFrom(
-          foregroundColor: isDark ? Colors.white70 : Colors.black87,
+          foregroundColor: AppColors.mutedText(isDark),
           padding: const EdgeInsets.symmetric(vertical: 12),
           minimumSize: const Size(0, kMinTapTarget),
           shape: RoundedRectangleBorder(
@@ -134,7 +134,7 @@ class _MedicationCardState extends ConsumerState<MedicationCard> {
         onPressed: actionsBusy ? null : _snooze,
         child: BusyButtonChild(
           busy: _busySnooze,
-          spinnerColor: isDark ? Colors.white70 : Colors.black87,
+          spinnerColor: AppColors.mutedText(isDark),
           spinnerSize: 18,
           label: Text(
             l10n.snooze15mButton,
@@ -221,8 +221,8 @@ class _MedicationCardState extends ConsumerState<MedicationCard> {
                               ),
                               decoration: BoxDecoration(
                                 color: isDark
-                                    ? Colors.white10
-                                    : Colors.black.withValues(alpha: 0.05),
+                                    ? AppColors.surfaceContainerHighestDark
+                                    : AppColors.surfaceContainerHighestLight,
                                 borderRadius: BorderRadius.circular(
                                   AppRadii.chip,
                                 ),
@@ -267,8 +267,8 @@ class _MedicationCardState extends ConsumerState<MedicationCard> {
                               alpha: isDark ? 0.15 : 0.12,
                             )
                           : (isDark
-                                ? Colors.white.withValues(alpha: 0.05)
-                                : Colors.black.withValues(alpha: 0.04))),
+                                ? AppColors.surfaceContainerDark
+                                : AppColors.surfaceContainerLight)),
                 borderRadius: BorderRadius.circular(AppRadii.input),
                 border: Border.all(
                   color: isTaken

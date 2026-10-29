@@ -211,7 +211,7 @@ class _DailyRoutineScreenState extends ConsumerState<DailyRoutineScreen> {
                           : AppColors.textMuted,
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: AppSpacing.section),
                   GlassSurface(
                     padding: const EdgeInsets.symmetric(
                       horizontal: AppSpacing.card,
@@ -242,7 +242,7 @@ class _DailyRoutineScreenState extends ConsumerState<DailyRoutineScreen> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 18),
+                  const SizedBox(height: AppSpacing.section),
                   _buildSectionCard(
                     context: context,
                     icon: AppIcons.checkin,
@@ -252,13 +252,13 @@ class _DailyRoutineScreenState extends ConsumerState<DailyRoutineScreen> {
                       child: CheckInForm(
                         key: _checkInKey,
                         // epoch força formulário limpo após salvar
-                        // Android: halo animado + dezenas de GlassChip = jank no scroll.
-                        showHalo: !lumenGlassAndroidLite(),
+                        // Halo glass só no iOS; Material não usa o efeito.
+                        showHalo: lumenUsesLiquidGlass(),
                         showFeelingHeader: false,
                       ),
                     ),
                   ),
-                  const SizedBox(height: 18),
+                  const SizedBox(height: AppSpacing.section),
                   _buildSectionCard(
                     context: context,
                     icon: AppIcons.tasks,
@@ -423,7 +423,7 @@ class _DailyRoutineScreenState extends ConsumerState<DailyRoutineScreen> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 18),
+                  const SizedBox(height: AppSpacing.section),
                   _buildSectionCard(
                     context: context,
                     icon: AppIcons.water,
@@ -553,7 +553,7 @@ class _DailyRoutineScreenState extends ConsumerState<DailyRoutineScreen> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 18),
+                  const SizedBox(height: AppSpacing.section),
                   _buildSectionCard(
                     context: context,
                     icon: AppIcons.couch,
@@ -581,7 +581,7 @@ class _DailyRoutineScreenState extends ConsumerState<DailyRoutineScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 18),
+                  const SizedBox(height: AppSpacing.section),
                   _buildSectionCard(
                     context: context,
                     icon: AppIcons.therapist,
@@ -686,7 +686,7 @@ class _DailyRoutineScreenState extends ConsumerState<DailyRoutineScreen> {
     final isDark = theme.brightness == Brightness.dark;
 
     return GlassSurface(
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(AppSpacing.card),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -702,18 +702,18 @@ class _DailyRoutineScreenState extends ConsumerState<DailyRoutineScreen> {
                 child: Text(
                   title,
                   style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 2),
+          const SizedBox(height: 4),
           Text(
             subtitle,
-            style: theme.textTheme.bodyMedium?.copyWith(fontSize: 12),
+            style: theme.textTheme.bodySmall,
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 16),
           child,
         ],
       ),

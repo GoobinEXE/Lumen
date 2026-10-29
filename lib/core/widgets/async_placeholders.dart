@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../theme/app_colors.dart';
+import '../theme/app_spacing.dart';
 
 /// Barra arredondada com pulso de opacidade para skeletons locais.
 class PulseSkeletonBar extends StatefulWidget {
@@ -59,8 +60,8 @@ class _PulseSkeletonBarState extends State<PulseSkeletonBar>
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final base = isDark
-        ? Colors.white.withValues(alpha: 0.12)
-        : Colors.black.withValues(alpha: 0.08);
+        ? AppColors.surfaceContainerHighestDark
+        : AppColors.surfaceContainerHighestLight;
 
     return AnimatedBuilder(
       animation: _opacity,
@@ -157,7 +158,7 @@ class _BlockSkeleton extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: isDark ? AppColors.cardDark : AppColors.cardLight,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppRadii.card),
         border: Border.all(
           color: isDark
               ? AppColors.glassBorderDark

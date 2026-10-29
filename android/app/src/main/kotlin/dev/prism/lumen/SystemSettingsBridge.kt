@@ -22,6 +22,13 @@ class SystemSettingsBridge(
                 val target = call.argument<String>("target") ?: "app"
                 result.success(open(target))
             }
+            "accessibilityFlags" -> {
+                result.success(
+                    mapOf(
+                        "reduceTransparency" to false,
+                    ),
+                )
+            }
             else -> result.notImplemented()
         }
     }

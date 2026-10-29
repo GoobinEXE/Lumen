@@ -42,19 +42,27 @@ class GlassSurface extends StatelessWidget {
   final VoidCallback? onTap;
   final Color? shadowColor;
 
-  /// Compat: força FakeGlass no iOS (já é o caminho padrão de surface).
+  /// Compat: ignorado — surface iOS é sólido (HIG).
   final bool lite;
 
   @override
   Widget build(BuildContext context) {
     final contentPadding = padding ?? EdgeInsets.zero;
+    final scheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final shape = RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(borderRadius),
+    );
+    final baseFill = lumenUsesMaterialChrome()
+        ? scheme.surfaceContainerLow
+        : (isDark ? AppColors.cardDark : AppColors.cardLight);
+    final fill = tint == null
+        ? baseFill
+        : Color.alphaBlend(tint!.withValues(alpha: 0.18), baseFill);
+
+    Widget body = Padding(padding: contentPadding, child: child);
 
     if (lumenUsesMaterialChrome()) {
-      final scheme = Theme.of(context).colorScheme;
-      final shape = RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(borderRadius),
-      );
-      Widget body = Padding(padding: contentPadding, child: child);
       if (onTap != null) {
         body = InkWell(
           onTap: onTap,
@@ -64,12 +72,7 @@ class GlassSurface extends StatelessWidget {
       }
       return Card(
         elevation: 0,
-        color: tint == null
-            ? scheme.surfaceContainerLow
-            : Color.alphaBlend(
-                tint!.withValues(alpha: 0.18),
-                scheme.surfaceContainerLow,
-              ),
+        color: fill,
         surfaceTintColor: scheme.surfaceTint,
         shape: shape,
         clipBehavior: Clip.antiAlias,
@@ -77,30 +80,34 @@ class GlassSurface extends StatelessWidget {
       );
     }
 
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    Widget content = Padding(padding: contentPadding, child: child);
     if (onTap != null) {
-      content = GestureDetector(
+      body = GestureDetector(
         onTap: onTap,
         behavior: HitTestBehavior.opaque,
-        child: content,
+        child: body,
       );
     }
 
     return DecoratedBox(
       decoration: BoxDecoration(
+        color: fill,
         borderRadius: BorderRadius.circular(borderRadius),
+        border: Border.all(
+          color: AppColors.glassBorder(isDark),
+          width: 0.75,
+        ),
         boxShadow: lumenGlassShadow(
           isDark: isDark,
           shadowColor: shadowColor,
+          role: LumenGlassRole.surface,
         ),
       ),
-      child: LumenGlass(
-        role: LumenGlassRole.surface,
-        cornerRadius: borderRadius,
-        tint: tint,
-        forceLite: lite,
-        child: content,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(borderRadius),
+        child: KeyedSubtree(
+          key: ValueKey<bool>(lite),
+          child: body,
+        ),
       ),
     );
   }

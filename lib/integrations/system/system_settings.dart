@@ -36,4 +36,20 @@ class SystemSettings {
       return false;
     }
   }
+
+  /// iOS: [UIAccessibility.isReduceTransparencyEnabled]. Android: sempre false.
+  Future<bool> isReduceTransparencyEnabled() async {
+    try {
+      final flags = await _channel.invokeMethod<dynamic>('accessibilityFlags');
+      if (flags is Map) {
+        final value = flags['reduceTransparency'];
+        if (value is bool) return value;
+      }
+      return false;
+    } on PlatformException {
+      return false;
+    } on MissingPluginException {
+      return false;
+    }
+  }
 }

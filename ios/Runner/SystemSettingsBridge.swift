@@ -2,6 +2,7 @@ import Flutter
 import UIKit
 
 /// Abre Ajustes do iPhone na ficha do Lumen (idioma, notificações, permissões).
+/// Também expõe flags de acessibilidade legíveis (Reduzir Transparência).
 final class SystemSettingsBridge: NSObject {
   static let channelName = "dev.prism.lumen/system_settings"
 
@@ -14,6 +15,8 @@ final class SystemSettingsBridge: NSObject {
       switch call.method {
       case "open":
         openAppSettings(result: result)
+      case "accessibilityFlags":
+        result(accessibilityFlags())
       default:
         result(FlutterMethodNotImplemented)
       }
@@ -28,5 +31,12 @@ final class SystemSettingsBridge: NSObject {
     UIApplication.shared.open(url, options: [:]) { ok in
       result(ok)
     }
+  }
+
+  /// Sem API pública para Liquid Glass Transparente/Colorido (iOS 26.1).
+  private static func accessibilityFlags() -> [String: Any] {
+    [
+      "reduceTransparency": UIAccessibility.isReduceTransparencyEnabled
+    ]
   }
 }

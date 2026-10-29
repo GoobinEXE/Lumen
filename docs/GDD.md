@@ -2,7 +2,7 @@
 
 > Documento vivo de produto e desenvolvimento.  
 > **App:** Lumen (package `noa`)  
-> **Versão do doc:** 1.12 · **Data:** 2026-10-29  
+> **Versão do doc:** 1.13 · **Data:** 2026-10-29  
 > **Stack:** Flutter · Riverpod · SharedPreferences · Apple Health / Samsung Health / Health Connect  
 > **Plataformas-alvo:** iOS (primário), Android, Web (parcial)  
 > **Referências:** [PRD](PRD.md) (requisitos do protótipo) · telas em `Design/`
@@ -81,11 +81,11 @@ Dois pilares complementares no mesmo app:
 | Nome de produto | **Lumen** |
 | Package / código | `noa` |
 | Tom de voz | 100% humanizado, empático, sem clichês de IA (perfis selecionáveis) |
-| Metáfora visual | **iOS:** Apple Liquid Glass (`liquid_glass_renderer` + Impeller/Flutter GPU; refração no chrome). **Android:** Material 3 nativo (`MaterialApp`, `NavigationBar`, `Card`, `FilterChip`, `AppBar`, `FAB`, `SnackBar`) com tokens Lumen (teal `#1FAF8A`) — sem FakeGlass / liquid glass no chrome Android |
+| Metáfora visual | **iOS:** Apple Liquid Glass no chrome (`liquid_glass_renderer` + Impeller; níveis `clear`/`tinted`/`solid`); conteúdo em superfícies sólidas (HIG). **Android:** Material 3 nativo (`MaterialApp`, `NavigationBar`, `Card`, `FilterChip`, `AppBar`, `FAB`, `SnackBar`) com tokens Lumen (teal `#1FAF8A`) — sem FakeGlass / liquid glass no chrome Android |
 | Cores-chave | Organic Biophilic: teal `#1FAF8A` (primária/CTA), sage/terra `#5F7A6C` (acento), coral `#FF8A5C` (Des-Trava); fundo sage-stone `#F2F5F3` / carvão `#141816` |
 | Ícone | Arte em `lumen.ai`. iOS é o `ios/Runner/Lumen.icon` do Icon Composer, com vidro e luz, sem raster chapado por cima. Android usa essa arte no adaptive icon: fundo `#F6F1DE` no claro e `#16161A` no escuro; o L fica `#3A3A40` no claro e `#F4F1EC` no escuro |
 | Locales | `pt` (fonte), `en`, `es`, `ja` |
-| Versão do app | [SemVer](https://semver.org/lang/pt-BR/) em `pubspec.yaml`: `MAJOR.MINOR.PATCH`. Atual: `0.2.2` (série 0, antes do lançamento). `1.0.0` é o primeiro lançamento público. O `+N` do Flutter é só o build da loja e sobe a cada envio |
+| Versão do app | [SemVer](https://semver.org/lang/pt-BR/) em `pubspec.yaml`: `MAJOR.MINOR.PATCH`. Atual: `0.3.0` (série 0, antes do lançamento). `1.0.0` é o primeiro lançamento público. O `+N` do Flutter é só o build da loja e sobe a cada envio |
 
 ### Perfis de tom de voz (humanizados, zero dialeto de IA)
 
@@ -176,7 +176,7 @@ lib/
 | Persistência | SharedPreferences (JSON maps) |
 | Domínio | classes imutáveis + `toMap` / `fromMap` |
 | Health | interface `HealthService` → `AppleHealthService` |
-| UI | **iOS:** `CupertinoApp` + tema Material engine no `builder` + Liquid Glass (`GlassSurface` / `GlassSheet` / `GlassNavBar` / `GlassAppBar` / `GlassChip` / `LumenFab` via `liquid_glass_renderer`). **Android:** `MaterialApp` + Material 3 visível (mesmos wrappers resolvem para `Card` / `NavigationBar` / `AppBar` / `FilterChip` / `FAB` / `SnackBar`). 4 abas irmãs no `PageView` + `Navigator` aninhado (`LumenShell`). Sem `go_router` (FUT-52) |
+| UI | **iOS:** `CupertinoApp` + tema Material engine no `builder` + Liquid Glass no chrome (`GlassSheet` / `GlassNavBar` / `GlassAppBar` / `GlassChip` / `LumenFab`); `GlassSurface` sólido. **Android:** `MaterialApp` + Material 3 visível (mesmos wrappers resolvem para `Card` / `NavigationBar` / `AppBar` / `FilterChip` / `FAB` / `SnackBar`). 4 abas irmãs no `PageView` + `Navigator` aninhado (`LumenShell`). Sem `go_router` (FUT-52) |
 
 ### Dependências relevantes
 
@@ -434,7 +434,7 @@ Entrada só na aba Dia (linha discreta). Protótipo: `Design/Stitch/new/des_trav
 |----|---------|--------|-------|
 | P01 | i18n pt/en/es/ja + doloc | ✅ | locale 100% do sistema; ver `docs/i18n.md` |
 | P02 | Tema claro/escuro/sistema | ✅ | |
-| P03 | Design system (cores, spacing, glass/M3) | ✅ | Organic Biophilic; iOS: `CupertinoApp` + `liquid_glass_renderer`; Android: `MaterialApp` + M3 (`lumenUsesMaterialChrome`); wrappers `Glass*` / `LumenFab` / `showGlassToast` bifurcam por plataforma |
+| P03 | Design system (cores, spacing, glass/M3) | ✅ | Organic Biophilic; iOS: Liquid Glass só no chrome (`LumenGlassLevel` + `LumenGlassScope`); conteúdo sólido; Android: M3 (`lumenUsesMaterialChrome`); ver `docs/DESIGN_LIQUID_GLASS.md` |
 | P04 | Skeletons / FadeSwap | ✅ | |
 | P05 | Widget tests básicos | 🟡 | `test/widget_test.dart` |
 | P06 | Auth / cloud backup | ❌ | |
@@ -923,16 +923,17 @@ doloc.io a partir de `app_pt.arb` → en/es/ja. Ver [i18n.md](./i18n.md).
 ### Tema
 
 - Gate: `lumenUsesLiquidGlass()` (iOS) / `lumenUsesMaterialChrome()` (Android e demais)
-- **iOS:** `CupertinoApp` + `AppTheme.iosEngineTheme` no `builder` (Material transparente) + Liquid Glass
+- **iOS:** `CupertinoApp` + `AppTheme.iosEngineTheme` no `builder` (Material transparente) + Liquid Glass **só no chrome** (HIG)
 - **Android:** `MaterialApp` + `AppTheme.androidTheme` (M3 visível: ripple/`InkSparkle`, `NavigationBarTheme`, `Card`, elevação FAB, predictive back)
 - Direção visual: **Organic Biophilic** (wellness, cantos orgânicos, sage/teal, motion suave; tipografia do sistema recalibrada — sem fonte custom na UI)
-- Tokens compartilhados: `AppColors`, `AppSpacing`, `AppRadii`
+- Tokens compartilhados: `AppColors`, `AppSpacing`, `AppRadii`, `LumenGlassLevel` (`clear` / `tinted` / `solid`)
   - Primária/CTA `#1FAF8A`, soft `#E3F4EE`; acento sage `#5F7A6C` / soft `#E8EEEA`; Des-Trava coral `#FF8A5C`
   - Fundo claro sage-stone `#F2F5F3` (sem lilás); escuro `#141816`; cards `#FFFFFF` / `#1C211E`
   - `AppSpacing.section` 24; raios `card` 24, `sheet` 36, `input` 18 (`button` / `buttonMaterial` inalterados)
-- Wrappers de UI (`GlassSurface` / `GlassSheet` / `GlassNavBar` / `GlassAppBar` / `GlassScaffold` / `GlassIconButton` / `GlassChip` / `LumenFab` / `showGlassToast`) bifurcam: glass no iOS, componentes M3 no Android
-- Nav ativa usa primary (não acento); empty states com ícone + copy humana em `GlassSurface`
-- iOS glass: `liquid_glass_renderer` (`LiquidGlass` / `FakeGlass` / `GlassGlow` / `LiquidGlassBlendGroup`) + `LumenGlassLite` em chips densos; Impeller + `EnableFlutterGPU` / `FLTEnableFlutterGPU`
+  - Nível de vidro: prefs `noa_glass_level_v1` (Seguir sistema / Transparente / Colorido / Sólido, só iOS); senão Reduzir Transparência → `solid`; Aumentar Contraste → `tinted` + borda; padrão `clear`. Sem API pública para Transparente/Colorido do iOS 26.1 (`SystemSettings.accessibilityFlags`). Spec: `docs/DESIGN_LIQUID_GLASS.md`
+- Wrappers: `GlassSurface` = card sólido nas duas plataformas; chrome iOS (`GlassSheet` / `GlassNavBar` / `GlassAppBar` / `GlassChip` / `LumenFab`) usa `liquid_glass_renderer`; Android resolve para M3
+- Nav ativa usa primary (não acento); empty states com ícone + copy humana em `GlassSurface` sólido
+- iOS glass: `liquid_glass_renderer` (`LiquidGlass` / `FakeGlass` / `GlassGlow` / `LiquidGlassBlendGroup`) + `LumenGlassLite` em chips densos; Impeller + `EnableFlutterGPU` / `FLTEnableFlutterGPU`; `LumenGlassScope` no `CupertinoApp.builder`
 - Responsive: `responsive.dart` (`kMinBodySecondary`, etc.)
 
 ### Linha-base de hardware (glass iOS + Material Android)

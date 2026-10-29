@@ -58,7 +58,7 @@ Domínio não importa Flutter. Modelo imutável, um tipo por conceito do GDD, co
 - Arquivo `snake_case`, tipo `PascalCase`, membro `camelCase`
 - String de UI só em `lib/l10n/app_pt.arb`, chave `camelCase`. Labels de State of Mind ficam em `state_of_mind_*.dart`
 - Chave de prefs: `noa_*` com sufixo de versão (`noa_mood_entries_v2`)
-- Cor, espaço e raio em `AppColors`, `AppSpacing`, `AppRadii`. Superfície em `GlassSurface` (glass no iOS / `Card` M3 no Android). Ícone em `AppIcons`. CTA `#1FAF8A`. Fundo sólido. Gate de plataforma: `lumenUsesLiquidGlass` / `lumenUsesMaterialChrome` (só no core/tema — telas de feature não checam `Platform`)
+- Cor, espaço e raio em `AppColors`, `AppSpacing`, `AppRadii`. `GlassSurface` = card sólido (iOS e Android). Vidro só no chrome iOS (`GlassNavBar` / `GlassAppBar` / `GlassSheet` / `GlassChip` / `LumenFab`) via `LumenGlassLevel`. Ícone em `AppIcons`. CTA `#1FAF8A`. Gate: `lumenUsesLiquidGlass` / `lumenUsesMaterialChrome` (só no core/tema — telas de feature não checam `Platform`)
 
 ## Sistema
 

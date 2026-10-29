@@ -3,6 +3,7 @@ import 'package:liquid_glass_renderer/liquid_glass_renderer.dart';
 
 import '../theme/app_colors.dart';
 import '../theme/app_spacing.dart';
+import '../theme/lumen_glass_level.dart';
 import '../theme/lumen_glass_style.dart';
 
 /// Destino de uma aba na [GlassNavBar].
@@ -116,10 +117,12 @@ class GlassNavBar extends StatelessWidget {
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final height = heightFor(context);
+    final level = LumenGlassScope.levelOf(context);
     final reduceMotion = MediaQuery.disableAnimationsOf(context);
     final useFake = lumenGlassUseFake(
       context: context,
       role: LumenGlassRole.navBar,
+      level: level,
     );
     final duration =
         reduceMotion ? Duration.zero : const Duration(milliseconds: 220);
@@ -153,6 +156,7 @@ class GlassNavBar extends StatelessWidget {
             ),
             child: _NavDockChrome(
               useFake: useFake,
+              level: level,
               isDark: isDark,
               height: height,
               lensLeft: lensLeft,
@@ -181,6 +185,7 @@ class GlassNavBar extends StatelessWidget {
 class _NavDockChrome extends StatelessWidget {
   const _NavDockChrome({
     required this.useFake,
+    required this.level,
     required this.isDark,
     required this.height,
     required this.lensLeft,
@@ -190,6 +195,7 @@ class _NavDockChrome extends StatelessWidget {
   });
 
   final bool useFake;
+  final LumenGlassLevel level;
   final bool isDark;
   final double height;
   final double lensLeft;
@@ -204,7 +210,13 @@ class _NavDockChrome extends StatelessWidget {
     final settings = lumenGlassSettings(
       context: context,
       role: LumenGlassRole.navBar,
+      level: level,
     );
+    final contrast = lumenGlassNeedsContrastBorder(level);
+    final rimAlpha = contrast
+        ? (isDark ? 0.28 : 0.55)
+        : (isDark ? 0.10 : 0.42);
+    final rimWidth = contrast ? 1.0 : 0.75;
 
     final indicator = Positioned(
       key: GlassNavBar.lensKey,
@@ -241,8 +253,8 @@ class _NavDockChrome extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(radius),
             border: Border.all(
-              color: Colors.white.withValues(alpha: isDark ? 0.10 : 0.42),
-              width: 0.75,
+              color: Colors.white.withValues(alpha: rimAlpha),
+              width: rimWidth,
             ),
           ),
           child: const SizedBox.expand(),

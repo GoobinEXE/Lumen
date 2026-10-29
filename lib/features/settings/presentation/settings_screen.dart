@@ -10,7 +10,9 @@ import '../../../core/localization/locale_provider.dart';
 import '../../../core/providers.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
+import '../../../core/theme/glass_level_provider.dart';
 import '../../../core/theme/glass_surface.dart';
+import '../../../core/theme/lumen_glass_style.dart';
 import '../../../core/theme/theme_mode_provider.dart';
 import '../../../core/widgets/lumen_shell.dart';
 import '../../../integrations/system/system_settings.dart';
@@ -51,9 +53,11 @@ class SettingsScreen extends ConsumerWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final themeMode = ref.watch(themeModeProvider);
+    final glassPreference = ref.watch(glassLevelPreferenceProvider);
     final healthSync = ref.watch(healthSyncEnabledProvider);
     final locale = ref.watch(activeLocaleProvider);
     final muted = AppColors.mutedText(isDark);
+    final showGlassControls = lumenUsesLiquidGlass();
 
     return GlassScaffold(
       appBar: GlassAppBar(title: Text(l10n.settingsScreenTitle)),
@@ -125,6 +129,55 @@ class SettingsScreen extends ConsumerWidget {
                       ),
                     ],
                   ),
+                  if (showGlassControls) ...[
+                    const SizedBox(height: 20),
+                    Text(
+                      l10n.settingsGlassTitle,
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      l10n.settingsGlassSubtitle,
+                      style: theme.textTheme.bodySmall?.copyWith(color: muted),
+                    ),
+                    const SizedBox(height: 12),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        for (final option in LumenGlassPreference.values)
+                          GlassChip(
+                            label: _glassPreferenceLabel(l10n, option),
+                            selected: glassPreference == option,
+                            onTap: () {
+                              HapticFeedback.selectionClick();
+                              ref
+                                  .read(glassLevelPreferenceProvider.notifier)
+                                  .setPreference(option);
+                            },
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: TextButton(
+                        onPressed: () => _openSystem(
+                          context,
+                          ref,
+                          SystemSettingsTarget.app,
+                          l10n,
+                        ),
+                        child: Text(l10n.settingsGlassOpenSystem),
+                      ),
+                    ),
+                    Text(
+                      l10n.settingsGlassOpenSystemHint,
+                      style: theme.textTheme.bodySmall?.copyWith(color: muted),
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -279,6 +332,18 @@ class SettingsScreen extends ConsumerWidget {
       default:
         return l10n.portuguese;
     }
+  }
+
+  String _glassPreferenceLabel(
+    AppLocalizations l10n,
+    LumenGlassPreference preference,
+  ) {
+    return switch (preference) {
+      LumenGlassPreference.system => l10n.settingsGlassSystem,
+      LumenGlassPreference.clear => l10n.settingsGlassClear,
+      LumenGlassPreference.tinted => l10n.settingsGlassTinted,
+      LumenGlassPreference.solid => l10n.settingsGlassSolid,
+    };
   }
 
   Future<void> _openSystem(

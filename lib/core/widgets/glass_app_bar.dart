@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../theme/app_colors.dart';
 import '../theme/app_spacing.dart';
+import '../theme/lumen_glass_level.dart';
 import '../theme/lumen_glass_style.dart';
 import 'glass_nav_bar.dart';
 
@@ -60,10 +62,12 @@ class GlassAppBar extends StatelessWidget implements PreferredSizeWidget {
     }
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final level = LumenGlassScope.levelOf(context);
     final canPop = ModalRoute.of(context)?.canPop ?? false;
     final showLeading = leading != null ||
         (automaticallyImplyLeading && canPop);
     final titleWidget = title;
+    final contrast = lumenGlassNeedsContrastBorder(level);
 
     return SafeArea(
       bottom: false,
@@ -72,6 +76,12 @@ class GlassAppBar extends StatelessWidget implements PreferredSizeWidget {
         child: DecoratedBox(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(AppRadii.button),
+            border: contrast
+                ? Border.all(
+                    color: AppColors.glassBorder(isDark),
+                    width: 1,
+                  )
+                : null,
             boxShadow: lumenGlassShadow(
               isDark: isDark,
               role: LumenGlassRole.appBar,
@@ -194,13 +204,38 @@ class GlassScaffold extends StatelessWidget {
               child: body,
             ),
           ),
-          if (bar != null)
+          if (bar != null) ...[
+            Positioned(
+              top: clearTop - 12,
+              left: 0,
+              right: 0,
+              height: 12,
+              child: IgnorePointer(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Theme.of(context).scaffoldBackgroundColor.withValues(
+                              alpha: 0.55,
+                            ),
+                        Theme.of(context).scaffoldBackgroundColor.withValues(
+                              alpha: 0,
+                            ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
             Positioned(
               top: 0,
               left: 0,
               right: 0,
               child: bar,
             ),
+          ],
         ],
       ),
     );

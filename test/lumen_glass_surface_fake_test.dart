@@ -7,7 +7,7 @@ import 'package:noa/core/widgets/glass_chip.dart';
 
 void main() {
   testWidgets(
-    'iOS: surface/chip/sheet FakeGlass; chrome refrata',
+    'iOS: chrome refrata; sheet/chip FakeGlass; surface não é papel de vidro',
     (tester) async {
       late BuildContext captured;
       await tester.pumpWidget(
@@ -45,12 +45,12 @@ void main() {
       );
       expect(lumenGlassPreferLitePaint(LumenGlassRole.chip), isTrue);
       expect(lumenGlassPreferLitePaint(LumenGlassRole.surface), isFalse);
-      final iosSurface = lumenGlassSettings(
+      final iosNav = lumenGlassSettings(
         context: captured,
-        role: LumenGlassRole.surface,
+        role: LumenGlassRole.navBar,
       );
-      expect(iosSurface.blur, greaterThan(0));
-      expect(iosSurface.saturation, 1.15);
+      expect(iosNav.blur, greaterThan(0));
+      expect(iosNav.saturation, 1.15);
     },
     variant: TargetPlatformVariant.only(TargetPlatform.iOS),
   );
@@ -93,7 +93,7 @@ void main() {
   );
 
   testWidgets(
-    'iOS: GlassSurface não usa LumenGlassLite; chip usa (scroll denso)',
+    'iOS: GlassSurface é sólido (sem LumenGlass / FakeGlass); chip usa lite',
     (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
@@ -117,7 +117,10 @@ void main() {
 
       expect(find.text('ios'), findsOneWidget);
       expect(find.text('chip-lite'), findsOneWidget);
+      expect(find.byType(FakeGlass), findsNothing);
       expect(find.byType(LumenGlassLite), findsOneWidget);
+      final surface = tester.widget<GlassSurface>(find.byType(GlassSurface));
+      expect(surface.lite, isFalse);
       expect(lumenGlassPreferLitePaint(LumenGlassRole.surface), isFalse);
       expect(lumenGlassPreferLitePaint(LumenGlassRole.chip), isTrue);
       expect(lumenGlassPreferLitePaint(LumenGlassRole.navBar), isFalse);

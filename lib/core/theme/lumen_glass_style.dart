@@ -5,10 +5,15 @@ import 'package:flutter/material.dart';
 import 'package:liquid_glass_renderer/liquid_glass_renderer.dart';
 
 import 'app_colors.dart';
+import 'lumen_glass_level.dart';
 
 /// Papéis de superfície liquid glass no Lumen (só iOS).
+///
+/// HIG: vidro na camada de navegação/controles ([navBar], [appBar], [sheet],
+/// [chip]). Conteúdo ([surface]) é sólido via [GlassSurface] — o papel
+/// permanece para sombra/compat.
 enum LumenGlassRole {
-  /// Cards de hub / painéis.
+  /// Cards de hub / painéis (conteúdo sólido; sem refração).
   surface,
 
   /// Bottom sheets e modais.
@@ -52,23 +57,29 @@ bool lumenGlassPreferLitePaint(LumenGlassRole role) {
 
 /// Se este papel deve usar [FakeGlass] (sem refração). Só faz sentido no iOS.
 ///
-/// Cards/painéis ([LumenGlassRole.surface]), chips e sheets ficam em
-/// FakeGlass: o `liquid_glass_renderer` real chama `toImageSync` com o matte
-/// transform da árvore; em lista scrollável / PageView / form longo isso vira
-/// Infinity/NaN ou texto ilegível. Chrome iOS refrata.
+/// Sheets e chips ficam em FakeGlass (lista/form longo). Chrome refrata em
+/// [LumenGlassLevel.clear]/ [LumenGlassLevel.solid] força FakeGlass.
 bool lumenGlassUseFake({
   required BuildContext context,
   required LumenGlassRole role,
   bool forceLite = false,
+  LumenGlassLevel? level,
 }) {
   if (lumenUsesMaterialChrome()) return true;
+  final resolved = level ?? LumenGlassScope.levelOf(context);
   final reduceMotion = MediaQuery.disableAnimationsOf(context);
   return debugLumenForceFakeGlass ||
       forceLite ||
       reduceMotion ||
+      resolved == LumenGlassLevel.solid ||
       role == LumenGlassRole.chip ||
       role == LumenGlassRole.surface ||
       role == LumenGlassRole.sheet;
+}
+
+/// Borda reforçada no chrome quando o nível pede contraste.
+bool lumenGlassNeedsContrastBorder(LumenGlassLevel level) {
+  return level == LumenGlassLevel.tinted || level == LumenGlassLevel.solid;
 }
 
 double lumenGlassRadius(LumenGlassRole role, {double? override}) {
@@ -94,23 +105,42 @@ LiquidGlassSettings lumenGlassSettings({
   required LumenGlassRole role,
   Color? tint,
   bool forceLite = false,
+  LumenGlassLevel? level,
 }) {
   final isDark = Theme.of(context).brightness == Brightness.dark;
+  final resolved = level ?? LumenGlassScope.levelOf(context);
   final useFake = lumenGlassUseFake(
     context: context,
     role: role,
     forceLite: forceLite,
+    level: resolved,
   );
   final preferLite = lumenGlassPreferLitePaint(role);
   final reduceMotion = MediaQuery.disableAnimationsOf(context);
 
-  // iOS: tint baixo no chrome (refração); sheet quase opaco (forms legíveis).
-  final baseAlpha = switch (role) {
+  final clearAlpha = switch (role) {
     LumenGlassRole.navBar => isDark ? 0.10 : 0.07,
     LumenGlassRole.appBar => isDark ? 0.16 : 0.12,
     LumenGlassRole.sheet => isDark ? 0.94 : 0.97,
     LumenGlassRole.chip => isDark ? 0.20 : 0.16,
     LumenGlassRole.surface => isDark ? 0.16 : 0.12,
+  };
+  final tintedAlpha = switch (role) {
+    LumenGlassRole.navBar => isDark ? 0.28 : 0.22,
+    LumenGlassRole.appBar => isDark ? 0.34 : 0.28,
+    LumenGlassRole.sheet => isDark ? 0.96 : 0.98,
+    LumenGlassRole.chip => isDark ? 0.32 : 0.26,
+    LumenGlassRole.surface => isDark ? 0.30 : 0.24,
+  };
+  final solidAlpha = switch (role) {
+    LumenGlassRole.sheet => isDark ? 0.98 : 1.0,
+    LumenGlassRole.chip => isDark ? 0.88 : 0.92,
+    _ => isDark ? 0.92 : 0.94,
+  };
+  final baseAlpha = switch (resolved) {
+    LumenGlassLevel.clear => clearAlpha,
+    LumenGlassLevel.tinted => tintedAlpha,
+    LumenGlassLevel.solid => solidAlpha,
   };
 
   var glassColor = (isDark ? const Color(0xFF2A2A32) : Colors.white)
@@ -123,20 +153,18 @@ LiquidGlassSettings lumenGlassSettings({
   }
 
   final thickness = useFake
-      ? 8.0
+      ? (resolved == LumenGlassLevel.solid ? 4.0 : 8.0)
       : switch (role) {
-          // Nav mais fina = mais transparente; app bar mantém peso.
-          LumenGlassRole.navBar => 16.0,
-          LumenGlassRole.appBar => 22.0,
+          LumenGlassRole.navBar => resolved == LumenGlassLevel.tinted ? 20.0 : 16.0,
+          LumenGlassRole.appBar => resolved == LumenGlassLevel.tinted ? 26.0 : 22.0,
           LumenGlassRole.sheet => 26.0,
           LumenGlassRole.surface => 18.0,
           LumenGlassRole.chip => 10.0,
         };
 
-  // Blur só fora do paint lite (e com reduzir movimento = 0).
-  final blur = (preferLite || reduceMotion)
+  final blur = (preferLite || reduceMotion || resolved == LumenGlassLevel.solid)
       ? 0.0
-          : useFake
+      : useFake
           ? switch (role) {
               LumenGlassRole.chip => 6.0,
               LumenGlassRole.navBar => 12.0,
@@ -155,11 +183,12 @@ LiquidGlassSettings lumenGlassSettings({
     glassColor: glassColor,
     thickness: thickness,
     blur: blur,
-    chromaticAberration: useFake ? 0 : 0.008,
+    chromaticAberration:
+        useFake || resolved != LumenGlassLevel.clear ? 0 : 0.008,
     lightIntensity: role == LumenGlassRole.chip ? 0.35 : 0.55,
     ambientStrength: isDark ? 0.12 : 0.08,
-    refractiveIndex: useFake ? 1.0 : 1.18,
-    saturation: 1.15,
+    refractiveIndex: useFake ? 1.0 : (resolved == LumenGlassLevel.tinted ? 1.12 : 1.18),
+    saturation: resolved == LumenGlassLevel.tinted ? 1.08 : 1.15,
   );
 }
 
@@ -311,17 +340,20 @@ class LumenGlass extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final level = LumenGlassScope.levelOf(context);
     final settings = lumenGlassSettings(
       context: context,
       role: role,
       tint: tint,
       forceLite: forceLite,
+      level: level,
     );
     final shape = lumenGlassShape(role, cornerRadius: cornerRadius);
     final fake = lumenGlassUseFake(
       context: context,
       role: role,
       forceLite: forceLite,
+      level: level,
     );
     final content = interactive
         ? GlassGlow(

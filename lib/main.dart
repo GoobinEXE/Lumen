@@ -8,6 +8,8 @@ import 'core/localization/locale_provider.dart';
 import 'core/providers.dart';
 import 'core/theme/app_colors.dart';
 import 'core/theme/app_theme.dart';
+import 'core/theme/glass_level_provider.dart';
+import 'core/theme/lumen_glass_level.dart';
 import 'core/theme/lumen_glass_style.dart';
 import 'core/theme/theme_mode_provider.dart';
 import 'core/widgets/lumen_shell.dart';
@@ -77,6 +79,13 @@ class _LumenAppState extends ConsumerState<LumenApp>
     setState(() {});
   }
 
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      ref.read(lumenGlassAccessibilityProvider.notifier).refresh();
+    }
+  }
+
   Brightness _resolveBrightness(ThemeMode mode, Brightness platform) {
     return switch (mode) {
       ThemeMode.light => Brightness.light,
@@ -108,6 +117,10 @@ class _LumenAppState extends ConsumerState<LumenApp>
         WidgetsBinding.instance.platformDispatcher.platformBrightness;
     final brightness = _resolveBrightness(themeMode, platformBrightness);
 
+    final glassA11y = ref.watch(lumenGlassAccessibilityProvider).valueOrNull ??
+        const LumenGlassAccessibility();
+    final glassPreference = ref.watch(glassLevelPreferenceProvider);
+
     if (lumenUsesLiquidGlass()) {
       final materialTheme = AppTheme.iosEngineTheme(brightness: brightness);
       return CupertinoApp(
@@ -131,13 +144,23 @@ class _LumenAppState extends ConsumerState<LumenApp>
         localeListResolutionCallback: _resolveLocale,
         localizationsDelegates: _localizationsDelegates,
         builder: (context, child) {
+          final level = resolveLumenGlassLevel(
+            reduceTransparency: glassA11y.reduceTransparency,
+            highContrast: MediaQuery.highContrastOf(context) ||
+                glassA11y.highContrast,
+            preference: glassPreference.overrideLevel,
+          );
           return Theme(
             data: materialTheme,
-            child: DefaultTextStyle(
-              style: materialTheme.textTheme.bodyMedium!,
-              child: Material(
-                type: MaterialType.transparency,
-                child: child ?? const SizedBox.shrink(),
+            child: LumenGlassScope(
+              level: level,
+              reduceTransparency: glassA11y.reduceTransparency,
+              child: DefaultTextStyle(
+                style: materialTheme.textTheme.bodyMedium!,
+                child: Material(
+                  type: MaterialType.transparency,
+                  child: child ?? const SizedBox.shrink(),
+                ),
               ),
             ),
           );

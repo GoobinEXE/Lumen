@@ -61,6 +61,30 @@ void main() {
     );
   });
 
+  test(
+    'texto que não é preferência volta para o sistema e não regrava',
+    () async {
+      for (final stored in ['liquid', '']) {
+        SharedPreferences.setMockInitialValues({
+          glassLevelPrefKey: stored,
+        });
+        final prefs = await SharedPreferences.getInstance();
+        final container = ProviderContainer(
+          overrides: [
+            sharedPreferencesProvider.overrideWithValue(prefs),
+          ],
+        );
+        addTearDown(container.dispose);
+
+        expect(
+          container.read(glassLevelPreferenceProvider),
+          LumenGlassPreference.system,
+        );
+        expect(prefs.getString(glassLevelPrefKey), stored);
+      }
+    },
+  );
+
   test('preferência explícita ganha da acessibilidade na resolução', () {
     expect(
       resolveLumenGlassLevel(

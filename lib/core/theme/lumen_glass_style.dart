@@ -264,11 +264,10 @@ class LumenGlassLitePainter extends CustomPainter {
       radius: bounds.size.longestSide / 2,
     );
     final lightCoverage = uiLerp(.3, .5, lightIntensity);
-    final aspectAdjustment = 1 - 1 / (bounds.size.aspectRatio == 0
-        ? 1
-        : bounds.size.aspectRatio);
-    final alignmentWithShortestSide =
-        (bounds.size.aspectRatio < 1 ? y : x).abs();
+    final rawAspect = bounds.size.aspectRatio;
+    final aspect = rawAspect.isNaN || rawAspect == 0 ? 1.0 : rawAspect;
+    final aspectAdjustment = 1 - 1 / aspect;
+    final alignmentWithShortestSide = (aspect < 1 ? y : x).abs();
     final gradientScale =
         aspectAdjustment * (1 - alignmentWithShortestSide);
     final inset = uiLerp(0, .5, gradientScale.clamp(0.0, 1.0));

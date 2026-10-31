@@ -372,7 +372,23 @@ class _LumenShellState extends ConsumerState<LumenShell>
       return;
     }
     _lastTasksNavigation = now;
-    openTasksHub(context);
+    _showTab(_ShellTab.home);
+    void push() {
+      final nav = _navKeys[_ShellTab.home.index].currentState;
+      if (nav == null) return;
+      nav.push(
+        MaterialPageRoute<void>(builder: (_) => const TasksHubScreen()),
+      );
+    }
+
+    if (_navKeys[_ShellTab.home.index].currentState != null) {
+      push();
+      return;
+    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      push();
+    });
   }
 
   ScrollPhysics _pagePhysics(BuildContext context, {required bool canPop}) {

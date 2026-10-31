@@ -13,10 +13,12 @@ import 'package:noa/core/widgets/lumen_shell.dart';
 import 'package:noa/features/calendar/presentation/routine_calendar_screen.dart';
 import 'package:noa/features/home/presentation/home_ficha_screen.dart';
 import 'package:noa/features/medications/presentation/medications_screen.dart';
+import 'package:noa/features/medications/service/medication_notification_bus.dart';
 import 'package:noa/features/profile/presentation/profile_screen.dart';
 import 'package:noa/features/routine_mood/presentation/daily_routine_screen.dart';
 import 'package:noa/features/settings/presentation/settings_screen.dart';
 import 'package:noa/features/tasks/presentation/tasks_hub_screen.dart';
+import 'package:noa/features/tasks/service/task_notification_bus.dart';
 import 'package:noa/features/therapist_export/presentation/clinical_folder_screen.dart';
 import 'package:noa/l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -26,7 +28,14 @@ void main() {
 
   late AppLocalizations l10n;
 
+  void resetNotificationBuses() {
+    MedicationNotificationBus.openMedications.value = 0;
+    TaskNotificationBus.openRoutine.value = 0;
+    TaskNotificationBus.openTasks.value = 0;
+  }
+
   setUp(() async {
+    resetNotificationBuses();
     debugLumenForceFakeGlass = true;
     SharedPreferences.setMockInitialValues(const {
       'noa_onboarding_done_v1': true,
@@ -41,6 +50,7 @@ void main() {
   });
 
   tearDown(() {
+    resetNotificationBuses();
     debugLumenForceFakeGlass = false;
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(
@@ -483,6 +493,121 @@ void main() {
       final homeScreen = find.byType(HomeFichaScreen);
       expect(homeScreen, findsOneWidget);
       expect(Navigator.of(tester.element(homeScreen)).canPop(), isFalse);
+    },
+  );
+
+  testWidgets('alarme de remédio abre a aba na hora', (tester) async {
+    await pumpShell(tester);
+
+    MedicationNotificationBus.requestOpenMedications();
+    await tester.pump();
+
+    final meds = find.byType(MedicationsScreen);
+    expect(meds, findsOneWidget);
+    expect(onScreen(tester, meds), isTrue);
+    expect(onScreen(tester, find.byType(HomeFichaScreen)), isFalse);
+  });
+
+  testWidgets(
+    'segundo alarme de remédio em seguida não puxa de volta para a aba',
+    (tester) async {
+      await pumpShell(tester);
+
+      MedicationNotificationBus.requestOpenMedications();
+      await tester.pump();
+      expect(onScreen(tester, find.byType(MedicationsScreen)), isTrue);
+
+      await tester.tap(navLabel(l10n.navHome));
+      await tester.pump();
+      expect(onScreen(tester, find.byType(HomeFichaScreen)), isTrue);
+
+      MedicationNotificationBus.requestOpenMedications();
+      await tester.pump();
+
+      expect(onScreen(tester, find.byType(HomeFichaScreen)), isTrue);
+      expect(onScreen(tester, find.byType(MedicationsScreen)), isFalse);
+    },
+  );
+
+  testWidgets('alarme de tarefa abre o hub na Início sem esperar frame', (
+    tester,
+  ) async {
+    await pumpShell(tester);
+
+    await tester.tap(navLabel(l10n.navMeds));
+    await tester.pump();
+    expect(onScreen(tester, find.byType(MedicationsScreen)), isTrue);
+
+    TaskNotificationBus.requestOpenTasks();
+
+    final home = find.byType(HomeFichaScreen, skipOffstage: false);
+    expect(home, findsOneWidget);
+    expect(Navigator.of(tester.element(home)).canPop(), isTrue);
+
+    await tester.pump();
+    expect(find.byType(TasksHubScreen), findsOneWidget);
+    expect(onScreen(tester, find.byType(TasksHubScreen)), isTrue);
+    expect(onScreen(tester, find.byType(MedicationsScreen)), isFalse);
+  });
+
+  testWidgets(
+    'segundo alarme de tarefa em seguida não reabre o hub',
+    (tester) async {
+      await pumpShell(tester);
+
+      TaskNotificationBus.requestOpenTasks();
+      await tester.pump();
+      expect(find.byType(TasksHubScreen), findsOneWidget);
+
+      Navigator.of(tester.element(find.byType(TasksHubScreen))).pop();
+      await tester.pump();
+      expect(find.byType(TasksHubScreen), findsNothing);
+
+      TaskNotificationBus.requestOpenTasks();
+      await tester.pump();
+
+      expect(find.byType(TasksHubScreen), findsNothing);
+      final home = find.byType(HomeFichaScreen);
+      expect(home, findsOneWidget);
+      expect(Navigator.of(tester.element(home)).canPop(), isFalse);
+    },
+  );
+
+  testWidgets('alarme de rotina abre a aba Dia', (tester) async {
+    await pumpShell(tester);
+
+    TaskNotificationBus.requestOpenRoutine();
+    await tester.pump();
+
+    final routine = find.byType(DailyRoutineScreen);
+    expect(onScreen(tester, routine), isTrue);
+    expect(Navigator.of(tester.element(routine)).canPop(), isFalse);
+  });
+
+  testWidgets(
+    'alarme de remédio que chegou antes do shell ainda abre a aba',
+    (tester) async {
+      MedicationNotificationBus.requestOpenMedications();
+      await pumpShell(tester);
+
+      final meds = find.byType(MedicationsScreen);
+      expect(meds, findsOneWidget);
+      expect(onScreen(tester, meds), isTrue);
+    },
+  );
+
+  testWidgets(
+    'alarme de tarefa que chegou antes do shell ainda abre o hub',
+    (tester) async {
+      TaskNotificationBus.requestOpenTasks();
+      await pumpShell(tester);
+
+      expect(find.byType(TasksHubScreen), findsOneWidget);
+      expect(onScreen(tester, find.byType(TasksHubScreen)), isTrue);
+      expect(
+        Navigator.of(tester.element(find.byType(TasksHubScreen))).canPop(),
+        isTrue,
+      );
     },
   );
 }

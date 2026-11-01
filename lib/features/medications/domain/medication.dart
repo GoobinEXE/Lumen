@@ -136,17 +136,13 @@ class Medication {
       scheduledTimes: (map['scheduledTimes'] as List<dynamic>)
           .map((e) => e.toString())
           .toList(),
-      totalStock: map['totalStock'] as int? ?? 30,
-      remainingStock: map['remainingStock'] as int? ?? 30,
-      refillWarningThreshold: map['refillWarningThreshold'] as int? ?? 5,
-      durationHours: map['durationHours'] as int? ?? 10,
+      totalStock: _storedInt(map['totalStock'], 30),
+      remainingStock: _storedInt(map['remainingStock'], 30),
+      refillWarningThreshold: _storedInt(map['refillWarningThreshold'], 5),
+      durationHours: _storedInt(map['durationHours'], 10),
       instructions: map['instructions'] as String? ?? '',
       active: map['active'] as bool? ?? true,
-      daysOfWeek:
-          (map['daysOfWeek'] as List<dynamic>?)
-              ?.map((e) => e as int)
-              .toList() ??
-          const [1, 2, 3, 4, 5, 6, 7],
+      daysOfWeek: _storedWeekdays(map['daysOfWeek']),
       appleConceptId: concept,
       rxNormCode: map['rxNormCode'] as String?,
       source: MedicationSource.values.firstWhere(
@@ -157,4 +153,19 @@ class Medication {
       ),
     );
   }
+}
+
+int _storedInt(Object? value, int fallback) {
+  if (value == null) return fallback;
+  if (value is num) return value.round();
+  throw ArgumentError.value(value);
+}
+
+List<int> _storedWeekdays(Object? raw) {
+  if (raw == null) return const [1, 2, 3, 4, 5, 6, 7];
+  if (raw is! List) throw ArgumentError.value(raw);
+  return [
+    for (final item in raw)
+      if (item is num) item.round() else throw ArgumentError.value(item),
+  ];
 }

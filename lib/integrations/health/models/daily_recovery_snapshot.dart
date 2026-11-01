@@ -75,11 +75,17 @@ class DailyRecoverySnapshot {
       date: DateTime.parse(map['date'] as String),
       hrvMs: (map['hrvMs'] as num?)?.toDouble(),
       restingHeartRate: (map['restingHeartRate'] as num?)?.toDouble(),
-      steps: map['steps'] as int?,
+      steps: _storedSteps(map['steps']),
       exerciseMinutes: (map['exerciseMinutes'] as num?)?.toDouble(),
       timeInDaylightMinutes: (map['timeInDaylightMinutes'] as num?)?.toDouble(),
       avgEnvironmentalDb: (map['avgEnvironmentalDb'] as num?)?.toDouble(),
       avgHeadphoneDb: (map['avgHeadphoneDb'] as num?)?.toDouble(),
     );
   }
+}
+
+int? _storedSteps(Object? value) {
+  if (value == null) return null;
+  if (value is num) return value.round();
+  throw ArgumentError.value(value);
 }
